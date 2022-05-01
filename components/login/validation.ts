@@ -6,7 +6,7 @@ export const loginSchema = yup.object().shape({
     password: yup.string().required(VALIDATIONS.REQUIRED_FIELD)
 })
 
-export const LOGIN_DEFAULT_VALUES = {
+export const LOGIN_INITIAL_VALUES = {
     document: "",
     password: ""
 }
