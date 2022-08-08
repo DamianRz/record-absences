@@ -4,11 +4,13 @@ import Textfield from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { loginSchema, LOGIN_INITIAL_VALUES } from "./validation";
+
 interface LoginProps {
   onSuccess: () => void;
   onError: () => void;
 }
-export const Login: React.FC<LoginProps> = () => {
+
+const Login: React.FC<LoginProps> = () => {
   const formik = useFormik({
     initialValues: LOGIN_INITIAL_VALUES,
     validationSchema: loginSchema,
@@ -20,8 +22,9 @@ export const Login: React.FC<LoginProps> = () => {
         */
     },
   });
+
   return (
-    <div className="p-4 m-auto bg-white rounded shadow-xl w-80">
+    <div className={styles.login}>
       <p className="mb-4 text-center">Iniciar de Sesion</p>
       <form onSubmit={formik.handleSubmit}>
         <Textfield
@@ -60,3 +63,5 @@ export const Login: React.FC<LoginProps> = () => {
     </div>
   );
 };
+
+export default Login;
