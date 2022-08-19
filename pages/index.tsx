@@ -11,7 +11,7 @@ const Index: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
-        <LoginPage />
+        {/* <LoginPage /> */}
       </main>
     </>
   )

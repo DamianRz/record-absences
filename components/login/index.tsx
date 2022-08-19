@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./login.module.scss";
-import Textfield from "@mui/material/TextField";
+import Textfield from "../textfield";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { loginSchema, LOGIN_INITIAL_VALUES } from "./validation";
@@ -25,7 +25,7 @@ const Login: React.FC<LoginProps> = () => {
 
   return (
     <div className={styles.login}>
-      <p className="mb-4 text-center">Iniciar de Sesion</p>
+      <p className={styles.title}>Login</p>
       <form onSubmit={formik.handleSubmit}>
         <Textfield
           fullWidth
@@ -35,8 +35,8 @@ const Login: React.FC<LoginProps> = () => {
           type="text"
           onChange={formik.handleChange}
           value={formik.values.document}
-          error={formik.touched.document && Boolean(formik.errors.document)}
-          helperText={formik.touched.document && formik.errors.document}
+          error={formik.touched.document && Boolean(formik.errors.document) || false}
+          helperText={formik.touched.document && formik.errors.document || ""}
           label="Documento"
         />
         <Textfield
@@ -45,8 +45,8 @@ const Login: React.FC<LoginProps> = () => {
           name="password"
           onChange={formik.handleChange}
           value={formik.values.password}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={formik.touched.password && formik.errors.password}
+          error={formik.touched.password && Boolean(formik.errors.password)  || false}
+          helperText={formik.touched.password && formik.errors.password || ""}
           label="Contrasena"
           type="password"
         />
