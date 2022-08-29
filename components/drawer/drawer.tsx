@@ -37,7 +37,7 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
     const [selected, setSelected] = useState(0);
     return (
         <div className={styles.drawer}>
-            <p className={styles.title}>Herramientas</p>
+            {/* <p className={styles.title}>Herramientas</p> */}
             <ul>
                 { tools.map((item, index) => 
                     <li 

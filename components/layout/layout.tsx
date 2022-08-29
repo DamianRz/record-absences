@@ -2,7 +2,9 @@
 import React from "react";
 import Drawer from "../drawer/drawer";
 import Toolbar from "../toolbar/toolbar";
+import Absences from "../absences";
 import styles from "./layout.module.scss";
+
 
 const Layout: React.FC = ({ }) => {
     return (
@@ -11,7 +13,9 @@ const Layout: React.FC = ({ }) => {
             <Toolbar isAdmin={false} />
             <div className={styles.container}>
                 <Drawer isAdmin={false} />
-                <div className={styles.toolbox}></div>
+                <div className={styles.toolbox}>
+                    <Absences />
+                </div>
             </div>
         </div>
     );

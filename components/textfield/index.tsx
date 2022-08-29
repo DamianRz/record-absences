@@ -39,6 +39,7 @@ const Textfield: React.FC<TextFieldProps> = ({
           type={type}
           fullWidth={fullWidth}
           className={className}
+          size="small"
         />
     )
 };
