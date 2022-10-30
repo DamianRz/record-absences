@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Absences from '../components/absences'
 import Layout from '../components/layout/layout'
 
 const Index: NextPage = () => {
@@ -11,7 +12,9 @@ const Index: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Layout />
+                <Layout>
+                    <Absences />
+                </Layout>
             </main>
         </>
     )

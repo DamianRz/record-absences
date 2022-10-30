@@ -2,7 +2,6 @@
 import React from "react";
 import Drawer from "../drawer/drawer";
 import Toolbar from "../toolbar/toolbar";
-import Absences from "../sections/absences";
 import styles from "./layout.module.scss";
 
 interface LayoutProps {
