@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { VALIDATIONS } from '../../constants/validations';
+import { VALIDATIONS } from '../../../constants/validations';
 
 export const loginSchema = yup.object().shape({
     name: yup.string().required(VALIDATIONS.REQUIRED_FIELD),

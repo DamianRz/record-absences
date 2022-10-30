@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import TitleSection from "../title-section";
+import TitleSection from "../../title-section";
 import Textfield from "@mui/material/TextField";
 import { useFormik } from "formik";
 import { loginSchema, ABSENCES_INITIAL_VALUES } from "./validation";
@@ -13,6 +13,7 @@ import styles from "./absences.module.scss";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
+
 
 const Absences = () => {
   interface IGroup {
@@ -283,7 +284,7 @@ const Absences = () => {
         </div>
         <Button
           className="mt-8"
-          onClick={() => {}}
+          onClick={() => { }}
           color="success"
           variant="outlined"
         >
