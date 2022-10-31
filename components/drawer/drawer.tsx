@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styles from "./drawer.module.scss";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import GroupIcon from '@mui/icons-material/Group';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -14,6 +13,11 @@ interface DrawerProps {
 }
 
 const tools = [
+    {
+        label: "Usuarios",
+        icon: PersonIcon,
+        page: "/users"
+    },
     {
         label: "Inasistencias",
         icon: EventBusyIcon,
@@ -33,11 +37,6 @@ const tools = [
         label: "Reportes",
         icon: AssessmentIcon,
         page: "/reports"
-    },
-    {
-        label: "Usuarios",
-        icon: PersonIcon,
-        page: "/users"
     }
 ];
 
@@ -54,16 +53,17 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
     }, [])
 
     return (
-        <div className={styles.drawer}>
-            <ul>
+        <div className="w-max h-full text-center">
+            <ul className="pt-0">
                 {tools.map((item, index) =>
                     <Link href={item.page}>
                         <li
                             key={index}
-                            className={selected === index ? styles.selected : ""}
+                            className={`flex items-center mb-1 px-4 py-1 cursor-pointer
+                            ${selected === index ? "bg-gray-300 rounded-md" : ""}`}
                         >
-                            <span>
-                                <item.icon />
+                            <span className="flex">
+                                <item.icon className="mr-1" />
                                 {item.label}
                             </span>
                         </li>

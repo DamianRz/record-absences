@@ -1,6 +1,9 @@
+import { Button } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Layout from '../components/layout/layout'
+import TitleSection from '../components/title-section'
+import UserTable from '../components/userTable'
 
 const Index: NextPage = () => {
     return (
@@ -11,7 +14,12 @@ const Index: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Layout />
+                <Layout>
+                    <>
+                        <TitleSection title="Lista de Usuarios" />
+                        <UserTable />
+                    </>
+                </Layout>
             </main>
         </>
     )

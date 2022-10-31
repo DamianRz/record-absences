@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Absences from '../components/absences'
+import Absences from '../components/sections/absences'
 import Layout from '../components/layout/layout'
 
 const Index: NextPage = () => {
