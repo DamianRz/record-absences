@@ -1,13 +1,15 @@
 import React, { FC } from "react";
 
 interface TitleSectionProps {
+    children?: React.ReactChild,
     title: string
 }
 
-const TitleSection: FC<TitleSectionProps> = ({ title }) => {
+const TitleSection: FC<TitleSectionProps> = ({ children, title }) => {
     return (
-        <div className="w-full mb-1 px-4 py-1 bg-zinc-300 text-black rounded-sm">
-            <span className="text-xl">{title}</span>
+        <div className="flex items-center w-full pt-4 pb-1 bg-zinc-900 text-white">
+            <span className="text-xs">{title}</span>
+            {children}
         </div>
     );
 };

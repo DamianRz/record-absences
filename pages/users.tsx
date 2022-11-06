@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Layout from '../components/layout/layout'
 import TitleSection from '../components/title-section'
 import UserTable from '../components/userTable'
+import UserDialog from '../components/user-dialog'
 
 const Index: NextPage = () => {
     return (
@@ -16,7 +17,9 @@ const Index: NextPage = () => {
             <main>
                 <Layout>
                     <>
-                        <TitleSection title="Lista de Usuarios" />
+                        <TitleSection title="Lista de Usuarios">
+                            <UserDialog />
+                        </TitleSection>
                         <UserTable />
                     </>
                 </Layout>

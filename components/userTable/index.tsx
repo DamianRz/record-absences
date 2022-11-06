@@ -1,6 +1,9 @@
 import React from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, esES, GridColDef, nlNL } from "@mui/x-data-grid";
 import { mokUsers } from "../../api/users.mok";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { es } from 'date-fns/locale';
+import { LocalizationProvider } from "@mui/x-date-pickers";
 
 interface UserTableProps { }
 
@@ -15,14 +18,20 @@ const rows = mokUsers;
 
 const UserTable: React.FC<UserTableProps> = () => {
   return (
-    <div className="h-[520px]">
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-      />
-    </div>
+    <DataGrid
+      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+      className="text-white rounded-none border-none h-[500px]"
+      sx={{
+        ".MuiDataGrid-cell": { border: "none" },
+        ".MuiTablePagination-root": { color: "white" },
+        ".MuiDataGrid-row:hover": { backgroundColor: "#4f4f4f", color: "white" },
+      }}
+      rows={rows}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5]}
+      checkboxSelection
+    />
   );
 };
 
