@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import GroupIcon from '@mui/icons-material/Group';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PersonIcon from '@mui/icons-material/Person';
+import { LoaderContext } from "../../contexts/loader-context";
+
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -44,24 +46,30 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
     const [selected, setSelected] = useState(0);
     const { asPath } = useRouter();
 
+    const { setLoading } = useContext(LoaderContext)
+
     useEffect(() => {
         tools.map((item, index) => {
             if (item.page === `/${asPath.split("/")[1]}`) {
+                setLoading(true)
                 setSelected(index)
+                setLoading(false)
             }
         })
     }, [])
 
     return (
-        <div className="w-max h-full bg-zinc-900 px-4 py-4">
-            <span className="text-xs m-auto cursor-default text-white">Dashboard</span>
+        <div className="w-max h-full px-4 py-4">
+            <span className="text-xs m-auto cursor-default ">Dashboard</span>
             <ul className="pt-4">
                 {tools.map((item, index) =>
-                    <Link href={item.page}>
+                    <Link
+                        href={item.page}
+                        key={index}
+                    >
                         <li
-                            key={index}
-                            className={`mb-1 py-1 cursor-pointer  text-xs hover:text-white
-                            ${selected === index ? "rounded-md text-white" : "text-gray-400"}`}
+                            className={`mb-1 py-1 cursor-pointer  text-xs 
+                            ${selected === index ? "rounded-md" : "text-zinc-900"}`}
                         >
                             <span className="flex items-center">
                                 <item.icon className={`mr-1 w-[20px] ${selected === index && "text-[#1976d2]"}`} />

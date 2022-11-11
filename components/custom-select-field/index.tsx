@@ -1,10 +1,11 @@
-import React from "react";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import React, { useState } from "react";
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
 interface CustomSelectFieldProps {
     name: string,
     onChange: any,
-    value: any, label: string,
+    value: any,
+    label: string,
     className?: string,
     items: { name: string, value: any }[],
 }
@@ -12,32 +13,44 @@ interface CustomSelectFieldProps {
 const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
     name,
     onChange,
-    value, label,
+    value,
+    label,
     className,
     items,
 }) => {
+
+    const [selectedItem, setSelectedItem] = useState("")
+
+    // const handleChange = (event: SelectChangeEvent) => {
+    //     // console.log("chadndfj")
+    //     setSelectedItem(event.target.value as string);
+    //     // onChange(selectedItem);
+    // };
+
+    const handle = (v) => {
+        setSelectedItem(v)
+    }
+
     return (
         <FormControl sx={{ minWidth: 150 }} className="mr-4">
             <InputLabel
-                className="text-white flex items-center top-[-8px]"
+                className="flex items-center top-[-8px]"
                 id="demo-simple-select-label">{label}</InputLabel>
             <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={value}
+                value={selectedItem}
+                name={name}
                 label={label}
                 fullWidth={false}
-                onChange={onChange}
                 size="small"
-                sx={{
-                    'svg': { color: "#fff" },
-                    '.MuiOutlinedInput-notchedOutline': {
-                        borderColor: "#fff",
-                    },
-                }}
+                id={`demo-simple-select-${name}`}
+                labelId={`demo-simple-select-label-${name}`}
             >
                 {items.map((item: any, index: number) => (
-                    <MenuItem value={item.id} key={index}>
+                    <MenuItem
+                        value={item.id}
+                        key={index}
+                        onClick={() => { handle(item.id) }}
+                    >
                         {item.name}
                     </MenuItem>
                 ))}

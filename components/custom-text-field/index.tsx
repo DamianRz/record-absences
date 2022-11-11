@@ -32,12 +32,12 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
             className={`${className}`}
             size="small"
             sx={{
-                ".MuiFormLabel-root": { color: "#fff" },
-                '& input + fieldset': {
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                },
-                "& input": { color: "#ffff" },
+                // ".MuiFormLabel-root": { color: "#fff" },
+                // '& input + fieldset': {
+                //     borderColor: '#fff',
+                //     borderWidth: 1,
+                // },
+                // "& input": { color: "#ffff" },
             }}
         />
     )

@@ -7,7 +7,7 @@ interface TitleSectionProps {
 
 const TitleSection: FC<TitleSectionProps> = ({ children, title }) => {
     return (
-        <div className="flex items-center w-full pt-4 pb-1 bg-zinc-900 text-white">
+        <div className="flex items-center w-full pt-4 pb-1">
             <span className="text-xs">{title}</span>
             {children}
         </div>

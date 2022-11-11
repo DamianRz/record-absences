@@ -1,20 +1,33 @@
 
-import React from "react";
+import { CircularProgress } from "@mui/material";
+import React, { useContext } from "react";
+import { LoaderContext } from "../../contexts/loader-context";
 import Drawer from "../drawer/drawer";
-import Toolbar from "../toolbar/toolbar";
 
 interface LayoutProps {
     children: React.ReactChild
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+
+    const { isLoading } = useContext(LoaderContext)
+
     return (
-        <div className="block absolute w-full h-full bg-zinc-900">
+        <div className="block absolute w-full h-full">
             <div className="w-full h-full flex">
                 <Drawer isAdmin={false} />
-                <div className="w-full">
-                    {children}
-                </div>
+                {
+                    isLoading ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                            <CircularProgress />
+                        </div>
+                    ) : (
+                        <div className="w-full">
+                            {children}
+                        </div>
+                    )
+                }
+
             </div>
         </div>
     );

@@ -46,13 +46,13 @@ const CustomDateField: React.FC<CustomDateFieldProps> = ({
                         helperText={helperText}
                         label={label}
                         sx={{
-                            "svg": { color: "#fff" },
-                            ".MuiFormLabel-root": { color: "#fff" },
-                            '.MuiInputBase-root': {
-                                // borderBottomColor: '#fff',
-                                // borderWidth: 1,
-                            },
-                            "& input": { color: "#ffff" },
+                            // "svg": { color: "#fff" },
+                            // ".MuiFormLabel-root": { color: "#fff" },
+                            // '.MuiInputBase-root': {
+                            // borderBottomColor: '#fff',
+                            // borderWidth: 1,
+                            // },
+                            // "& input": { color: "#ffff" },
                         }}
                     />
                 )}

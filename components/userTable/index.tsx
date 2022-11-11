@@ -20,11 +20,11 @@ const UserTable: React.FC<UserTableProps> = () => {
   return (
     <DataGrid
       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-      className="text-white rounded-none border-none h-[500px]"
+      className=" rounded-none border-none h-[500px]"
       sx={{
-        ".MuiDataGrid-cell": { border: "none" },
-        ".MuiTablePagination-root": { color: "white" },
-        ".MuiDataGrid-row:hover": { backgroundColor: "#4f4f4f", color: "white" },
+        // ".MuiDataGrid-cell": { border: "none" },
+        // ".MuiTablePagination-root": { color: "white" },
+        // ".MuiDataGrid-row:hover": { backgroundColor: "#4f4f4f", color: "white" },
       }}
       rows={rows}
       columns={columns}

@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import TextField from "@mui/material/TextField"
 
 import CustomTextField from "../custom-text-field";
-import { ABSENCES_INITIAL_VALUES, loginSchema } from "../sections/absences/validation";
+import { ABSENCES_INITIAL_VALUES, loginSchema } from "../widgets/absences-widget/validation";
 
 interface UserDialogProps {
     // show: boolean
