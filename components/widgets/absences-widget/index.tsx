@@ -14,6 +14,8 @@ const AbsencesWidget = () => {
   const [endDate, setEndDate] = useState();
   const [motive, setMotive] = useState();
 
+  const [reason, setReason] = useState("");
+
   interface IGroup {
     value: number;
     name: string;
@@ -30,24 +32,23 @@ const AbsencesWidget = () => {
   const response = [
     {
       group: "1A",
-
-    }
-  ]
+    },
+  ];
 
   const reasons = [
     { value: 1, name: "enfermedad" },
     { value: 2, name: "medico" },
-    { value: 1, name: "licencia" },
-    { value: 1, name: "embarazo" },
-    { value: 1, name: "otro" },
-  ]
+    { value: 3, name: "licencia" },
+    { value: 4, name: "embarazo" },
+    { value: 5, name: "otro" },
+  ];
 
   const groups = [
     { value: 1, name: "1A" },
     { value: 2, name: "1B" },
     { value: 3, name: "1C" },
     { value: 4, name: "1D" },
-  ]
+  ];
 
   const formik = useFormik({
     initialValues: ABSENCES_INITIAL_VALUES,
@@ -70,30 +71,35 @@ const AbsencesWidget = () => {
             label={"Documento"}
             value={formik.values.document}
             onChange={formik.handleChange}
-            error={Boolean(formik.touched.document && Boolean(formik.errors.document))}
-            helperText={(formik.touched.document && formik.errors.document) || ""}
+            error={Boolean(
+              formik.touched.document && Boolean(formik.errors.document)
+            )}
+            helperText={
+              (formik.touched.document && formik.errors.document) || ""
+            }
           />
         </div>
         <div className="flex mt-4">
-          <CustomSelectField
+          {/* <CustomSelectField
             items={groups}
             value={group}
             label="Grupo"
-            name="group"
-            onChange={setGroup}
+            name="groups"
+            onChange={(v: any) => {
+              console.log(v);
+            }}
             className=""
-          />
+          /> */}
           <CustomSelectField
             items={groups}
-            value={undefined}
+            value={group}
             label="Materia"
-            name="matter"
-            onChange={() => { }}
-            className=""
+            name="matters"
+            onChange={setGroup}
           />
         </div>
         <div className="flex mt-4">
-          <CustomDateField
+          {/* <CustomDateField
             name="startDate"
             error={false}
             helperText={""}
@@ -108,20 +114,20 @@ const AbsencesWidget = () => {
             label="Fecha fin"
             onChange={() => { }}
             value={undefined}
-          />
+          /> */}
         </div>
         <div className="flex mt-4">
           <CustomSelectField
             items={reasons}
-            value={undefined}
+            value={reason}
+            onChange={setReason}
             label="Motivo"
             name="motive"
-            onChange={() => { }}
           />
         </div>
         <Button
           className="mt-8"
-          onClick={() => { }}
+          onClick={() => {}}
           color="success"
           variant="outlined"
         >

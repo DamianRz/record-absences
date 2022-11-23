@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             <CircularProgress />
                         </div>
                     ) : (
-                        <div className="w-full">
+                        <div className="w-full px-4">
                             {children}
                         </div>
                     )
