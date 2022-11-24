@@ -29,12 +29,6 @@ const AbsencesWidget = () => {
     name: string;
   }
 
-  const response = [
-    {
-      group: "1A",
-    },
-  ];
-
   const reasons = [
     { value: 1, name: "enfermedad" },
     { value: 2, name: "medico" },
@@ -48,6 +42,11 @@ const AbsencesWidget = () => {
     { value: 2, name: "1B" },
     { value: 3, name: "1C" },
     { value: 4, name: "1D" },
+  ];
+
+  const matters = [
+    { value: 1, name: "Matematicas" },
+    { value: 2, name: "Geometria" },
   ];
 
   const formik = useFormik({
@@ -79,42 +78,40 @@ const AbsencesWidget = () => {
             }
           />
         </div>
-        <div className="flex mt-4">
-          {/* <CustomSelectField
+        <div className="flex mt-4 space-x-4">
+          <CustomSelectField
             items={groups}
             value={group}
             label="Grupo"
             name="groups"
-            onChange={(v: any) => {
-              console.log(v);
-            }}
+            onChange={setGroup}
             className=""
-          /> */}
+          />
           <CustomSelectField
-            items={groups}
-            value={group}
+            items={matters}
+            value={matter}
             label="Materia"
             name="matters"
-            onChange={setGroup}
+            onChange={setMatter}
           />
         </div>
         <div className="flex mt-4">
-          {/* <CustomDateField
+          <CustomDateField
             name="startDate"
             error={false}
             helperText={""}
             label="Fecha de inicio"
-            onChange={() => { }}
-            value={undefined}
+            onChange={setStartDate}
+            value={startDate}
           />
           <CustomDateField
             name="endDate"
             error={false}
             helperText={""}
             label="Fecha fin"
-            onChange={() => { }}
-            value={undefined}
-          /> */}
+            onChange={setEndDate}
+            value={endDate}
+          />
         </div>
         <div className="flex mt-4">
           <CustomSelectField

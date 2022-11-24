@@ -61,25 +61,6 @@ const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
           name={name}
           onChange={handleChange}
           size="small"
-          // sx={{
-          //   ".MuiOutlinedInput-notchedOutline legend": {
-          //     display: "block",
-          //     // padding: 0,
-          //     height: "11px",
-          //     fontSize: "0.75em",
-          //     // visibility: "hidden",
-          //     maxWidth: "0.01px",
-          //     transition: "max-width 50ms cubic-bezier(0.0, 0, 0.2, 1) 0ms",
-          //     whiteSpace: "nowrap",
-          //   },
-          //   "legend > span": {
-          //     paddingLeft: "5px",
-          //     paddingRight: "5px",
-          //     display: "inline-block",
-          //     opacity: 0,
-          //     visibility: "visible",
-          //   },
-          // }}
         >
           {items.map((menuItem, key) => (
             <MenuItem value={menuItem.value} key={key}>
