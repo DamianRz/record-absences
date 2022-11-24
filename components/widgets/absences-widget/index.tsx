@@ -8,7 +8,7 @@ import CustomSelectField from "../../custom-select-field";
 import CustomDateField from "../../custom-date-field";
 
 const AbsencesWidget = () => {
-  const [group, setGroup] = useState(undefined);
+  const [group, setGroup] = useState();
   const [matter, setMatter] = useState();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
