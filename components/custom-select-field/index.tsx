@@ -51,7 +51,6 @@ const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
         >
           {label}
         </InputLabel>
-
         <Select
           labelId="`${name}-select`"
           open={open}

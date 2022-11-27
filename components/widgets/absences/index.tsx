@@ -60,10 +60,12 @@ const AbsencesWidget = () => {
   return (
     <div className="bg-zing-900">
       <TitleSection title="Ingreso de Inasistencias Docente" />
+
       <form onSubmit={formik.handleSubmit}>
         <span className="text-xs text-white">
           Ingrese los datos del docente, fechas, grupo, materia y turno
         </span>
+
         <div className="flex mt-4">
           <CustomTextField
             name="document"
@@ -78,58 +80,63 @@ const AbsencesWidget = () => {
             }
           />
         </div>
-        <div className="flex mt-4 space-x-4">
-          <CustomSelectField
-            items={groups}
-            value={group}
-            label="Grupo"
-            name="groups"
-            onChange={setGroup}
-            className=""
-          />
-          <CustomSelectField
-            items={matters}
-            value={matter}
-            label="Materia"
-            name="matters"
-            onChange={setMatter}
-          />
-        </div>
-        <div className="flex mt-4">
-          <CustomDateField
-            name="startDate"
-            error={false}
-            helperText={""}
-            label="Fecha de inicio"
-            onChange={setStartDate}
-            value={startDate}
-          />
-          <CustomDateField
-            name="endDate"
-            error={false}
-            helperText={""}
-            label="Fecha fin"
-            onChange={setEndDate}
-            value={endDate}
-          />
-        </div>
-        <div className="flex mt-4">
-          <CustomSelectField
-            items={reasons}
-            value={reason}
-            onChange={setReason}
-            label="Motivo"
-            name="motive"
-          />
-        </div>
-        <Button
-          className="mt-8"
-          onClick={() => {}}
-          color="success"
-          variant="outlined"
-        >
-          Crear
-        </Button>
+
+        {formik.values.document && (
+          <>
+            <div className="flex mt-4 space-x-4">
+              <CustomSelectField
+                items={groups}
+                value={group}
+                label="Grupo"
+                name="groups"
+                onChange={setGroup}
+                className=""
+              />
+              <CustomSelectField
+                items={matters}
+                value={matter}
+                label="Materia"
+                name="matters"
+                onChange={setMatter}
+              />
+            </div>
+            <div className="flex mt-4">
+              <CustomDateField
+                name="startDate"
+                error={false}
+                helperText={""}
+                label="Fecha de inicio"
+                onChange={setStartDate}
+                value={startDate}
+              />
+              <CustomDateField
+                name="endDate"
+                error={false}
+                helperText={""}
+                label="Fecha fin"
+                onChange={setEndDate}
+                value={endDate}
+              />
+            </div>
+            <div className="flex mt-4">
+              <CustomSelectField
+                items={reasons}
+                value={reason}
+                onChange={setReason}
+                label="Motivo"
+                name="motive"
+              />
+            </div>
+            <Button
+              className="mt-8"
+              onClick={() => {}}
+              color="success"
+              variant="outlined"
+            >
+              Crear
+            </Button>
+          </>
+        )}
       </form>
     </div>
   );
