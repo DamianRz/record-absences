@@ -1,114 +1,97 @@
-import React, { useState } from "react";
-import { LinearProgress } from "@mui/material";
+import React, { useState } from 'react'
+import { LinearProgress } from '@mui/material'
+import { RowProps, TableProps } from '../../types/customTable'
 
-interface CustomTableProps {
-  isLoading: boolean;
-  headers: any[];
-  items: any[];
-  className?: string;
-  footerButtons: any;
-  onSelectRow: any;
-}
-
-interface CustomRowProps {
-  row: any[];
-  onSelect: any;
-  isSelected: boolean;
-}
-
-const CustomTable: React.FC<CustomTableProps> = ({
+const CustomTable: React.FC<TableProps> = ({
   isLoading,
   headers,
   items,
   className,
   footerButtons,
-  onSelectRow,
+  onSelectRow
 }) => {
-  const [selectedRow, setSelectedRow] = useState(undefined);
+  const [selectedRow, setSelectedRow] = useState(false)
 
-  const CustomRow: React.FC<CustomRowProps> = ({
-    row,
+  const labels = {
+    loading: 'loading results...',
+    noResult: 'no results'
+  }
+
+  const CustomRow: React.FC<RowProps> = ({
+    value,
     onSelect,
-    isSelected,
+    isSelected
   }) => {
-    const handleSelect = () => {
-      onSelect(row);
-    };
+    const handleSelect = (): void => onSelect(value)
 
     return (
       <div
         onClick={handleSelect}
         className={`w-auto flex py-2 px-4 cursor-pointer
-         hover:bg-blue-100 ${isSelected && "bg-blue-200"}`}
+         hover:bg-blue-100 ${isSelected ? 'bg-blue-200' : ''}`}
       >
-        {headers.map((header: any, index: number) => (
+        {headers.map((header, index) => (
           <div className="min-w-[200px]" key={index}>
-            {header.field === "actions" && isSelected ? (
-              <>{/* TODO  */}</>
-            ) : (
-              row[header.field]
-            )}
+            <span>{value[header.name]}</span>
           </div>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
-  const CustomHeader = () => {
-    return (
-      <div className="flex shadow-md p-4">
-        {headers.map((header: any, index: number) => (
+  const handleSelect: any = (row: any) => {
+    setSelectedRow(row)
+    onSelectRow(row)
+  }
+
+  const CustomHeader = (): any => (
+    <div className="flex p-4 shadow-md">
+        {headers.map((header, index) => (
           <div key={index} className="min-w-[200px]">
-            {header.headerName}
+            {header.value}
           </div>
         ))}
       </div>
-    );
-  };
+  )
 
-  const CustomFooter = () => {
-    return (
-      <div className="flex space-x-2 shadow-md p-4 mb-2">
-        {selectedRow && footerButtons}
-      </div>
-    );
-  };
-
-  const handleSelect = (row: any) => {
-    setSelectedRow(row);
-    onSelectRow(row);
-  };
+  const CustomFooter = (): any => (
+    <div className="flex space-x-4 shadow-md p-4 mb-2 h-[64px]">
+      {selectedRow && (footerButtons)}
+    </div>
+  )
 
   return (
     <>
-      {(isLoading && (
-        <>
-          <div className="w-full h-full mt-4 items-center space-y-4">
-            <span>Cargando resultados...</span>
-            <LinearProgress />
+    {isLoading
+      ? (
+      <>
+        <div className="items-center w-full h-full mt-4 space-y-4">
+          <span>{labels.loading}</span>
+          <LinearProgress />
+        </div>
+      </>
+        )
+      : (items.length > 0
+          ? (
+        <div className={`shadow-md w-fit ${className ?? ''}`}>
+          <CustomHeader />
+          <div className="max-h-[400px] overflow-y-scroll">
+            {items.map((row, index) => (
+              <CustomRow
+                value={row}
+                key={index}
+                onSelect={handleSelect}
+                isSelected={row === selectedRow}
+              />
+            ))}
           </div>
-        </>
-      )) ||
-        (items.length ? (
-          <div className={`shadow-md w-fit min-w-[600px] ${className}`}>
-            <CustomHeader />
-            <div className="max-h-[400px] overflow-y-scroll">
-              {items.map((row: any, index) => (
-                <CustomRow
-                  row={row}
-                  key={index}
-                  onSelect={handleSelect}
-                  isSelected={row === selectedRow}
-                />
-              ))}
-            </div>
-            <CustomFooter />
-          </div>
-        ) : (
-          <span>No se encontraron registros</span>
-        ))}
-    </>
-  );
-};
+          <CustomFooter />
+        </div>
+            )
+          : (<span>{labels.noResult}</span>)
+        )}
+  </>
+  )
+}
 
-export default CustomTable;
+export default CustomTable

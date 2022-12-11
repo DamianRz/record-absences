@@ -1,28 +1,28 @@
-import React from "react";
-import { TextField } from "@mui/material";
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import React from 'react'
+import { TextField } from '@mui/material'
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 interface CustomDateFieldProps {
-    name: string,
-    onChange: any,
-    value: any,
-    label: string,
-    error: boolean,
-    helperText: string,
-    className?: string,
+  name: string
+  onChange: any
+  value: any
+  label: string
+  error: boolean
+  helperText: string
+  className?: string
 }
 
 const CustomDateField: React.FC<CustomDateFieldProps> = ({
-    name,
-    onChange,
-    value,
-    label,
-    className,
-    error,
-    helperText,
+  name,
+  onChange,
+  value,
+  label,
+  className,
+  error,
+  helperText
 }) => {
-    return (
+  return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDatePicker
                 label="Date desktop"
@@ -46,19 +46,19 @@ const CustomDateField: React.FC<CustomDateFieldProps> = ({
                         helperText={helperText}
                         label={label}
                         sx={{
-                            // "svg": { color: "#fff" },
-                            // ".MuiFormLabel-root": { color: "#fff" },
-                            // '.MuiInputBase-root': {
-                            // borderBottomColor: '#fff',
-                            // borderWidth: 1,
-                            // },
-                            // "& input": { color: "#ffff" },
+                          // "svg": { color: "#fff" },
+                          // ".MuiFormLabel-root": { color: "#fff" },
+                          // '.MuiInputBase-root': {
+                          // borderBottomColor: '#fff',
+                          // borderWidth: 1,
+                          // },
+                          // "& input": { color: "#ffff" },
                         }}
                     />
                 )}
             />
         </LocalizationProvider>
-    )
-};
+  )
+}
 
-export default CustomDateField;
+export default CustomDateField

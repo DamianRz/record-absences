@@ -1,17 +1,17 @@
-import React, { FC } from "react";
+import React, { FC } from 'react'
 
 interface TitleSectionProps {
-    children?: React.ReactChild,
-    title: string
+  children?: React.ReactChild
+  title: string
 }
 
 const TitleSection: FC<TitleSectionProps> = ({ children, title }) => {
-    return (
+  return (
         <div className="flex items-center w-full pt-4 pb-1">
             <span className="text-xs">{title}</span>
             {children}
         </div>
-    );
-};
+  )
+}
 
-export default TitleSection;
+export default TitleSection

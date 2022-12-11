@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
-} from "@mui/material";
-import { StyledEngineProvider } from "@mui/material/styles";
+  SelectChangeEvent
+} from '@mui/material'
+import { StyledEngineProvider } from '@mui/material/styles'
 
 interface CustomSelectFieldProps {
-  name: string;
-  onChange: any;
-  value: any;
-  label: string;
-  className?: string;
-  items: { name: string; value: any }[];
+  name: string
+  onChange: any
+  value: any
+  label: string
+  className?: string
+  items: Array<{ name: string, value: any }>
 }
 
 const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
@@ -23,26 +23,30 @@ const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
   value,
   onChange,
   items,
+  className
 }) => {
-  const [item, setItem] = useState(value);
-  const [open, setOpen] = useState(false);
+  const [item, setItem] = useState(value)
+  const [open, setOpen] = useState(false)
 
   const handleOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   const handleChange = (event: SelectChangeEvent) => {
-    setItem(event.target.value as string);
-    onChange(event.target.value);
-  };
+    setItem(event.target.value)
+    // return full item
+    const selectedItem = items.filter((a) => a.value === event.target.value)
+    // console.log(event.target.value, selectedItem[0])
+    onChange(selectedItem[0])
+  }
 
   return (
     <StyledEngineProvider injectFirst>
-      <FormControl className="min-w-[223px]">
+      <FormControl className={`min-w-[223px] ${className}`}>
         <InputLabel
           size="small"
           variant="outlined"
@@ -69,7 +73,7 @@ const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
         </Select>
       </FormControl>
     </StyledEngineProvider>
-  );
-};
+  )
+}
 
-export default CustomSelectField;
+export default CustomSelectField

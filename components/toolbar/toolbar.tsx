@@ -1,18 +1,18 @@
-import React from "react";
-import MDToolbar from '@mui/material/Toolbar';
-import styles from "./toolbar.module.scss";
-import PersonIcon from '@mui/icons-material/Person';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import React from 'react'
+import MDToolbar from '@mui/material/Toolbar'
+import styles from './toolbar.module.scss'
+import PersonIcon from '@mui/icons-material/Person'
+import NotificationsIcon from '@mui/icons-material/Notifications'
 
 interface DrawerProps {
-    isAdmin: boolean
+  isAdmin: boolean
 }
 
-const username = "Damian Rodriguez";
-const instituteName = "ITS - Montevideo";
+const username = 'Damian Rodriguez'
+const instituteName = 'ITS - Montevideo'
 
 const Toolbar: React.FC<DrawerProps> = ({ isAdmin }) => {
-    return (
+  return (
         <MDToolbar className={styles.toolbar}>
             <div className={styles.left}>
                 <p className={styles.title}>{instituteName}</p>
@@ -29,7 +29,7 @@ const Toolbar: React.FC<DrawerProps> = ({ isAdmin }) => {
                 {/* <ExitToAppIcon className={styles.exit} /> */}
             </div>
         </ MDToolbar>
-    )
-};
+  )
+}
 
-export default Toolbar;
+export default Toolbar

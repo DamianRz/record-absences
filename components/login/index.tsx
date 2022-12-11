@@ -1,13 +1,13 @@
-import React from "react";
-import styles from "./login.module.scss";
-import Textfield from "../custom-text-field";
-import Button from "@mui/material/Button";
-import { useFormik } from "formik";
-import { loginSchema, LOGIN_INITIAL_VALUES } from "./validation";
+import React from 'react'
+import styles from './login.module.scss'
+import Textfield from '../custom-text-field'
+import Button from '@mui/material/Button'
+import { useFormik } from 'formik'
+import { loginSchema, LOGIN_INITIAL_VALUES } from './validation'
 
 interface LoginProps {
-  onSuccess: () => void;
-  onError: () => void;
+  onSuccess: () => void
+  onError: () => void
 }
 
 const Login: React.FC<LoginProps> = () => {
@@ -15,13 +15,13 @@ const Login: React.FC<LoginProps> = () => {
     initialValues: LOGIN_INITIAL_VALUES,
     validationSchema: loginSchema,
     onSubmit: () => {
-      console.log("data", formik.values)
+      console.log('data', formik.values)
       // TODO
       /*
           Router controller, token controller by permissions
       */
-    },
-  });
+    }
+  })
 
   return (
     <div className={styles.login}>
@@ -61,7 +61,7 @@ const Login: React.FC<LoginProps> = () => {
         </Button>
       </form> */}
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

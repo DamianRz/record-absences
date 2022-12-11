@@ -1,26 +1,26 @@
-import React from "react";
-import TextField from "@mui/material/TextField";
+import React from 'react'
+import TextField from '@mui/material/TextField'
 
 interface CustomTextFieldProps {
-    name: string,
-    onChange: any,
-    value: any,
-    error: boolean,
-    helperText: string,
-    label: string,
-    className?: string,
+  name: string
+  onChange: any
+  value: any
+  error: boolean
+  helperText: string
+  label: string
+  className?: string
 }
 
 const CustomTextField: React.FC<CustomTextFieldProps> = ({
-    name,
-    onChange,
-    value,
-    error,
-    helperText,
-    label,
-    className
+  name,
+  onChange,
+  value,
+  error,
+  helperText,
+  label,
+  className
 }) => {
-    return (
+  return (
         <TextField
             name={name}
             onChange={onChange}
@@ -32,15 +32,15 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
             className={`${className}`}
             size="small"
             sx={{
-                // ".MuiFormLabel-root": { color: "#fff" },
-                // '& input + fieldset': {
-                //     borderColor: '#fff',
-                //     borderWidth: 1,
-                // },
-                // "& input": { color: "#ffff" },
+              // ".MuiFormLabel-root": { color: "#fff" },
+              // '& input + fieldset': {
+              //     borderColor: '#fff',
+              //     borderWidth: 1,
+              // },
+              // "& input": { color: "#ffff" },
             }}
         />
-    )
-};
+  )
+}
 
-export default CustomTextField;
+export default CustomTextField

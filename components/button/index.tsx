@@ -1,15 +1,15 @@
-import React, { FC } from "react";
-import MIButton from  "@mui/material/Button";
-import styles from "./button.module.scss";
+import React, { FC } from 'react'
+import MIButton from '@mui/material/Button'
+import styles from './button.module.scss'
 
 interface buttonProps {
-    label: string,
-    type: "error" | "accept" | "cancel",
-    className?: string
+  label: string
+  type: 'error' | 'accept' | 'cancel'
+  className?: string
 }
 
 // const Button: FC<buttonProps> = ({ label, type, className }) => {
-//     return <MIButton 
+//     return <MIButton
 //         type={type}
 //         className={`button ${className}`}
 //         variant="contained"
@@ -18,6 +18,6 @@ interface buttonProps {
 //         </MIButton>
 // };
 
-const Button = ()=> {}
+const Button = () => {}
 
-export default Button;
+export default Button

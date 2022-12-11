@@ -1,12 +1,12 @@
-import React from "react";
-import styles from "./drawer.module.scss";
+import React from 'react'
+import styles from './drawer.module.scss'
 
 interface DrawerProps {
-    isAdmin: boolean
+  isAdmin: boolean
 }
 
-const Drawer: React.FC<DrawerProps> = ({isAdmin}) => {
-    return <div></div>;
-};
+const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
+  return <div></div>
+}
 
-export default Drawer;
+export default Drawer

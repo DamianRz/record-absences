@@ -1,7 +1,7 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import Absences from "../components/widgets/absences";
-import Layout from "../components/layout/layout";
+import type { NextPage } from 'next'
+import Head from 'next/head'
+import Absences from '../components/widgets/absences'
+import Layout from '../components/layout/layout'
 
 const Index: NextPage = () => {
   return (
@@ -17,7 +17,7 @@ const Index: NextPage = () => {
         </Layout>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default Index;
+export default Index
