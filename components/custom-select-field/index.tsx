@@ -1,79 +1,56 @@
-import React, { useState } from 'react'
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent
-} from '@mui/material'
-import { StyledEngineProvider } from '@mui/material/styles'
+import React, {useState} from 'react'
+import {InputLabel, FormControl, MenuItem, Select} from '@mui/material'
 
-interface CustomSelectFieldProps {
-  name: string
-  onChange: any
-  value: any
+interface MySelectProps {
   label: string
-  className?: string
-  items: Array<{ name: string, value: any }>
+  className: string
+  options: { value: any, label: string }[]
+  initialValue: any
+  onChange: (value: any) => void;
+  error?: boolean
 }
 
-const CustomSelectField: React.FC<CustomSelectFieldProps> = ({
-  name,
-  label,
-  value,
+const CustomSelect: React.FC<MySelectProps> = ({ 
   onChange,
-  items,
-  className
+  label, 
+  className, 
+  options, 
+  initialValue,
+  error
 }) => {
-  const [item, setItem] = useState(value)
-  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(initialValue)
 
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setItem(event.target.value)
-    // return full item
-    const selectedItem = items.filter((a) => a.value === event.target.value)
-    // console.log(event.target.value, selectedItem[0])
+  const handleChange = (event: any) => {
+    setValue(event.target.value)
+    const selectedItem = options.filter((a) => a.value === event.target.value)
     onChange(selectedItem[0])
-  }
+  };
 
   return (
-    <StyledEngineProvider injectFirst>
-      <FormControl className={`min-w-[223px] ${className}`}>
-        <InputLabel
-          size="small"
-          variant="outlined"
-          className="bg-white w-max"
-          htmlFor={`${name}-select`}
-        >
-          {label}
-        </InputLabel>
-        <Select
-          labelId="`${name}-select`"
-          open={open}
-          onClose={handleClose}
-          onOpen={handleOpen}
-          value={item}
-          name={name}
-          onChange={handleChange}
-          size="small"
-        >
-          {items.map((menuItem, key) => (
-            <MenuItem value={menuItem.value} key={key}>
-              {menuItem.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </StyledEngineProvider>
+    <FormControl className={`${className}`}>
+      <InputLabel 
+        size="small"
+        variant="outlined"
+        className="bg-white w-max"
+        htmlFor='select-label'
+      >
+        {label}
+      </InputLabel>
+      <Select
+        value={value} 
+        onChange={handleChange}
+        labelId="select-label"
+        error={error}
+      >
+        {/* <MenuItem disabled value="">Seleccione...</MenuItem> */}
+        {options.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   )
 }
 
-export default CustomSelectField
+export default CustomSelect

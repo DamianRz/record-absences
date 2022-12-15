@@ -1,5 +1,5 @@
 export interface TableHeader {
-  name: string
+  label: string
   value: string
 }
 

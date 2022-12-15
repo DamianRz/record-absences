@@ -32,7 +32,7 @@ const CustomTable: React.FC<TableProps> = ({
       >
         {headers.map((header, index) => (
           <div className="min-w-[200px]" key={index}>
-            <span>{value[header.name]}</span>
+            <span>{value[header.label]}</span>
           </div>
         ))}
       </div>
@@ -72,10 +72,10 @@ const CustomTable: React.FC<TableProps> = ({
       </>
         )
       : (items.length > 0
-          ? (
-        <div className={`shadow-md w-fit ${className ?? ''}`}>
+          && (
+        <div className={`shadow-md ${className ?? ''}`}>
           <CustomHeader />
-          <div className="max-h-[400px] overflow-y-scroll">
+          <div className="max-h-[200px] overflow-y-scroll">
             {items.map((row, index) => (
               <CustomRow
                 value={row}
@@ -87,9 +87,7 @@ const CustomTable: React.FC<TableProps> = ({
           </div>
           <CustomFooter />
         </div>
-            )
-          : (<span>{labels.noResult}</span>)
-        )}
+        ))}
   </>
   )
 }
