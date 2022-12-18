@@ -5,9 +5,10 @@ interface MySelectProps {
   label: string
   className: string
   options: { value: any, label: string }[]
-  initialValue: any
+  defaultValue?: any
   onChange: (value: any) => void;
-  error?: boolean
+  error?: boolean,
+  value: any
 }
 
 const CustomSelect: React.FC<MySelectProps> = ({ 
@@ -15,13 +16,14 @@ const CustomSelect: React.FC<MySelectProps> = ({
   label, 
   className, 
   options, 
-  initialValue,
+  defaultValue,
+  value,
   error
 }) => {
-  const [value, setValue] = useState(initialValue)
+  // const [selectedValue, setSelectedValue] = useState(value || "")
 
   const handleChange = (event: any) => {
-    setValue(event.target.value)
+    // setSelectedValue(event.target.value)
     const selectedItem = options.filter((a) => a.value === event.target.value)
     onChange(selectedItem[0])
   };
@@ -29,22 +31,21 @@ const CustomSelect: React.FC<MySelectProps> = ({
   return (
     <FormControl className={`${className}`}>
       <InputLabel 
-        size="small"
-        variant="outlined"
         className="bg-white w-max"
         htmlFor='select-label'
       >
         {label}
       </InputLabel>
+      <p>{JSON.stringify(value)}</p>
       <Select
-        value={value} 
+        defaultValue={value.value}
+        value={value.value}
         onChange={handleChange}
         labelId="select-label"
         error={error}
       >
-        {/* <MenuItem disabled value="">Seleccione...</MenuItem> */}
-        {options.map(option => (
-          <MenuItem key={option.value} value={option.value}>
+        {options.map((option, index) => (
+          <MenuItem key={index} value={option.value}>
             {option.label}
           </MenuItem>
         ))}

@@ -71,7 +71,11 @@ const TeacherDialog: any = () => {
     setOpenConfirm(false)
     setOpen(false)
   }
-  
+
+  const handleCancel: any = () => {
+    setOpenConfirm(true)
+  }
+
   return (
     <>
       <AlertDialog
@@ -140,8 +144,8 @@ const TeacherDialog: any = () => {
               title="Seleccione especialidades"
               label="Especialidad"
               name='specialties'
-              error={selectedSpecialties.length === 0}
-              helperText={selectedSpecialties.length === 0 ? "* Debe seleccionar al menos una especialidad" : ""}
+              error={false}
+              helperText={""}
             />
             </div>
             <div className="flex items-center justify-center mt-8 space-x-4">
@@ -156,7 +160,7 @@ const TeacherDialog: any = () => {
                 Guardar
             </Button>
             <Button
-                onClick={() => {}}
+                onClick={handleCancel}
                 className='normal-case'
                 variant='outlined'
                 color='inherit'

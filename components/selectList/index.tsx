@@ -8,7 +8,7 @@ import CustomSelect from '../custom-select-field'
 
 interface SelectListProps {
     items: any[]
-    className: string
+    className?: string
     label: string
     title: string
     name: string
@@ -21,7 +21,7 @@ interface SelectListProps {
 
 const SelectList: React.FC<SelectListProps> = ({
     items,
-    className, 
+    className,
     label,
     title,
     name,
@@ -35,17 +35,15 @@ const SelectList: React.FC<SelectListProps> = ({
     // table vars
     const [rows, setRows] = useState([])
     const [selectedRow, setSelectedRow] = useState(undefined)
+    const [selectedSpecialty, setSelectedSpecialty] = useState("")
 
     useEffect(() => {
         onChange(rows)
     },[rows])
 
-    // select vars
-    const [selectedItem, setSelectedItem] = useState("")
-
     const handleSelectItem = () => {
-        setRows(data => [...data, selectedItem])
-        setSelectedItem("")
+        setRows(data => [...data, selectedSpecialty])
+        setSelectedSpecialty("")
     }
 
     const handleRemoveRow = () => {
@@ -66,9 +64,9 @@ const SelectList: React.FC<SelectListProps> = ({
         <span className=''>{title}</span>
         <div className='flex mt-4 space-x-4'>
             <CustomSelect
-                initialValue=""//{selectedItem}
+                value={selectedSpecialty}
                 options={filterItems}
-                onChange={setSelectedItem}
+                onChange={setSelectedSpecialty}
                 label={label}
                 className="min-w-[250px]"
                 error={error}
@@ -79,10 +77,11 @@ const SelectList: React.FC<SelectListProps> = ({
                 color='success'
                 endIcon={<AddIcon />}
                 onClick={handleSelectItem}
-                disabled={selectedItem === ""}
+                disabled={selectedSpecialty === ""}
             >
                 Agregar
             </Button>
+            <p>{JSON.stringify(selectedSpecialty)}</p>
     </div>
     <CustomTable
       isLoading={false}
