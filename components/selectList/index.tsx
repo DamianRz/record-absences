@@ -43,7 +43,7 @@ const SelectList: React.FC<SelectListProps> = ({
 
     const handleSelectItem = () => {
         setRows(data => [...data, selectedSpecialty])
-        setSelectedSpecialty("")
+        // setSelectedSpecialty("")
     }
 
     const handleRemoveRow = () => {
@@ -53,18 +53,16 @@ const SelectList: React.FC<SelectListProps> = ({
 
     const filterItems = items.filter(a => {
         let found = true;
-        rows.forEach(b => {
-          if(b == a) found = false
+        rows.map((b: any) => {
+          if(b.value === a.value) found = false
         })
         return found
       })
-
   return (
     <div className={`${className}`}>
         <span className=''>{title}</span>
         <div className='flex mt-4 space-x-4'>
             <CustomSelect
-                value={selectedSpecialty}
                 options={filterItems}
                 onChange={setSelectedSpecialty}
                 label={label}
@@ -81,7 +79,6 @@ const SelectList: React.FC<SelectListProps> = ({
             >
                 Agregar
             </Button>
-            <p>{JSON.stringify(selectedSpecialty)}</p>
     </div>
     <CustomTable
       isLoading={false}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {InputLabel, FormControl, MenuItem, Select} from '@mui/material'
 
 interface MySelectProps {
@@ -8,7 +8,6 @@ interface MySelectProps {
   defaultValue?: any
   onChange: (value: any) => void;
   error?: boolean,
-  value: any
 }
 
 const CustomSelect: React.FC<MySelectProps> = ({ 
@@ -16,14 +15,9 @@ const CustomSelect: React.FC<MySelectProps> = ({
   label, 
   className, 
   options, 
-  defaultValue,
-  value,
-  error
+  error,
 }) => {
-  // const [selectedValue, setSelectedValue] = useState(value || "")
-
   const handleChange = (event: any) => {
-    // setSelectedValue(event.target.value)
     const selectedItem = options.filter((a) => a.value === event.target.value)
     onChange(selectedItem[0])
   };
@@ -36,10 +30,7 @@ const CustomSelect: React.FC<MySelectProps> = ({
       >
         {label}
       </InputLabel>
-      <p>{JSON.stringify(value)}</p>
       <Select
-        defaultValue={value.value}
-        value={value.value}
         onChange={handleChange}
         labelId="select-label"
         error={error}
