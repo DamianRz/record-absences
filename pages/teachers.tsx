@@ -3,6 +3,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Layout from '../components/layout/layout'
 import TeachersWidget from '../components/widgets/teachers'
+import Teachers2 from '../components/widgets/teachers'
 
 const Index: NextPage = () => {
   return (
@@ -14,7 +15,8 @@ const Index: NextPage = () => {
     </Head>
     <main>
       <Layout>
-        <TeachersWidget />
+        {/* <TeachersWidget /> */}
+        <Teachers2/>
       </Layout>
     </main>
   </>
