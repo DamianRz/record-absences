@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import {
   Button,
   Dialog,
@@ -19,41 +20,40 @@ import {
   RadioGroup,
   OutlinedInput,
   Checkbox,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
 import axios from "axios";
-import CustomTable from "../table"
+import CustomTable from "../table";
 
 const Teachers2 = () => {
-
   const mokProffesors = [
-      { id: 1, name: 'Juan', lastname: 'Pérez', ci: 123456, active: true },
-      { id: 2, name: 'María', lastname: 'González', ci: 123457, active: false },
-      { id: 3, name: 'Pedro', lastname: 'Rodríguez', ci: 123458, active: true },
-      { id: 4, name: 'Ana', lastname: 'Sánchez', ci: 123459, active: false },
-      { id: 5, name: 'Pablo', lastname: 'Martínez', ci: 123460, active: true },
-      { id: 6, name: 'Sandra', lastname: 'Lopez', ci: 123461, active: false },
-      { id: 7, name: 'Carlos', lastname: 'Gómez', ci: 123462, active: true },
-      { id: 8, name: 'Laura', lastname: 'Díaz', ci: 123463, active: false },
-      { id: 9, name: 'Alberto', lastname: 'Jiménez', ci: 123464, active: true },
-      { id: 10, name: 'Sonia', lastname: 'Ruiz', ci: 123465, active: false },
-  ]
+    { id: 1, name: "Juan", lastname: "Pérez", ci: 123456, active: true },
+    { id: 2, name: "María", lastname: "González", ci: 123457, active: false },
+    { id: 3, name: "Pedro", lastname: "Rodríguez", ci: 123458, active: true },
+    { id: 4, name: "Ana", lastname: "Sánchez", ci: 123459, active: false },
+    { id: 5, name: "Pablo", lastname: "Martínez", ci: 123460, active: true },
+    { id: 6, name: "Sandra", lastname: "Lopez", ci: 123461, active: false },
+    { id: 7, name: "Carlos", lastname: "Gómez", ci: 123462, active: true },
+    { id: 8, name: "Laura", lastname: "Díaz", ci: 123463, active: false },
+    { id: 9, name: "Alberto", lastname: "Jiménez", ci: 123464, active: true },
+    { id: 10, name: "Sonia", lastname: "Ruiz", ci: 123465, active: false },
+  ];
 
   const specialties = [
-      { value: 1, label: 'Matematicas' },
-      { value: 2, label: 'Filosofia' },
-      { value: 3, label: 'Sistemas Operativos' },
-      { value: 4, label: 'Programacion' },
-      { value: 5, label: 'Base de datos' },
-      { value: 6, label: 'Logica' }
-  ]
+    { value: 1, label: "Matematicas" },
+    { value: 2, label: "Filosofia" },
+    { value: 3, label: "Sistemas Operativos" },
+    { value: 4, label: "Programacion" },
+    { value: 5, label: "Base de datos" },
+    { value: 6, label: "Logica" },
+  ];
 
   const headers = [
     { name: "name", value: "Nombre" },
     { name: "lastname", value: "Apellido" },
     { name: "ci", value: "CI" },
     { name: "active", value: "Activo" },
-  ]
+  ];
 
   const ITEM_HEIGHT = 30;
   const ITEM_PADDING_TOP = 8;
@@ -71,19 +71,21 @@ const Teachers2 = () => {
     lastname: "",
     ci: "",
     active: true,
-    specialty: ""
-  }
+    specialty: "",
+  };
 
   const [professors, setProfessors] = useState(mokProffesors);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [persons, setPersons] = useState([]);
-  
-  const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<string[]>(['Matematicas']);
+
+  const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
+    string[]
+  >([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
 
-  const [selectedRow, setSelectedRow] = useState()
+  const [selectedRow, setSelectedRow] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,21 +108,21 @@ const Teachers2 = () => {
   };
 
   const handleActiveChange = (event: any) => {
-    console.log(event)
+    console.log(event);
     setFormData({
       ...formData,
-      active: event.target.value === "true"
+      active: event.target.value === "true",
     });
   };
 
   const handleOpen = () => {
     setEditId(null);
-    setFormData(DEFAULT_FORM_DATA)
+    setFormData(DEFAULT_FORM_DATA);
     setOpen(true);
   };
 
   const handleClose = () => {
-    setSelectedRow(undefined)
+    setSelectedRow(undefined);
     setOpen(false);
   };
 
@@ -145,6 +147,7 @@ const Teachers2 = () => {
     setFormData(professors.find((p) => p.id === id));
   };
 
+  // TODO
   const handleDelete = async (id: any) => {
     await axios.delete(`/api/professors/${id}`);
     const result = await axios("/api/professors");
@@ -152,24 +155,37 @@ const Teachers2 = () => {
   };
 
   const handleSpecialtyChange = (event: any) => {
-    const {target: { value }} = event;
-    setSelectedSpecialtiesNames( typeof value === 'string' ? value.split(',') : value)
-  }
+    const {
+      target: { value },
+    } = event;
+    setSelectedSpecialtiesNames(
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
 
   const handleSelectSpecialty = (specialty: any) => {
     if (!(selectedSpecialtiesNames.indexOf(specialty.label) > -1)) {
-      setSelectedSpecialties(prev => [...prev, specialty] )
+      setSelectedSpecialties((prev) => [...prev, specialty]);
     } else {
-      const filtred = selectedSpecialties.filter((a: any) => a.value !== specialty.value)
-      setSelectedSpecialties(filtred)
+      const filtred = selectedSpecialties.filter(
+        (a: any) => a.value !== specialty.value
+      );
+      setSelectedSpecialties(filtred);
     }
-  }
+  };
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleOpen}>
+      <Button
+        variant="outlined"
+        color="success"
+        onClick={handleOpen}
+        endIcon={<PersonAddIcon />}
+        className="mx-4 my-4 normal-case"
+      >
         Nuevo profesor
       </Button>
+      <p>{JSON.stringify(selectedSpecialties)}</p>
       <CustomTable
         headers={headers}
         items={mokProffesors}
@@ -181,32 +197,32 @@ const Teachers2 = () => {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-              <div className="flex space-x-2">
-                <FormControl className="w-full">
-                  <TextField
-                    required
-                    label="Nombre"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                    variant="outlined"
-                    size="small"
-                  />
-                </FormControl>
-                <FormControl className="w-full">
-                  <TextField
-                    required
-                    label="Apellido"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                    variant="outlined"
-                    size="small"
-                  />
-                </FormControl>
-              </div>
+            <div className="flex space-x-2">
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Nombre"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                />
+              </FormControl>
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Apellido"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                />
+              </FormControl>
+            </div>
             <FormControl className="w-full my-4">
               <TextField
                 required
@@ -229,7 +245,7 @@ const Teachers2 = () => {
                 value={selectedSpecialtiesNames}
                 onChange={handleSpecialtyChange}
                 input={<OutlinedInput label="Especialidades" />}
-                renderValue={(selected) => selected.join(', ')}
+                renderValue={(selected) => selected.join(", ")}
                 MenuProps={MenuProps}
               >
                 {specialties.map((specialty: any, index) => (
@@ -237,10 +253,14 @@ const Teachers2 = () => {
                     className="h-[20px]"
                     key={index}
                     value={specialty.label}
-                    onClick={() => { handleSelectSpecialty(specialty) }}
+                    onClick={() => {
+                      handleSelectSpecialty(specialty);
+                    }}
                   >
                     <Checkbox
-                      checked={selectedSpecialtiesNames.indexOf(specialty.label) > -1}
+                      checked={
+                        selectedSpecialtiesNames.indexOf(specialty.label) > -1
+                      }
                     />
                     <ListItemText primary={specialty.label} />
                   </MenuItem>
@@ -255,8 +275,16 @@ const Teachers2 = () => {
                 defaultValue={formData.active}
                 onChange={handleActiveChange}
               >
-                <FormControlLabel value={true} control={<Radio size="small" />} label="Activo" />
-                <FormControlLabel value={false} control={<Radio size="small" />} label="Inactivo" />
+                <FormControlLabel
+                  value={true}
+                  control={<Radio size="small" />}
+                  label="Activo"
+                />
+                <FormControlLabel
+                  value={false}
+                  control={<Radio size="small" />}
+                  label="Inactivo"
+                />
               </RadioGroup>
             </FormControl>
           </DialogContent>
@@ -269,10 +297,10 @@ const Teachers2 = () => {
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
-              color="success" 
-              variant="outlined" 
+            <Button
+              type="submit"
+              color="success"
+              variant="outlined"
               size="small"
               className="normal-case"
             >
