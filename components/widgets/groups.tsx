@@ -25,20 +25,137 @@ import {
 import axios from "axios";
 import CustomTable from "../table";
 
-const Teachers2 = () => {
-  const mokProffesors = [
-    { id: 1, name: "Juan", lastname: "Pérez", ci: 123456, active: true },
-    { id: 2, name: "María", lastname: "González", ci: 123457, active: false },
-    { id: 3, name: "Pedro", lastname: "Rodríguez", ci: 123458, active: true },
-    { id: 4, name: "Ana", lastname: "Sánchez", ci: 123459, active: false },
-    { id: 5, name: "Pablo", lastname: "Martínez", ci: 123460, active: true },
-    { id: 6, name: "Sandra", lastname: "Lopez", ci: 123461, active: false },
-    { id: 7, name: "Carlos", lastname: "Gómez", ci: 123462, active: true },
-    { id: 8, name: "Laura", lastname: "Díaz", ci: 123463, active: false },
-    { id: 9, name: "Alberto", lastname: "Jiménez", ci: 123464, active: true },
-    { id: 10, name: "Sonia", lastname: "Ruiz", ci: 123465, active: false },
+const Groups = () => {
+  const mokGroups = [
+    {
+      id: 1,
+      name: "AZ1",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
+    {
+      id: 2,
+      name: "BC2",
+      grade: 2,
+      active: true,
+      turnId: 2,
+      description: "Informática",
+    },
+    {
+      id: 3,
+      name: "CD3",
+      grade: 3,
+      active: true,
+      turnId: 3,
+      description: "Informática",
+    },
+    {
+      id: 4,
+      name: "DE4",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
+    {
+      id: 5,
+      name: "EF5",
+      grade: 2,
+      active: true,
+      turnId: 2,
+      description: "Informática",
+    },
+    {
+      id: 6,
+      name: "FG6",
+      grade: 3,
+      active: true,
+      turnId: 3,
+      description: "Informática",
+    },
+    {
+      id: 7,
+      name: "GH7",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
+    {
+      id: 8,
+      name: "HI8",
+      grade: 2,
+      active: true,
+      turnId: 2,
+      description: "Informática",
+    },
+    {
+      id: 9,
+      name: "IJ9",
+      grade: 3,
+      active: true,
+      turnId: 3,
+      description: "Informática",
+    },
+    {
+      id: 10,
+      name: "JK10",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
+    {
+      id: 11,
+      name: "KL11",
+      grade: 2,
+      active: true,
+      turnId: 2,
+      description: "Informática",
+    },
+    {
+      id: 12,
+      name: "LM12",
+      grade: 3,
+      active: true,
+      turnId: 3,
+      description: "Informática",
+    },
+    {
+      id: 13,
+      name: "MN13",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
+    {
+      id: 14,
+      name: "NO14",
+      grade: 2,
+      active: true,
+      turnId: 2,
+      description: "Informática",
+    },
+    {
+      id: 15,
+      name: "OP15",
+      grade: 3,
+      active: true,
+      turnId: 3,
+      description: "Informática",
+    },
+    {
+      id: 16,
+      name: "PQ16",
+      grade: 1,
+      active: true,
+      turnId: 1,
+      description: "Informática",
+    },
   ];
-
   const specialties = [
     { value: 1, label: "Matematicas" },
     { value: 2, label: "Filosofia" },
@@ -50,8 +167,9 @@ const Teachers2 = () => {
 
   const headers = [
     { name: "name", value: "Nombre" },
-    { name: "lastname", value: "Apellido" },
-    { name: "ci", value: "CI" },
+    { name: "grade", value: "Grado" },
+    { name: "turnId", value: "Turno" },
+    { name: "description", value: "Descripcion" },
     { name: "active", value: "Activo" },
   ];
 
@@ -68,10 +186,10 @@ const Teachers2 = () => {
 
   const DEFAULT_FORM_DATA = {
     name: "",
-    lastname: "",
-    ci: "",
-    active: true,
-
+    description: "",
+    grade: "",
+    turnId: "",
+    active: false,
     /*
       obtener las especialidades, como? 
       por bd o obteniendo id  y texto de la materia
@@ -85,7 +203,13 @@ const Teachers2 = () => {
     ],
   };
 
-  const [professors, setProfessors] = useState(mokProffesors);
+  const turns = [
+    { name: "Manana", id: 1 },
+    { name: "Tarde", id: 2 },
+    { name: "Noche", id: 3 },
+  ];
+
+  const [professors, setProfessors] = useState(mokGroups);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
@@ -194,17 +318,17 @@ const Teachers2 = () => {
         endIcon={<PersonAddIcon />}
         className="mx-4 my-4 normal-case"
       >
-        Nuevo profesor
+        Nuevo grupo
       </Button>
       <p>{JSON.stringify(selectedSpecialties)}</p>
       <CustomTable
         headers={headers}
-        items={mokProffesors}
+        items={mokGroups}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="max-w-sm mx-auto">
         <DialogTitle className="text-sm">
-          {editId ? "Editar profesor" : "Nuevo profesor"}
+          {editId ? "Editar grupo" : "Nuevo grupo"}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
@@ -224,9 +348,10 @@ const Teachers2 = () => {
               <FormControl className="w-full">
                 <TextField
                   required
-                  label="Apellido"
-                  name="lastname"
-                  value={formData.lastname}
+                  label="Grado"
+                  name="grade"
+                  type="number"
+                  value={formData.grade}
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
@@ -237,25 +362,39 @@ const Teachers2 = () => {
             <FormControl className="w-full my-4">
               <TextField
                 required
-                label="CI"
-                name="ci"
-                type="number"
-                value={formData.ci}
+                label="Descripción"
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
                 className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                 variant="outlined"
                 size="small"
               />
             </FormControl>
+            <FormControl>
+              <InputLabel id="turn-select">Turno</InputLabel>
+              <Select
+                labelId="turn-select"
+                value={formData.turnId}
+                onChange={() => {}}
+                input={<OutlinedInput label="Turno" />}
+              >
+                {turns.map((turn) => (
+                  <MenuItem key={turn.id} value={turn.id}>
+                    {turn.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <FormControl className="w-full my-4">
-              <InputLabel id="specialties-select">Especialidades</InputLabel>
+              <InputLabel id="specialties-select">Materias</InputLabel>
               <Select
                 required
                 labelId="specialties-select"
                 multiple
                 value={selectedSpecialtiesNames}
                 onChange={handleSpecialtyChange}
-                input={<OutlinedInput label="Especialidades" />}
+                input={<OutlinedInput label="Materias" />}
                 renderValue={(selected) => selected.join(", ")}
                 MenuProps={MenuProps}
               >
@@ -288,12 +427,12 @@ const Teachers2 = () => {
               >
                 <FormControlLabel
                   value={true}
-                  control={<Radio size="small" />}
+                  control={<Radio />}
                   label="Activo"
                 />
                 <FormControlLabel
                   value={false}
-                  control={<Radio size="small" />}
+                  control={<Radio />}
                   label="Inactivo"
                 />
               </RadioGroup>
@@ -324,4 +463,4 @@ const Teachers2 = () => {
   );
 };
 
-export default Teachers2;
+export default Groups;

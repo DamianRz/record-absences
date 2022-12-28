@@ -27,7 +27,7 @@ const tools = [
   {
     label: "Materias",
     icon: AssignmentIcon,
-    page: "/matter",
+    page: "/matters",
   },
   {
     label: "Reportes",
