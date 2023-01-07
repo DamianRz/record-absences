@@ -24,6 +24,10 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import CustomTable from "../table";
+import {
+  getSpecialties,
+  getSpecialtiesByTeacher,
+} from "../../libs/specialtiesApi";
 
 const Teachers2 = () => {
   const mokProffesors = [
@@ -37,15 +41,6 @@ const Teachers2 = () => {
     { id: 8, name: "Laura", lastname: "Díaz", ci: 123463, active: false },
     { id: 9, name: "Alberto", lastname: "Jiménez", ci: 123464, active: true },
     { id: 10, name: "Sonia", lastname: "Ruiz", ci: 123465, active: false },
-  ];
-
-  const specialties = [
-    { value: 1, label: "Matematicas" },
-    { value: 2, label: "Filosofia" },
-    { value: 3, label: "Sistemas Operativos" },
-    { value: 4, label: "Programacion" },
-    { value: 5, label: "Base de datos" },
-    { value: 6, label: "Logica" },
   ];
 
   const headers = [
@@ -91,6 +86,7 @@ const Teachers2 = () => {
   const [editId, setEditId] = useState(null);
   const [persons, setPersons] = useState([]);
 
+  const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
     string[]
   >([]);
@@ -99,19 +95,16 @@ const Teachers2 = () => {
   const [selectedRow, setSelectedRow] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataTeachers = async () => {
       const result = await axios("/api/professors");
       setProfessors(result.data);
     };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios("/api/persons");
-      setPersons(result.data);
+    const fetchDataSpecialties = async () => {
+      const result: any = await getSpecialties();
+      setSpecialties(result);
     };
-    fetchData();
+    fetchDataTeachers();
+    fetchDataSpecialties();
   }, []);
 
   const handleChange = (event: any) => {
@@ -152,8 +145,24 @@ const Teachers2 = () => {
     setProfessors(result.data);
   };
 
-  const handleEdit = (id: any) => {
+  const handleEdit = async (id: any) => {
+    // setSelectedSpecialties([]);
     setEditId(id);
+
+    const teacherSpecialties: any = await getSpecialtiesByTeacher(id);
+    setSelectedSpecialties(teacherSpecialties);
+
+    // get names and join
+
+    console.log(teacherSpecialties);
+
+    let specialiesNames = "";
+    teacherSpecialties.map((s) => {
+      specialiesNames += `${s.name}, `;
+    });
+
+    setSelectedSpecialtiesNames(specialiesNames);
+
     setOpen(true);
     setFormData(professors.find((p) => p.id === id));
   };
@@ -196,7 +205,6 @@ const Teachers2 = () => {
       >
         Nuevo profesor
       </Button>
-      <p>{JSON.stringify(selectedSpecialties)}</p>
       <CustomTable
         headers={headers}
         items={mokProffesors}
@@ -263,17 +271,17 @@ const Teachers2 = () => {
                   <MenuItem
                     className="h-[20px]"
                     key={index}
-                    value={specialty.label}
+                    value={specialty.name}
                     onClick={() => {
                       handleSelectSpecialty(specialty);
                     }}
                   >
                     <Checkbox
                       checked={
-                        selectedSpecialtiesNames.indexOf(specialty.label) > -1
+                        selectedSpecialtiesNames.indexOf(specialty.name) > -1
                       }
                     />
-                    <ListItemText primary={specialty.label} />
+                    <ListItemText primary={specialty.name} />
                   </MenuItem>
                 ))}
               </Select>

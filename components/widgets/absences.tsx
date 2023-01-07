@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 import {
   Button,
   Dialog,
@@ -24,144 +24,133 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import CustomTable from "../table";
+import {
+  getSpecialties,
+  getSpecialtiesByTeacher,
+} from "../../libs/specialtiesApi";
 
-const Groups = () => {
-  const mokGroups = [
+const Absences = () => {
+  const mokProffesors = [
     {
       id: 1,
-      name: "AZ1",
-      grade: 1,
+      name: "Juan",
+      lastname: "Pérez",
+      ci: 123456,
+      group: "A",
+      matter: "Matemáticas",
+      startDate: "01/01/2020",
+      endDate: "01/06/2020",
       active: true,
-      turnId: 1,
-      description: "Informática",
     },
     {
       id: 2,
-      name: "BC2",
-      grade: 2,
-      active: true,
-      turnId: 2,
-      description: "Informática",
+      name: "María",
+      lastname: "González",
+      ci: 123457,
+      group: "B",
+      matter: "Historia",
+      startDate: "01/02/2020",
+      endDate: "01/07/2020",
+      active: false,
     },
     {
       id: 3,
-      name: "CD3",
-      grade: 3,
+      name: "Pedro",
+      lastname: "Rodríguez",
+      ci: 123458,
+      group: "C",
+      matter: "Inglés",
+      startDate: "01/03/2020",
+      endDate: "01/08/2020",
       active: true,
-      turnId: 3,
-      description: "Informática",
     },
     {
       id: 4,
-      name: "DE4",
-      grade: 1,
-      active: true,
-      turnId: 1,
-      description: "Informática",
+      name: "Ana",
+      lastname: "Sánchez",
+      ci: 123459,
+      group: "D",
+      matter: "Física",
+      startDate: "01/04/2020",
+      endDate: "01/09/2020",
+      active: false,
     },
     {
       id: 5,
-      name: "EF5",
-      grade: 2,
+      name: "Pablo",
+      lastname: "Martínez",
+      ci: 123460,
+      group: "E",
+      matter: "Química",
+      startDate: "01/05/2020",
+      endDate: "01/10/2020",
       active: true,
-      turnId: 2,
-      description: "Informática",
     },
     {
       id: 6,
-      name: "FG6",
-      grade: 3,
-      active: true,
-      turnId: 3,
-      description: "Informática",
+      name: "Sandra",
+      lastname: "Lopez",
+      ci: 123461,
+      group: "F",
+      matter: "Biología",
+      startDate: "01/06/2020",
+      endDate: "01/11/2020",
+      active: false,
     },
     {
       id: 7,
-      name: "GH7",
-      grade: 1,
+      name: "Carlos",
+      lastname: "Gómez",
+      ci: 123462,
+      group: "G",
+      matter: "Geografía",
+      startDate: "01/07/2020",
+      endDate: "01/12/2020",
       active: true,
-      turnId: 1,
-      description: "Informática",
     },
     {
       id: 8,
-      name: "HI8",
-      grade: 2,
-      active: true,
-      turnId: 2,
-      description: "Informática",
+      name: "Laura",
+      lastname: "Díaz",
+      ci: 123463,
+      group: "H",
+      matter: "Español",
+      startDate: "01/08/2020",
+      endDate: "01/01/2021",
+      active: false,
     },
     {
       id: 9,
-      name: "IJ9",
-      grade: 3,
+      name: "Alberto",
+      lastname: "Jiménez",
+      ci: 123464,
+      group: "I",
+      matter: "Lenguaje",
+      startDate: "01/09/2020",
+      endDate: "01/02/2021",
       active: true,
-      turnId: 3,
-      description: "Informática",
     },
     {
       id: 10,
-      name: "JK10",
-      grade: 1,
-      active: true,
-      turnId: 1,
-      description: "Informática",
-    },
-    {
-      id: 11,
-      name: "KL11",
-      grade: 2,
-      active: true,
-      turnId: 2,
-      description: "Informática",
-    },
-    {
-      id: 12,
-      name: "LM12",
-      grade: 3,
-      active: true,
-      turnId: 3,
-      description: "Informática",
-    },
-    {
-      id: 13,
-      name: "MN13",
-      grade: 1,
-      active: true,
-      turnId: 1,
-      description: "Informática",
-    },
-    {
-      id: 14,
-      name: "NO14",
-      grade: 2,
-      active: true,
-      turnId: 2,
-      description: "Informática",
-    },
-    {
-      id: 15,
-      name: "OP15",
-      grade: 3,
-      active: true,
-      turnId: 3,
-      description: "Informática",
-    },
-    {
-      id: 16,
-      name: "PQ16",
-      grade: 1,
-      active: true,
-      turnId: 1,
-      description: "Informática",
+      name: "Sonia",
+      lastname: "Ruiz",
+      ci: 123465,
+      group: "J",
+      matter: "Literatura",
+      startDate: "01/10/2020",
+      endDate: "01/03/2021",
+      active: false,
     },
   ];
 
   const headers = [
     { name: "name", value: "Nombre" },
-    { name: "grade", value: "Grado" },
-    { name: "turnId", value: "Turno" },
-    { name: "description", value: "Descripcion" },
+    { name: "lastname", value: "Apellido" },
+    { name: "ci", value: "CI" },
+    { name: "group", value: "Grupo" },
+    { name: "matter", value: "Materia" },
+    { name: "startDate", value: "Fecha Incio" },
+    { name: "endDate", value: "Fecha Fin" },
     { name: "active", value: "Activo" },
   ];
 
@@ -178,10 +167,10 @@ const Groups = () => {
 
   const DEFAULT_FORM_DATA = {
     name: "",
-    description: "",
-    grade: "",
-    turnId: "",
-    active: false,
+    lastname: "",
+    ci: "",
+    active: true,
+
     /*
       obtener las especialidades, como? 
       por bd o obteniendo id  y texto de la materia
@@ -195,13 +184,7 @@ const Groups = () => {
     ],
   };
 
-  const turns = [
-    { name: "Manana", id: 1 },
-    { name: "Tarde", id: 2 },
-    { name: "Noche", id: 3 },
-  ];
-
-  const [professors, setProfessors] = useState(mokGroups);
+  const [professors, setProfessors] = useState(mokProffesors);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
@@ -216,19 +199,16 @@ const Groups = () => {
   const [selectedRow, setSelectedRow] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataTeachers = async () => {
       const result = await axios("/api/professors");
       setProfessors(result.data);
     };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios("/api/persons");
-      setPersons(result.data);
+    const fetchDataSpecialties = async () => {
+      const result: any = await getSpecialties();
+      setSpecialties(result);
     };
-    fetchData();
+    fetchDataTeachers();
+    fetchDataSpecialties();
   }, []);
 
   const handleChange = (event: any) => {
@@ -269,8 +249,24 @@ const Groups = () => {
     setProfessors(result.data);
   };
 
-  const handleEdit = (id: any) => {
+  const handleEdit = async (id: any) => {
+    // setSelectedSpecialties([]);
     setEditId(id);
+
+    const teacherSpecialties: any = await getSpecialtiesByTeacher(id);
+    setSelectedSpecialties(teacherSpecialties);
+
+    // get names and join
+
+    console.log(teacherSpecialties);
+
+    let specialiesNames = "";
+    teacherSpecialties.map((s) => {
+      specialiesNames += `${s.name}, `;
+    });
+
+    setSelectedSpecialtiesNames(specialiesNames);
+
     setOpen(true);
     setFormData(professors.find((p) => p.id === id));
   };
@@ -308,20 +304,19 @@ const Groups = () => {
         variant="outlined"
         color="success"
         onClick={handleOpen}
-        endIcon={<PersonAddIcon />}
+        endIcon={<EventBusyIcon />}
         className="mx-4 my-4 normal-case"
       >
-        Nuevo grupo
+        Nuevo Inasistencia
       </Button>
-      <p>{JSON.stringify(selectedSpecialties)}</p>
       <CustomTable
         headers={headers}
-        items={mokGroups}
+        items={mokProffesors}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="max-w-sm mx-auto">
         <DialogTitle className="text-sm">
-          {editId ? "Editar grupo" : "Nuevo grupo"}
+          {editId ? "Editar insasistencia" : "Nuevo Inasistencia"}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
@@ -341,10 +336,9 @@ const Groups = () => {
               <FormControl className="w-full">
                 <TextField
                   required
-                  label="Grado"
-                  name="grade"
-                  type="number"
-                  value={formData.grade}
+                  label="Apellido"
+                  name="lastname"
+                  value={formData.lastname}
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
@@ -355,39 +349,25 @@ const Groups = () => {
             <FormControl className="w-full my-4">
               <TextField
                 required
-                label="Descripción"
-                name="description"
-                value={formData.description}
+                label="CI"
+                name="ci"
+                type="number"
+                value={formData.ci}
                 onChange={handleChange}
                 className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                 variant="outlined"
                 size="small"
               />
             </FormControl>
-            <FormControl>
-              <InputLabel id="turn-select">Turno</InputLabel>
-              <Select
-                labelId="turn-select"
-                value={formData.turnId}
-                onChange={() => {}}
-                input={<OutlinedInput label="Turno" />}
-              >
-                {turns.map((turn) => (
-                  <MenuItem key={turn.id} value={turn.id}>
-                    {turn.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
             <FormControl className="w-full my-4">
-              <InputLabel id="specialties-select">Materias</InputLabel>
+              <InputLabel id="specialties-select">Especialidades</InputLabel>
               <Select
                 required
                 labelId="specialties-select"
                 multiple
                 value={selectedSpecialtiesNames}
                 onChange={handleSpecialtyChange}
-                input={<OutlinedInput label="Materias" />}
+                input={<OutlinedInput label="Especialidades" />}
                 renderValue={(selected) => selected.join(", ")}
                 MenuProps={MenuProps}
               >
@@ -395,17 +375,17 @@ const Groups = () => {
                   <MenuItem
                     className="h-[20px]"
                     key={index}
-                    value={specialty.label}
+                    value={specialty.name}
                     onClick={() => {
                       handleSelectSpecialty(specialty);
                     }}
                   >
                     <Checkbox
                       checked={
-                        selectedSpecialtiesNames.indexOf(specialty.label) > -1
+                        selectedSpecialtiesNames.indexOf(specialty.name) > -1
                       }
                     />
-                    <ListItemText primary={specialty.label} />
+                    <ListItemText primary={specialty.name} />
                   </MenuItem>
                 ))}
               </Select>
@@ -420,12 +400,12 @@ const Groups = () => {
               >
                 <FormControlLabel
                   value={true}
-                  control={<Radio />}
+                  control={<Radio size="small" />}
                   label="Activo"
                 />
                 <FormControlLabel
                   value={false}
-                  control={<Radio />}
+                  control={<Radio size="small" />}
                   label="Inactivo"
                 />
               </RadioGroup>
@@ -456,4 +436,4 @@ const Groups = () => {
   );
 };
 
-export default Groups;
+export default Absences;
