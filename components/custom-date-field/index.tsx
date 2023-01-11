@@ -11,6 +11,7 @@ interface CustomDateFieldProps {
   error: boolean
   helperText: string
   className?: string
+  disabled?: boolean
 }
 
 const CustomDateField: React.FC<CustomDateFieldProps> = ({
@@ -20,7 +21,8 @@ const CustomDateField: React.FC<CustomDateFieldProps> = ({
   label,
   className,
   error,
-  helperText
+  helperText,
+  disabled,
 }) => {
   return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -30,6 +32,7 @@ const CustomDateField: React.FC<CustomDateFieldProps> = ({
                 value={value}
                 onChange={onChange}
                 minDate={new Date()}
+                disabled={disabled}
                 renderInput={(params) => (
                     <TextField
                         {...params}

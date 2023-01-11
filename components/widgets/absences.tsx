@@ -28,9 +28,10 @@ import {
   getSpecialties,
   getSpecialtiesByTeacher,
 } from "../../libs/specialtiesApi";
+import CustomDateField from "../custom-date-field";
 
 const Absences = () => {
-  const mokProffesors = [
+  const mokAbsences = [
     {
       id: 1,
       name: "Juan",
@@ -184,11 +185,24 @@ const Absences = () => {
     ],
   };
 
-  const [professors, setProfessors] = useState(mokProffesors);
+  //
   const [open, setOpen] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState(undefined);
+  const [document, setDocument] = useState("")
+  //
+
+
+
+
+  const [professors, setProfessors] = useState(mokAbsences);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [persons, setPersons] = useState([]);
+
+
+
+
+
 
   const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
@@ -298,6 +312,26 @@ const Absences = () => {
     }
   };
 
+  const handleSearch = async () => {
+    // fetch teacher by doc
+
+    // const result = await axios("/api/professors");
+    // setSelectedTeacher(result.data);
+
+    const newTeacher: any = {
+      name: "Damian",
+      lastname: "Rodriguez",
+      document: "",
+      groups: [],
+      specialties: [],
+      matters: []
+    }
+
+    setSelectedTeacher(newTeacher)
+
+  }
+
+  
   return (
     <div>
       <Button
@@ -311,15 +345,102 @@ const Absences = () => {
       </Button>
       <CustomTable
         headers={headers}
-        items={mokProffesors}
+        items={mokAbsences}
         onSelectRow={handleEdit}
       />
-      <Dialog open={open} className="max-w-sm mx-auto">
+
+
+
+      <Dialog open={open} className="mx-auto ">
         <DialogTitle className="text-sm">
           {editId ? "Editar insasistencia" : "Nuevo Inasistencia"}
         </DialogTitle>
+
+
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
+
+
+
+
+            {/* BUSCAR PROFESOR A PARTIR DE DOCUMENTO */}
+
+
+
+            <div className="flex space-x-2">
+              <FormControl className="w-full mb-4">
+                <TextField
+                  required
+                  label="Documento"
+                  name="ci"
+                  type="text"
+                  value={formData.ci}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                />
+              </FormControl>
+              <Button
+                type="button"
+                variant="outlined"
+                size="small"
+                className="normal-case max-h-[40px]"
+                onClick={handleSearch}
+              >
+                Buscar
+              </Button>
+            </div>
+            
+            {selectedTeacher?.name && <p>{`Nombre: ${selectedTeacher.name} ${selectedTeacher.lastname}`}</p>}
+
+            <div className="flex space-x-2">
+              <CustomDateField 
+                disabled={!selectedTeacher?.name}  
+                name="startDate" 
+                error={false} 
+                helperText="Debe seleccionar la fecha de inicio" 
+                label="Fecha inicio"
+                onChange={()=> {}}
+                value=""
+              />
+              <CustomDateField 
+                disabled={!selectedTeacher?.name}                  
+                name="endDate" 
+                error={false} 
+                helperText="Debe seleccionar la fecha fin" 
+                label="Fecha fin"
+                onChange={()=> {}}
+                value=""
+              />
+            </div>
+
+            
+            
+
+
+
+
+
+          {/* <FormControl>
+              <InputLabel id="turn-select">Documento del profesor (CI)</InputLabel>
+              <Select
+                labelId="turn-select"
+                value={formData.teacher}
+                onChange={() => {}}
+                input={<OutlinedInput label="Turno" />}
+              >
+                {turns.map((turn) => (
+                  <MenuItem key={turn.id} value={turn.id}>
+                    {turn.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl> */}
+
+{/* 
+
+
             <div className="flex space-x-2">
               <FormControl className="w-full">
                 <TextField
@@ -345,21 +466,11 @@ const Absences = () => {
                   size="small"
                 />
               </FormControl>
-            </div>
-            <FormControl className="w-full my-4">
-              <TextField
-                required
-                label="CI"
-                name="ci"
-                type="number"
-                value={formData.ci}
-                onChange={handleChange}
-                className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                variant="outlined"
-                size="small"
-              />
-            </FormControl>
-            <FormControl className="w-full my-4">
+            </div> */}
+
+
+
+            {/* <FormControl className="w-full my-4">
               <InputLabel id="specialties-select">Especialidades</InputLabel>
               <Select
                 required
@@ -389,8 +500,10 @@ const Absences = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
-            <FormControl className="w-full my-4">
+            </FormControl> */}
+
+
+            {/* <FormControl className="w-full my-4">
               <FormLabel id="radio-active">Estado</FormLabel>
               <RadioGroup
                 aria-labelledby="radio-active"
@@ -409,8 +522,11 @@ const Absences = () => {
                   label="Inactivo"
                 />
               </RadioGroup>
-            </FormControl>
+            </FormControl> */}
+
+            
           </DialogContent>
+
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button
               onClick={handleClose}
@@ -432,6 +548,11 @@ const Absences = () => {
           </DialogActions>
         </form>
       </Dialog>
+
+
+
+
+
     </div>
   );
 };
