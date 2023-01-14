@@ -29,6 +29,8 @@ import { signin } from "../../libs/usersApi";
 import { Store } from "@mui/icons-material";
 import { getPerson } from "../../libs/personApi";
 import { getProffessor } from "../../libs/proffesorsApi";
+import { getGMP, getGmp } from "../../libs/gmpsApi";
+import { getMgs } from "../../libs/mgsApi";
 
 const Absences = () => {
   const mokAbsences = [
@@ -224,13 +226,26 @@ const Absences = () => {
 
     const getTeacher = async () => {
       
+      // GET PERSON DATA
       const response = await getPerson(86028008);
-      if (response) console.log(response);
+      if (response) console.log("person", response);
 
+      // GET PROFFESSOR ID
       const responseProffessor = await getProffessor(86028008);
-      if (responseProffessor) console.log(responseProffessor);
+      if (responseProffessor) console.log("proffessor",responseProffessor);
 
-      
+      // GET GROUP MATTER PROFFESOR
+      const responseGMPs = await getGMP(responseProffessor?.id);
+      if (responseGMPs) console.log("GMPs",responseGMPs);
+
+      // GET MATTERS AND GROUP
+      Promise.all(
+        responseGMPs.map(async (GMP: any) => {
+        const responseMGs = await getMgs(GMP?.mgId);
+        if (responseMGs) console.log("MG",responseMGs);
+      }));
+
+
 
 
 
