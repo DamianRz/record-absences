@@ -12,12 +12,6 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  IconButton,
-  TableContainer,
-  FormControlLabel,
-  Radio,
-  FormLabel,
-  RadioGroup,
   OutlinedInput,
   Checkbox,
   ListItemText,
@@ -29,6 +23,12 @@ import {
   getSpecialtiesByTeacher,
 } from "../../libs/specialtiesApi";
 import CustomDateField from "../custom-date-field";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { signin } from "../../libs/usersApi";
+import { Store } from "@mui/icons-material";
+import { getPerson } from "../../libs/personApi";
+import { getProffessor } from "../../libs/proffesorsApi";
 
 const Absences = () => {
   const mokAbsences = [
@@ -145,15 +145,22 @@ const Absences = () => {
   ];
 
   const headers = [
+    { name: "ci", value: "CI" },
     { name: "name", value: "Nombre" },
     { name: "lastname", value: "Apellido" },
-    { name: "ci", value: "CI" },
     { name: "group", value: "Grupo" },
     { name: "matter", value: "Materia" },
     { name: "startDate", value: "Fecha Incio" },
     { name: "endDate", value: "Fecha Fin" },
     { name: "active", value: "Activo" },
   ];
+
+
+  const TURNS = [
+    { id: 1, name: "Matutino" },
+    { id: 2, name: "Vespertino" },
+    { id: 3, name: "Nocturno" }
+  ]
 
   const ITEM_HEIGHT = 30;
   const ITEM_PADDING_TOP = 8;
@@ -166,43 +173,34 @@ const Absences = () => {
     },
   };
 
-  const DEFAULT_FORM_DATA = {
+  const DEFAULT_SELECTED_TEACHER: any = {
     name: "",
     lastname: "",
-    ci: "",
-    active: true,
-
-    /*
-      obtener las especialidades, como? 
-      por bd o obteniendo id  y texto de la materia
-    */
-
-    specialties: [
-      {
-        matterId: 1,
-        proffesorId: 1,
-      },
+    document: "",
+    groups: [
     ],
+    specialties: [],
+    matters: []
+  }
+
+  const DEFAULT_FORM_DATA = {
+    group: "",
+    matter: "",
+    turn: "",
+    startDate: "",
+    endDate: "",
+    document: "",
+    name: ""
   };
 
-  //
   const [open, setOpen] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState(undefined);
+  const [selectedTeacher, setSelectedTeacher] = useState(DEFAULT_SELECTED_TEACHER);
   const [document, setDocument] = useState("")
-  //
-
-
-
 
   const [professors, setProfessors] = useState(mokAbsences);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [persons, setPersons] = useState([]);
-
-
-
-
-
 
   const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
@@ -212,18 +210,85 @@ const Absences = () => {
 
   const [selectedRow, setSelectedRow] = useState();
 
+
+
+
+
   useEffect(() => {
-    const fetchDataTeachers = async () => {
-      const result = await axios("/api/professors");
-      setProfessors(result.data);
+    const signIn = async() => {
+      const response = await signin(56660749, "1234");
+      if (response) localStorage.setItem('token', response.token);
+      console.log(response)
+    }
+    signIn()
+
+    const getTeacher = async () => {
+      
+      const response = await getPerson(86028008);
+      if (response) console.log(response);
+
+      const responseProffessor = await getProffessor(86028008);
+      if (responseProffessor) console.log(responseProffessor);
+
+      
+
+
+
+
+
+      // TODO Grupos
+
+      /*
+        ci, id
+
+        gmp/all ?
+        (id = proffessorId)
+
+        {
+          "id": 1,
+          "mgId": 1,
+          "proffessorId": 1,
+          "active": true,
+          "mg": {
+            "id": 1,
+            "matterId": 1,
+            "groupId": 1
+          },
+          "proffessor": {
+            "id": 1,
+            "personId": 1,
+            "active": true
+          }
+        }
+
+        // grupo
+      
+      */
+
+
+
+
+      
+      // const result = await axios("/api/professors");
+      // setProfessors(result.data);
     };
+
     const fetchDataSpecialties = async () => {
       const result: any = await getSpecialties();
       setSpecialties(result);
     };
-    fetchDataTeachers();
+    getTeacher();
     fetchDataSpecialties();
   }, []);
+
+
+
+
+
+
+  useEffect(() => {
+    setFormData({ ...formData, endDate: formData.startDate })
+  }, [formData.startDate])
 
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -321,17 +386,25 @@ const Absences = () => {
     const newTeacher: any = {
       name: "Damian",
       lastname: "Rodriguez",
-      document: "",
-      groups: [],
+      document: "56660749",
+      groups: [
+        { id: 1, name: "RP3", turnId: 1 },
+        { id: 1, name: "RS1", turnId: 1 },
+        { id: 1, name: "IF", turnId: 1 },
+        { id: 1, name: "IG", turnId: 2 },
+        { id: 1, name: "IB", turnId: 2 },
+        { id: 1, name: "2A", turnId: 3 },
+      ],
       specialties: [],
-      matters: []
+      matters: [
+        { id: 1, name: "Matematicas" },
+        { id: 2, name: "Geometria" },
+      ]
     }
-
     setSelectedTeacher(newTeacher)
-
+    setFormData({ ...formData, name: newTeacher.name})
   }
 
-  
   return (
     <div>
       <Button
@@ -372,9 +445,9 @@ const Absences = () => {
                 <TextField
                   required
                   label="Documento"
-                  name="ci"
+                  name="document"
                   type="text"
-                  value={formData.ci}
+                  value={formData.document}
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
@@ -392,139 +465,104 @@ const Absences = () => {
               </Button>
             </div>
             
-            {selectedTeacher?.name && <p>{`Nombre: ${selectedTeacher.name} ${selectedTeacher.lastname}`}</p>}
+            {selectedTeacher?.name && <p className="mb-4">{`Nombre: ${selectedTeacher.name} ${selectedTeacher.lastname}`}</p>}
 
             <div className="flex space-x-2">
-              <CustomDateField 
-                disabled={!selectedTeacher?.name}  
-                name="startDate" 
-                error={false} 
-                helperText="Debe seleccionar la fecha de inicio" 
-                label="Fecha inicio"
-                onChange={()=> {}}
-                value=""
-              />
-              <CustomDateField 
-                disabled={!selectedTeacher?.name}                  
-                name="endDate" 
-                error={false} 
-                helperText="Debe seleccionar la fecha fin" 
-                label="Fecha fin"
-                onChange={()=> {}}
-                value=""
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Fecha inicio"
+                  inputFormat="DD/MM/YYYY"
+                  value={formData.startDate}
+                  onChange={(value)=> setFormData({...formData, startDate: value })}
+                  minDate={new Date()}
+                  disabled={!formData.name}
+                  renderInput={(params) => <TextField {...params} error={false} required />}
+                />
+                <DesktopDatePicker
+                  label="Fecha fin"
+                  inputFormat="DD/MM/YYYY"
+                  value={formData.endDate}
+                  onChange={(value)=> setFormData({...formData, endDate: value})}
+                  minDate={formData.startDate}
+                  disabled={!formData.name}
+                  renderInput={(params) => <TextField {...params} error={false} required />}
+                />
+              </LocalizationProvider>
             </div>
-
-            
-            
-
-
-
-
-
-          {/* <FormControl>
-              <InputLabel id="turn-select">Documento del profesor (CI)</InputLabel>
-              <Select
-                labelId="turn-select"
-                value={formData.teacher}
-                onChange={() => {}}
-                input={<OutlinedInput label="Turno" />}
-              >
-                {turns.map((turn) => (
-                  <MenuItem key={turn.id} value={turn.id}>
-                    {turn.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-
-{/* 
-
-
             <div className="flex space-x-2">
-              <FormControl className="w-full">
-                <TextField
+              <FormControl className="w-full my-4">
+                <InputLabel id="select-group">Grupo</InputLabel>
+                <Select
                   required
-                  label="Nombre"
-                  name="name"
-                  value={formData.name}
+                  name="group"
+                  labelId="select-group"
+                  value={formData.group}
                   onChange={handleChange}
-                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                  variant="outlined"
-                  size="small"
-                />
+                  input={<OutlinedInput label="Grupo" />}
+                  MenuProps={MenuProps}
+                  disabled={!formData.endDate}
+                >
+                  {selectedTeacher.groups.map((group: any, index: number) => (
+                    <MenuItem
+                      key={index}
+                      value={group}
+                    >
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
-              <FormControl className="w-full">
-                <TextField
+
+              <FormControl className="w-full my-4">
+                <InputLabel id="select-matter">Materia</InputLabel>
+                <Select
                   required
-                  label="Apellido"
-                  name="lastname"
-                  value={formData.lastname}
+                  name="matter"
+                  labelId="select-matter"
+                  value={formData.matter}
                   onChange={handleChange}
-                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                  variant="outlined"
-                  size="small"
-                />
+                  input={<OutlinedInput label="Materia" />}
+                  MenuProps={MenuProps}
+                  disabled={!formData.endDate}
+                >
+                  {selectedTeacher.matters.map((matter: any, index: number) => (
+                    <MenuItem
+                      key={index}
+                      value={matter}
+                    >
+                      {matter.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
-            </div> */}
 
 
 
-            {/* <FormControl className="w-full my-4">
-              <InputLabel id="specialties-select">Especialidades</InputLabel>
-              <Select
-                required
-                labelId="specialties-select"
-                multiple
-                value={selectedSpecialtiesNames}
-                onChange={handleSpecialtyChange}
-                input={<OutlinedInput label="Especialidades" />}
-                renderValue={(selected) => selected.join(", ")}
-                MenuProps={MenuProps}
-              >
-                {specialties.map((specialty: any, index) => (
-                  <MenuItem
-                    className="h-[20px]"
-                    key={index}
-                    value={specialty.name}
-                    onClick={() => {
-                      handleSelectSpecialty(specialty);
-                    }}
-                  >
-                    <Checkbox
-                      checked={
-                        selectedSpecialtiesNames.indexOf(specialty.name) > -1
-                      }
-                    />
-                    <ListItemText primary={specialty.name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
+              <FormControl className="w-full my-4">
+                <InputLabel id="select-turn">Turno</InputLabel>
+                <Select
+                  required
+                  name="turn"
+                  labelId="select-turn"
+                  value={formData.turn}
+                  onChange={handleChange}
+                  input={<OutlinedInput label="Turno" />}
+                  MenuProps={MenuProps}
+                  disabled={!formData.endDate}
+                >
+                  {TURNS.map((turn: any, index: number) => (
+                    <MenuItem
+                      key={index}
+                      value={turn}
+                    >
+                      {turn.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-
-            {/* <FormControl className="w-full my-4">
-              <FormLabel id="radio-active">Estado</FormLabel>
-              <RadioGroup
-                aria-labelledby="radio-active"
-                name="active"
-                defaultValue={formData.active}
-                onChange={handleActiveChange}
-              >
-                <FormControlLabel
-                  value={true}
-                  control={<Radio size="small" />}
-                  label="Activo"
-                />
-                <FormControlLabel
-                  value={false}
-                  control={<Radio size="small" />}
-                  label="Inactivo"
-                />
-              </RadioGroup>
-            </FormControl> */}
-
-            
+              
+            </div>             
           </DialogContent>
 
           <DialogActions className="pb-4 pr-4 space-x-4">
