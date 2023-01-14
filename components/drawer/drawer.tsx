@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import EventBusyIcon from "@mui/icons-material/EventBusy";
 import GroupIcon from "@mui/icons-material/Group";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import PersonIcon from "@mui/icons-material/Person";
+
+import EventBusyIcon from "@mui/icons-material/EventBusy";
+
+
 import { LoaderContext } from "../../contexts/loader-context";
 
 import Link from "next/link";
@@ -14,6 +17,11 @@ interface DrawerProps {
 }
 
 const tools = [
+  {
+    label: "Inasistencias",
+    icon: EventBusyIcon,
+    page: "/absences",
+  },
   {
     label: "Profesores",
     icon: PersonIcon,
