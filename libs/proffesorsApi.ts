@@ -1,4 +1,4 @@
-export const getProffessor = async (ci: number): Promise<{ id: number, personId: number, active: boolean } | undefined> => {
+export const getProfessor = async (ci: number): Promise<{ id: number, personId: number, active: boolean } | undefined> => {
     const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
     const token = localStorage.getItem('token');
     const response = await fetch(`${apiUrl}/proffessors`, {
