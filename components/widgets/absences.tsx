@@ -5,31 +5,25 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   FormControl,
   Select,
   InputLabel,
   MenuItem,
   OutlinedInput,
-  Checkbox,
-  ListItemText,
+  DialogTitle,
 } from "@mui/material";
 import axios from "axios";
 import CustomTable from "../table";
 import {
-  getSpecialties,
   getSpecialtiesByTeacher,
 } from "../../libs/specialtiesApi";
-import CustomDateField from "../custom-date-field";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { signin } from "../../libs/usersApi";
-import { Store } from "@mui/icons-material";
+import { signIn } from "../../libs/usersApi";
 import { getPerson } from "../../libs/personApi";
-import { getProffessor } from "../../libs/proffesorsApi";
-import { getGMP, getGmp } from "../../libs/gmpsApi";
+import { getProfessor } from "../../libs/proffesorsApi";
+import { getGMP } from "../../libs/gmpsApi";
 import { getMgs } from "../../libs/mgsApi";
 
 const Absences = () => {
@@ -145,7 +139,6 @@ const Absences = () => {
       active: false,
     },
   ];
-
   const headers = [
     { name: "ci", value: "CI" },
     { name: "name", value: "Nombre" },
@@ -156,14 +149,12 @@ const Absences = () => {
     { name: "endDate", value: "Fecha Fin" },
     { name: "active", value: "Activo" },
   ];
-
-
-  const TURNS = [
-    { id: 1, name: "Matutino" },
-    { id: 2, name: "Vespertino" },
-    { id: 3, name: "Nocturno" }
-  ]
-
+  const TURNS =
+    [
+      { id: 1, name: "Matutino" },
+      { id: 2, name: "Vespertino" },
+      { id: 3, name: "Nocturno" }
+    ]
   const ITEM_HEIGHT = 30;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -175,146 +166,161 @@ const Absences = () => {
     },
   };
 
-  const DEFAULT_SELECTED_TEACHER: any = {
-    name: "",
-    lastname: "",
-    document: "",
-    groups: [
-    ],
-    specialties: [],
-    matters: []
-  }
-
   const DEFAULT_FORM_DATA = {
     group: "",
     matter: "",
     turn: "",
     startDate: "",
     endDate: "",
-    document: "",
-    name: ""
+    document: "", // 86028008
+    name: "",
+    reason: ""
   };
+  interface FromDataProps {
+
+  }
+  interface GroupMatterProps {
+    id: number,
+    matterId: number,
+    groupId: number,
+    matter: {
+      id: number,
+      name: string,
+      description: string
+    },
+    group: {
+      id: number,
+      grade: number,
+      name: string,
+      description: string,
+      turnId: number,
+      active: boolean
+    }
+  }
+
+  interface TeacherDataProps {
+    groupMatter: GroupMatterProps[],
+    teacher: {
+      active: boolean,
+      ci: number,
+      id: number,
+      name: string,
+      lastname: string,
+      personId: number
+    }
+  }
+
+  const ERRORS = {
+    search: false
+  }
 
   const [open, setOpen] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState(DEFAULT_SELECTED_TEACHER);
-  const [document, setDocument] = useState("")
-
   const [professors, setProfessors] = useState(mokAbsences);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [persons, setPersons] = useState([]);
-
-  const [specialties, setSpecialties] = useState([]);
-  const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
-    string[]
-  >([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
-
-  const [selectedRow, setSelectedRow] = useState();
-
-
-
-
+  const [teacherData, setTeacherData] = useState<TeacherDataProps>();
+  const [selectedGroupMatter, setSelectedGroupMatter] = useState();
+  const [errors, setErrors] = useState(ERRORS);
 
   useEffect(() => {
-    const signIn = async() => {
-      const response = await signin(56660749, "1234");
-      if (response) localStorage.setItem('token', response.token);
-      console.log(response)
+    const fetchData = async () => {
+      const token: { token: string } | undefined = await getToken()
+      if (token) {
+        // fetchDataSpecialties();
+      }
     }
-    signIn()
-
-    const getTeacher = async () => {
-      
-      // GET PERSON DATA
-      const response = await getPerson(86028008);
-      if (response) console.log("person", response);
-
-      // GET PROFFESSOR ID
-      const responseProffessor = await getProffessor(86028008);
-      if (responseProffessor) console.log("proffessor",responseProffessor);
-
-      // GET GROUP MATTER PROFFESOR
-      const responseGMPs = await getGMP(responseProffessor?.id);
-      if (responseGMPs) console.log("GMPs",responseGMPs);
-
-      // GET MATTERS AND GROUP
-      Promise.all(
-        responseGMPs.map(async (GMP: any) => {
-        const responseMGs = await getMgs(GMP?.mgId);
-        if (responseMGs) console.log("MG",responseMGs);
-      }));
-
-
-
-
-
-
-
-      // TODO Grupos
-
-      /*
-        ci, id
-
-        gmp/all ?
-        (id = proffessorId)
-
-        {
-          "id": 1,
-          "mgId": 1,
-          "proffessorId": 1,
-          "active": true,
-          "mg": {
-            "id": 1,
-            "matterId": 1,
-            "groupId": 1
-          },
-          "proffessor": {
-            "id": 1,
-            "personId": 1,
-            "active": true
-          }
-        }
-
-        // grupo
-      
-      */
-
-
-
-
-      
-      // const result = await axios("/api/professors");
-      // setProfessors(result.data);
-    };
-
-    const fetchDataSpecialties = async () => {
-      const result: any = await getSpecialties();
-      setSpecialties(result);
-    };
-    getTeacher();
-    fetchDataSpecialties();
+    fetchData()
   }, []);
 
-
-
-
-
+  useEffect(() => {
+    console.log("UPDATING", teacherData)
+  }, [teacherData])
 
   useEffect(() => {
     setFormData({ ...formData, endDate: formData.startDate })
   }, [formData.startDate])
 
-  const handleChange = (event: any) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  const getToken = async () => {
+    return await signIn(56660749, "1234");
+  }
+
+  const getTeacherData = async (document: number) => {
+    let teacher: any = undefined
+    const person = await getPerson(document);
+    if (person) {
+      teacher = await getProfessor(document);
+    }
+    if (teacher) {
+      let groupMatter: any[] = new Array;
+      const responseGMPs = await getGMP(teacher?.id);
+      await Promise.all(
+        responseGMPs.map(async (GMP: any) => {
+          const responseMGs = await getMgs(GMP?.mgId);
+          if (responseMGs) {
+            groupMatter.push(responseMGs)
+          };
+        }));
+      if (teacher) {
+        console.log(groupMatter)
+        groupMatter.push({
+          "id": 8,
+          "matterId": 2,
+          "groupId": 10,
+          "matter": {
+            "id": 2,
+            "name": "fisica",
+            "description": null
+          },
+          "group": {
+            "id": 10,
+            "grade": 1,
+            "name": "IP",
+            "description": null,
+            "turnId": 1,
+            "active": false
+          }
+        })
+        return {
+          teacher: { ...teacher, ...person },
+          groupMatter
+        }
+      }
+    }
+    return undefined
   };
 
-  const handleActiveChange = (event: any) => {
-    console.log(event);
-    setFormData({
-      ...formData,
-      active: event.target.value === "true",
+  const handleSearch = async () => {
+    const teacherDataResponse: any = await getTeacherData(Number(formData.document));
+
+    if (teacherDataResponse) {
+      setErrors({ ...errors, search: false })
+      const formattedGroupMatter = groupMatterByGroupId(teacherDataResponse.groupMatter)
+      teacherDataResponse.groupMatter = formattedGroupMatter
+      setTeacherData(teacherDataResponse)
+    } else {
+      setErrors({ ...errors, search: true })
+    }
+  }
+
+  const groupMatterByGroupId = (groupMatter: any[]) => {
+    let groups: any = {};
+    groupMatter.forEach((item: any) => {
+      if (!groups[item.groupId]) {
+        groups[item.groupId] = {
+          groupId: item.groupId,
+          group: item.group,
+          matters: [item.matter]
+        }
+      } else {
+        groups[item.groupId].matters.push(item.matter);
+      }
     });
+    return Object.values(groups);
+  }
+
+
+  const handleChange = (event: any) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
   const handleOpen = () => {
@@ -365,61 +371,6 @@ const Absences = () => {
     setFormData(professors.find((p) => p.id === id));
   };
 
-  // TODO
-  const handleDelete = async (id: any) => {
-    await axios.delete(`/api/professors/${id}`);
-    const result = await axios("/api/professors");
-    setProfessors(result.data);
-  };
-
-  const handleSpecialtyChange = (event: any) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedSpecialtiesNames(
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-
-  const handleSelectSpecialty = (specialty: any) => {
-    if (!(selectedSpecialtiesNames.indexOf(specialty.label) > -1)) {
-      setSelectedSpecialties((prev) => [...prev, specialty]);
-    } else {
-      const filtred = selectedSpecialties.filter(
-        (a: any) => a.value !== specialty.value
-      );
-      setSelectedSpecialties(filtred);
-    }
-  };
-
-  const handleSearch = async () => {
-    // fetch teacher by doc
-
-    // const result = await axios("/api/professors");
-    // setSelectedTeacher(result.data);
-
-    const newTeacher: any = {
-      name: "Damian",
-      lastname: "Rodriguez",
-      document: "56660749",
-      groups: [
-        { id: 1, name: "RP3", turnId: 1 },
-        { id: 1, name: "RS1", turnId: 1 },
-        { id: 1, name: "IF", turnId: 1 },
-        { id: 1, name: "IG", turnId: 2 },
-        { id: 1, name: "IB", turnId: 2 },
-        { id: 1, name: "2A", turnId: 3 },
-      ],
-      specialties: [],
-      matters: [
-        { id: 1, name: "Matematicas" },
-        { id: 2, name: "Geometria" },
-      ]
-    }
-    setSelectedTeacher(newTeacher)
-    setFormData({ ...formData, name: newTeacher.name})
-  }
-
   return (
     <div>
       <Button
@@ -436,25 +387,12 @@ const Absences = () => {
         items={mokAbsences}
         onSelectRow={handleEdit}
       />
-
-
-
       <Dialog open={open} className="mx-auto ">
         <DialogTitle className="text-sm">
           {editId ? "Editar insasistencia" : "Nuevo Inasistencia"}
         </DialogTitle>
-
-
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-
-
-
-
-            {/* BUSCAR PROFESOR A PARTIR DE DOCUMENTO */}
-
-
-
             <div className="flex space-x-2">
               <FormControl className="w-full mb-4">
                 <TextField
@@ -473,33 +411,36 @@ const Absences = () => {
                 type="button"
                 variant="outlined"
                 size="small"
-                className="normal-case max-h-[40px]"
+                className="normal-case max-h-[40px] min-w-[200px]"
                 onClick={handleSearch}
               >
                 Buscar
               </Button>
             </div>
-            
-            {selectedTeacher?.name && <p className="mb-4">{`Nombre: ${selectedTeacher.name} ${selectedTeacher.lastname}`}</p>}
-
+            {errors.search && (
+              <p className="mb-4 text-red-400">{`No se han encontrado resultados`}</p>
+            )}
+            {teacherData?.teacher && (
+              <p className="mb-4 ">{`Nombre: ${teacherData.teacher.name} ${teacherData.teacher.lastname}`}</p>
+            )}
             <div className="flex space-x-2">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DesktopDatePicker
                   label="Fecha inicio"
                   inputFormat="DD/MM/YYYY"
                   value={formData.startDate}
-                  onChange={(value)=> setFormData({...formData, startDate: value })}
+                  onChange={(value) => setFormData({ ...formData, startDate: value })}
                   minDate={new Date()}
-                  disabled={!formData.name}
+                  disabled={!Boolean(teacherData?.teacher.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
                 />
                 <DesktopDatePicker
                   label="Fecha fin"
                   inputFormat="DD/MM/YYYY"
                   value={formData.endDate}
-                  onChange={(value)=> setFormData({...formData, endDate: value})}
+                  onChange={(value) => setFormData({ ...formData, endDate: value })}
                   minDate={formData.startDate}
-                  disabled={!formData.name}
+                  disabled={!Boolean(teacherData?.teacher.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
                 />
               </LocalizationProvider>
@@ -517,17 +458,17 @@ const Absences = () => {
                   MenuProps={MenuProps}
                   disabled={!formData.endDate}
                 >
-                  {selectedTeacher.groups.map((group: any, index: number) => (
+                  {teacherData?.groupMatter.map((groupMatter, index: number) => (
                     <MenuItem
                       key={index}
-                      value={group}
+                      value={groupMatter.groupId}
+                      onClick={() => { setSelectedGroupMatter(groupMatter) }}
                     >
-                      {group.name}
+                      {`${groupMatter.group.name} - (${TURNS[groupMatter.group.turnId].name})`}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-
               <FormControl className="w-full my-4">
                 <InputLabel id="select-matter">Materia</InputLabel>
                 <Select
@@ -540,46 +481,34 @@ const Absences = () => {
                   MenuProps={MenuProps}
                   disabled={!formData.endDate}
                 >
-                  {selectedTeacher.matters.map((matter: any, index: number) => (
+                  {(selectedGroupMatter?.matters || []).map((matter: any, index: number) => (
                     <MenuItem
                       key={index}
-                      value={matter}
+                      value={matter.id}
                     >
                       {matter.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-
-
-
-              <FormControl className="w-full my-4">
-                <InputLabel id="select-turn">Turno</InputLabel>
-                <Select
+            </div>
+            <div>
+              <FormControl className="items-center w-full mb-4">
+                <TextField
                   required
-                  name="turn"
-                  labelId="select-turn"
-                  value={formData.turn}
+                  label="Motivo"
+                  name="reason"
+                  type="text"
+                  value={formData.reason}
                   onChange={handleChange}
-                  input={<OutlinedInput label="Turno" />}
-                  MenuProps={MenuProps}
-                  disabled={!formData.endDate}
-                >
-                  {TURNS.map((turn: any, index: number) => (
-                    <MenuItem
-                      key={index}
-                      value={turn}
-                    >
-                      {turn.name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  className="flex w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md align-center focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  multiline
+                  disabled={!Boolean(teacherData?.teacher.name)}
+                />
               </FormControl>
-
-              
-            </div>             
+            </div>
           </DialogContent>
-
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button
               onClick={handleClose}
@@ -601,11 +530,6 @@ const Absences = () => {
           </DialogActions>
         </form>
       </Dialog>
-
-
-
-
-
     </div>
   );
 };
