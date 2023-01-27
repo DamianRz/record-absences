@@ -1,6 +1,6 @@
 const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
 
-export const signin = (ci: number, password: string): Promise<{ token: string }> => {
+export const signIn = (ci: number, password: string): Promise<{ token: string }> => {
     return fetch(`${apiUrl}/users/signin`, {
         method: 'POST',
         headers: {
