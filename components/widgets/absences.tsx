@@ -22,9 +22,10 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { signIn } from "../../libs/usersApi";
 import { getPerson } from "../../libs/personApi";
-import { getProfessor } from "../../libs/proffesorsApi";
+import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
 import { getGMP } from "../../libs/gmpsApi";
 import { getMgs } from "../../libs/mgsApi";
+import { getAbsences } from "../../libs/absencesApi";
 
 const Absences = () => {
   const mokAbsences = [
@@ -140,6 +141,7 @@ const Absences = () => {
     },
   ];
   const headers = [
+    { name: "id", value: "id" },
     { name: "ci", value: "CI" },
     { name: "name", value: "Nombre" },
     { name: "lastname", value: "Apellido" },
@@ -147,7 +149,7 @@ const Absences = () => {
     { name: "matter", value: "Materia" },
     { name: "startDate", value: "Fecha Incio" },
     { name: "endDate", value: "Fecha Fin" },
-    { name: "active", value: "Activo" },
+    { name: "activeLabel", value: "Activo" },
   ];
   const TURNS =
     [
@@ -221,28 +223,62 @@ const Absences = () => {
   const [teacherData, setTeacherData] = useState<TeacherDataProps>();
   const [selectedGroupMatter, setSelectedGroupMatter] = useState();
   const [errors, setErrors] = useState(ERRORS);
+  const [absences, setAbsences] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const token: { token: string } | undefined = await getToken()
+      const token = await signIn(56660749, "1234");
       if (token) {
-        // fetchDataSpecialties();
+        const responseAbsences = await getAbsencesList()
+        if (responseAbsences) {
+          setAbsences(responseAbsences)
+        }
       }
     }
     fetchData()
   }, []);
 
   useEffect(() => {
-    console.log("UPDATING", teacherData)
-  }, [teacherData])
-
-  useEffect(() => {
     setFormData({ ...formData, endDate: formData.startDate })
   }, [formData.startDate])
 
-  const getToken = async () => {
-    return await signIn(56660749, "1234");
+
+  const getAbsencesList = async () => {
+    const absencesResponse = await getAbsences()
+    if (absencesResponse) {
+
+      console.log(absencesResponse)
+
+      let formattedAbsences: any = []
+      await Promise.all(
+        absencesResponse.map(async (item: any) => {
+          const { gmp } = item
+          const teacher = await getProfessorInfo(gmp.proffessorId)
+          const mg = await getMgs(gmp.mgId);
+          formattedAbsences.push({
+            id: item.id,
+            ci: teacher.person.ci,
+            name: teacher.person.name,
+            lastname: teacher.person.lastname,
+            group: mg.group.name,
+            matter: mg.matter.name,
+            startDate: formatToLocalDate(item.startDate),
+            endDate: formatToLocalDate(item.endDate),
+
+            turnName: item.turn.name,
+            turnId: item.turn.id,
+
+            active: item.active,
+            activeLabel: item.active ? "Activo" : "Inactivo"
+          })
+        }));
+      console.log(formattedAbsences)
+      return formattedAbsences.sort((a, b) => a.id - b.id);
+
+    }
+    return []
   }
+
 
   const getTeacherData = async (document: number) => {
     let teacher: any = undefined
@@ -288,6 +324,21 @@ const Absences = () => {
     }
     return undefined
   };
+
+  const formatToLocalDate = (newDate: string) => {
+    const date = new Date(newDate);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('es-ES', options)
+  }
+
+  function formatToISO(newDate: string) {
+    const dateArr = newDate.split("/");
+    const day = Number(dateArr[0]);
+    const month = Number(dateArr[1]);
+    const year = Number(dateArr[2]);
+    const date = new Date(year, month - 1, day);
+    return date.toISOString();
+  }
 
   const handleSearch = async () => {
     const teacherDataResponse: any = await getTeacherData(Number(formData.document));
@@ -384,7 +435,7 @@ const Absences = () => {
       </Button>
       <CustomTable
         headers={headers}
-        items={mokAbsences}
+        items={absences}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="mx-auto ">
