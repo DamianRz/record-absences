@@ -142,7 +142,7 @@ const Absences = () => {
   ];
   const headers = [
     { name: "id", value: "id" },
-    { name: "ci", value: "CI" },
+    { name: "document", value: "CI" },
     { name: "name", value: "Nombre" },
     { name: "lastname", value: "Apellido" },
     { name: "group", value: "Grupo" },
@@ -176,10 +176,11 @@ const Absences = () => {
     endDate: "",
     document: "", // 86028008
     name: "",
-    reason: ""
+    lastname: "",
+    reason: "",
+    groupMatter: []
   };
   interface FromDataProps {
-
   }
   interface GroupMatterProps {
     id: number,
@@ -199,7 +200,6 @@ const Absences = () => {
       active: boolean
     }
   }
-
   interface TeacherDataProps {
     groupMatter: GroupMatterProps[],
     teacher: {
@@ -211,7 +211,6 @@ const Absences = () => {
       personId: number
     }
   }
-
   const ERRORS = {
     search: false
   }
@@ -227,8 +226,9 @@ const Absences = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await signIn(56660749, "1234");
+      const { token } = await signIn(56660749, "1234");
       if (token) {
+        localStorage.setItem("token", token)
         const responseAbsences = await getAbsencesList()
         if (responseAbsences) {
           setAbsences(responseAbsences)
@@ -239,16 +239,13 @@ const Absences = () => {
   }, []);
 
   useEffect(() => {
-    setFormData({ ...formData, endDate: formData.startDate })
-  }, [formData.startDate])
-
+    console.log(selectedGroupMatter)
+  }, [selectedGroupMatter])
 
   const getAbsencesList = async () => {
     const absencesResponse = await getAbsences()
     if (absencesResponse) {
-
       console.log(absencesResponse)
-
       let formattedAbsences: any = []
       await Promise.all(
         absencesResponse.map(async (item: any) => {
@@ -257,13 +254,15 @@ const Absences = () => {
           const mg = await getMgs(gmp.mgId);
           formattedAbsences.push({
             id: item.id,
-            ci: teacher.person.ci,
+            document: teacher.person.ci,
             name: teacher.person.name,
             lastname: teacher.person.lastname,
             group: mg.group.name,
             matter: mg.matter.name,
             startDate: formatToLocalDate(item.startDate),
             endDate: formatToLocalDate(item.endDate),
+
+            groupMatter: mg,
 
             turnName: item.turn.name,
             turnId: item.turn.id,
@@ -274,11 +273,9 @@ const Absences = () => {
         }));
       console.log(formattedAbsences)
       return formattedAbsences.sort((a, b) => a.id - b.id);
-
     }
     return []
   }
-
 
   const getTeacherData = async (document: number) => {
     let teacher: any = undefined
@@ -341,13 +338,22 @@ const Absences = () => {
   }
 
   const handleSearch = async () => {
-    const teacherDataResponse: any = await getTeacherData(Number(formData.document));
-
-    if (teacherDataResponse) {
+    const dataResponse: any = await getTeacherData(Number(formData.document));
+    if (dataResponse) {
+      const { groupMatter, teacher } = dataResponse
       setErrors({ ...errors, search: false })
-      const formattedGroupMatter = groupMatterByGroupId(teacherDataResponse.groupMatter)
-      teacherDataResponse.groupMatter = formattedGroupMatter
-      setTeacherData(teacherDataResponse)
+      const formattedGroupMatter = groupMatterByGroupId(groupMatter)
+      // groupMatter = formattedGroupMatter
+      // console.log("teacherData", dataResponse)
+      // setTeacherData(dataResponse)
+      setFormData({
+        ...formData,
+        ...teacher,
+        groupMatter: formattedGroupMatter,
+        document: teacher.ci,
+        name: teacher.name,
+        lastname: teacher.lastname
+      })
     } else {
       setErrors({ ...errors, search: true })
     }
@@ -368,7 +374,6 @@ const Absences = () => {
     });
     return Object.values(groups);
   }
-
 
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -400,26 +405,17 @@ const Absences = () => {
     setProfessors(result.data);
   };
 
-  const handleEdit = async (id: any) => {
-    // setSelectedSpecialties([]);
-    setEditId(id);
-
-    const teacherSpecialties: any = await getSpecialtiesByTeacher(id);
-    setSelectedSpecialties(teacherSpecialties);
-
-    // get names and join
-
-    console.log(teacherSpecialties);
-
-    let specialiesNames = "";
-    teacherSpecialties.map((s) => {
-      specialiesNames += `${s.name}, `;
-    });
-
-    setSelectedSpecialtiesNames(specialiesNames);
-
-    setOpen(true);
-    setFormData(professors.find((p) => p.id === id));
+  const handleEdit = async (selectedRow: any) => {
+    console.log("SELECTED ROW", selectedRow)
+    setEditId(selectedRow.id)
+    setOpen(true)
+    setFormData({
+      ...formData,
+      ...selectedRow,
+      startDate: formatToISO(selectedRow.startDate),
+      endDate: formatToISO(selectedRow.endDate),
+      groupMatter: [selectedRow.groupMatter]
+    })
   };
 
   return (
@@ -456,6 +452,7 @@ const Absences = () => {
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
                   size="small"
+                  disabled={editId != undefined}
                 />
               </FormControl>
               <Button
@@ -464,6 +461,7 @@ const Absences = () => {
                 size="small"
                 className="normal-case max-h-[40px] min-w-[200px]"
                 onClick={handleSearch}
+                disabled={editId != undefined}
               >
                 Buscar
               </Button>
@@ -471,8 +469,8 @@ const Absences = () => {
             {errors.search && (
               <p className="mb-4 text-red-400">{`No se han encontrado resultados`}</p>
             )}
-            {teacherData?.teacher && (
-              <p className="mb-4 ">{`Nombre: ${teacherData.teacher.name} ${teacherData.teacher.lastname}`}</p>
+            {formData && (
+              <p className="mb-4 ">{`Nombre: ${formData.name} ${formData.lastname}`}</p>
             )}
             <div className="flex space-x-2">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -482,7 +480,7 @@ const Absences = () => {
                   value={formData.startDate}
                   onChange={(value) => setFormData({ ...formData, startDate: value })}
                   minDate={new Date()}
-                  disabled={!Boolean(teacherData?.teacher.name)}
+                  disabled={!Boolean(formData.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
                 />
                 <DesktopDatePicker
@@ -491,7 +489,7 @@ const Absences = () => {
                   value={formData.endDate}
                   onChange={(value) => setFormData({ ...formData, endDate: value })}
                   minDate={formData.startDate}
-                  disabled={!Boolean(teacherData?.teacher.name)}
+                  disabled={!Boolean(formData.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
                 />
               </LocalizationProvider>
@@ -509,7 +507,7 @@ const Absences = () => {
                   MenuProps={MenuProps}
                   disabled={!formData.endDate}
                 >
-                  {teacherData?.groupMatter.map((groupMatter, index: number) => (
+                  {formData.groupMatter.map((groupMatter, index: number) => (
                     <MenuItem
                       key={index}
                       value={groupMatter.groupId}

@@ -1,5 +1,5 @@
 export const getPerson = async (ci: number): Promise<{ id: number, name: string, lastname: string, ci: number } | undefined> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     return await fetch(`${apiUrl}/people`, {
         method: 'POST',
         headers: {

@@ -1,5 +1,5 @@
 export const getGmps = async (proffessorId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/gmps/${proffessorId}/all`, {
         method: 'GET',
@@ -15,7 +15,7 @@ export const getGmps = async (proffessorId: number): Promise<any> => {
 
 
 export const getGMP = async (proffessorId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     const response = await fetch(`${apiUrl}/gmps`, {
         method: 'POST',

@@ -24,7 +24,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
 
   const handleSelectRow = (row: any) => {
     setSelectedRow(row);
-    onSelectRow(row.id);
+    onSelectRow(row);
   };
 
   return (

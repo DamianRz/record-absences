@@ -1,5 +1,5 @@
 export const getAbsences = async (): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/absences/all`, {
         method: 'POST',

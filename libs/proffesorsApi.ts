@@ -1,5 +1,5 @@
 export const getProfessor = async (ci: number): Promise<{ id: number, personId: number, active: boolean } | undefined> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     const response = await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
@@ -21,7 +21,7 @@ export const getProfessor = async (ci: number): Promise<{ id: number, personId: 
 }
 
 export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://26.80.200.141:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/${proffesorId}/all`, {
         method: 'GET',
