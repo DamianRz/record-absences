@@ -12,12 +12,13 @@ import {
   MenuItem,
   OutlinedInput,
   DialogTitle,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import axios from "axios";
 import CustomTable from "../table";
-import {
-  getSpecialtiesByTeacher,
-} from "../../libs/specialtiesApi";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { signIn } from "../../libs/usersApi";
@@ -25,7 +26,8 @@ import { getPerson } from "../../libs/personApi";
 import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
 import { getGMP } from "../../libs/gmpsApi";
 import { getMgs } from "../../libs/mgsApi";
-import { getAbsences } from "../../libs/absencesApi";
+import { getAbsences, saveAbsence } from "../../libs/absencesApi";
+import ES from 'dayjs/locale/es';
 
 const Absences = () => {
   const mokAbsences = [
@@ -169,16 +171,19 @@ const Absences = () => {
   };
 
   const DEFAULT_FORM_DATA = {
-    group: "",
-    matter: "",
+    groupId: null,
+    matterId: null,
+    gmpId: null,
+    gmps: [],
     turn: "",
     startDate: "",
     endDate: "",
-    document: "", // 86028008
+    document: "",
     name: "",
     lastname: "",
     reason: "",
-    groupMatter: []
+    groupMatter: [],
+    active: false
   };
   interface FromDataProps {
   }
@@ -212,119 +217,81 @@ const Absences = () => {
     }
   }
   const ERRORS = {
-    search: false
+    search: false,
+    save: false
   }
 
   const [open, setOpen] = useState(false);
   const [professors, setProfessors] = useState(mokAbsences);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [teacherData, setTeacherData] = useState<TeacherDataProps>();
   const [selectedGroupMatter, setSelectedGroupMatter] = useState();
   const [errors, setErrors] = useState(ERRORS);
   const [absences, setAbsences] = useState([]);
+
+  const [selectedGmp, setSelectedGmp] = useState<any>()
+  const [gmpId, setGmpId] = useState()
 
   useEffect(() => {
     const fetchData = async () => {
       const { token } = await signIn(56660749, "1234");
       if (token) {
         localStorage.setItem("token", token)
-        const responseAbsences = await getAbsencesList()
-        if (responseAbsences) {
-          setAbsences(responseAbsences)
-        }
+        await getAbsencesList()
       }
     }
     fetchData()
   }, []);
 
   useEffect(() => {
-    console.log(selectedGroupMatter)
-  }, [selectedGroupMatter])
+    console.log(selectedGmp)
+  }, [selectedGmp])
 
-  const getAbsencesList = async () => {
-    const absencesResponse = await getAbsences()
-    if (absencesResponse) {
-      console.log(absencesResponse)
-      let formattedAbsences: any = []
+  const getAbsencesListFormatted = async () => {
+    const absences = await getAbsences()
+    if (absences) {
+      let formattedAbsences: any[] = []
       await Promise.all(
-        absencesResponse.map(async (item: any) => {
-          const { gmp } = item
-          const teacher = await getProfessorInfo(gmp.proffessorId)
-          const mg = await getMgs(gmp.mgId);
+        absences.map(async (absence: any) => {
+          const { person } = await getProfessorInfo(absence.gmp.proffessorId)
+          const teacherData = await getTeacherData(Number(person.ci))
+          const filtredGmp = teacherData?.gmps.reduce((acc, gmp) => {
+            const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
+            if (selectedMatters.length > 0) {
+              acc.push({ group: gmp.group, matter: selectedMatters[0] });
+            }
+            return acc;
+          }, []);
+          const { group, matter } = filtredGmp[0]
+          const gmpData = teacherData?.gmps.filter((gmp) => (gmp.group.id === group.id))[0]
           formattedAbsences.push({
-            id: item.id,
-            document: teacher.person.ci,
-            name: teacher.person.name,
-            lastname: teacher.person.lastname,
-            group: mg.group.name,
-            matter: mg.matter.name,
-            startDate: formatToLocalDate(item.startDate),
-            endDate: formatToLocalDate(item.endDate),
-
-            groupMatter: mg,
-
-            turnName: item.turn.name,
-            turnId: item.turn.id,
-
-            active: item.active,
-            activeLabel: item.active ? "Activo" : "Inactivo"
+            id: absence.id,
+            document: person.ci,
+            name: person.name,
+            lastname: person.lastname,
+            group: group.name,
+            groupId: group.id,
+            matter: matter.name,
+            matterId: matter.id,
+            gmpId: matter.gmpId,
+            gmps: teacherData?.gmps,
+            gmpData: gmpData,
+            reason: absence.reason,
+            startDate: formatToLocalDate(absence.startDate),
+            endDate: formatToLocalDate(absence.endDate),
+            turnName: absence.turn.name,
+            turnId: absence.turn.id,
+            active: absence.active,
+            activeLabel: absence.active ? "Activo" : "Inactivo"
           })
-        }));
-      console.log(formattedAbsences)
+        }))
       return formattedAbsences.sort((a, b) => a.id - b.id);
     }
-    return []
   }
-
-  const getTeacherData = async (document: number) => {
-    let teacher: any = undefined
-    const person = await getPerson(document);
-    if (person) {
-      teacher = await getProfessor(document);
-    }
-    if (teacher) {
-      let groupMatter: any[] = new Array;
-      const responseGMPs = await getGMP(teacher?.id);
-      await Promise.all(
-        responseGMPs.map(async (GMP: any) => {
-          const responseMGs = await getMgs(GMP?.mgId);
-          if (responseMGs) {
-            groupMatter.push(responseMGs)
-          };
-        }));
-      if (teacher) {
-        console.log(groupMatter)
-        groupMatter.push({
-          "id": 8,
-          "matterId": 2,
-          "groupId": 10,
-          "matter": {
-            "id": 2,
-            "name": "fisica",
-            "description": null
-          },
-          "group": {
-            "id": 10,
-            "grade": 1,
-            "name": "IP",
-            "description": null,
-            "turnId": 1,
-            "active": false
-          }
-        })
-        return {
-          teacher: { ...teacher, ...person },
-          groupMatter
-        }
-      }
-    }
-    return undefined
-  };
 
   const formatToLocalDate = (newDate: string) => {
     const date = new Date(newDate);
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const options: any = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return date.toLocaleDateString('es-ES', options)
   }
 
@@ -335,44 +302,6 @@ const Absences = () => {
     const year = Number(dateArr[2]);
     const date = new Date(year, month - 1, day);
     return date.toISOString();
-  }
-
-  const handleSearch = async () => {
-    const dataResponse: any = await getTeacherData(Number(formData.document));
-    if (dataResponse) {
-      const { groupMatter, teacher } = dataResponse
-      setErrors({ ...errors, search: false })
-      const formattedGroupMatter = groupMatterByGroupId(groupMatter)
-      // groupMatter = formattedGroupMatter
-      // console.log("teacherData", dataResponse)
-      // setTeacherData(dataResponse)
-      setFormData({
-        ...formData,
-        ...teacher,
-        groupMatter: formattedGroupMatter,
-        document: teacher.ci,
-        name: teacher.name,
-        lastname: teacher.lastname
-      })
-    } else {
-      setErrors({ ...errors, search: true })
-    }
-  }
-
-  const groupMatterByGroupId = (groupMatter: any[]) => {
-    let groups: any = {};
-    groupMatter.forEach((item: any) => {
-      if (!groups[item.groupId]) {
-        groups[item.groupId] = {
-          groupId: item.groupId,
-          group: item.group,
-          matters: [item.matter]
-        }
-      } else {
-        groups[item.groupId].matters.push(item.matter);
-      }
-    });
-    return Object.values(groups);
   }
 
   const handleChange = (event: any) => {
@@ -386,37 +315,111 @@ const Absences = () => {
   };
 
   const handleClose = () => {
-    setSelectedRow(undefined);
     setOpen(false);
   };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
-      // Update existing professor
-      await axios.put(`/api/professors/${editId}`, formData);
     } else {
-      // Create new professor
-      await axios.post("/api/professors", formData);
+      const body = {
+        gmpId: gmpId,
+        turnId: selectedGmp.group.turnId,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        reason: formData.reason,
+        active: true
+      }
+      const response = await saveAbsence(body)
+      if (response) {
+        await getAbsencesList()
+        setOpen(false);
+        setEditId(null)
+        setGmpId(undefined)
+        setSelectedGmp(undefined)
+      } else {
+        setErrors({ ...errors, save: true })
+      }
     }
-    setOpen(false);
-    setEditId(null);
-    const result = await axios("/api/professors");
-    setProfessors(result.data);
   };
 
   const handleEdit = async (selectedRow: any) => {
-    console.log("SELECTED ROW", selectedRow)
     setEditId(selectedRow.id)
-    setOpen(true)
-    setFormData({
-      ...formData,
-      ...selectedRow,
-      startDate: formatToISO(selectedRow.startDate),
-      endDate: formatToISO(selectedRow.endDate),
-      groupMatter: [selectedRow.groupMatter]
-    })
+    const teacherData = await getTeacherData(Number(selectedRow.document));
+    if (teacherData) {
+      setFormData({
+        ...selectedRow
+      })
+      setSelectedGmp(selectedRow.gmpData)
+      setOpen(true)
+    }
   };
+
+  const handleSearch = async () => {
+    setErrors({ ...errors, search: false })
+    const teacherData = await getTeacherData(Number(formData.document));
+    if (teacherData) {
+      setFormData(teacherData)
+    } else {
+      setErrors({ ...errors, search: true })
+    }
+  }
+
+  const getAbsencesList = async () => {
+    const responseAbsences = await getAbsencesListFormatted()
+    if (responseAbsences) {
+      setAbsences(responseAbsences)
+    }
+  }
+
+  const getTeacherData = async (document: number) => {
+    const teacher = await getTeacher(document);
+    const gmps = await getGmpsByTeacherId(teacher?.teacherId)
+    const formattedGmps = await getGMPSortedByGroup(gmps)
+
+    if (teacher && gmps) {
+      return ({
+        ...formData,
+        ...teacher,
+        gmps: formattedGmps,
+        document: String(teacher.ci),
+      });
+    }
+    return undefined
+  }
+
+  const getGmpsByTeacherId = async (teacherId: number) => {
+    let gmps: any[] = [];
+    const gmp = await getGMP(teacherId);
+    await Promise.all(
+      gmp.map(async (item: any) => {
+        const { matter, group } = await getMgs(item.mgId);
+        if (matter && group) gmps.push({ id: item.id, matter, group })
+      }));
+    return gmps;
+  }
+
+  const getTeacher = async (document: number) => {
+    const person = await getPerson(document);
+    const teacher: any = await getProfessor(document);
+    if (person && teacher) return { ...person, teacherId: teacher.id }
+    return undefined
+  }
+
+  const getGMPSortedByGroup = (gmps: any[]) => {
+    let gmpsSorted: any[] = []
+    gmps.forEach((gmp) => {
+      if (!gmpsSorted[gmp.group.id]) {
+        gmpsSorted[gmp.group.id] = {
+          group: gmp.group,
+          matters: [{ ...gmp.matter, gmpId: gmp.id, }],
+        }
+      } else {
+        gmpsSorted[gmp.group.id].matters.push({ ...gmp.matter, gmpId: gmp.id, });
+      }
+    })
+    return Object.values(gmpsSorted);
+  }
 
   return (
     <div>
@@ -469,11 +472,14 @@ const Absences = () => {
             {errors.search && (
               <p className="mb-4 text-red-400">{`No se han encontrado resultados`}</p>
             )}
+            {errors.save && (
+              <p className="mb-4 text-red-400">{`No se ha podido crear la inasistencia`}</p>
+            )}
             {formData && (
               <p className="mb-4 ">{`Nombre: ${formData.name} ${formData.lastname}`}</p>
             )}
             <div className="flex space-x-2">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ES}>
                 <DesktopDatePicker
                   label="Fecha inicio"
                   inputFormat="DD/MM/YYYY"
@@ -499,21 +505,21 @@ const Absences = () => {
                 <InputLabel id="select-group">Grupo</InputLabel>
                 <Select
                   required
-                  name="group"
+                  name="groupId"
                   labelId="select-group"
-                  value={formData.group}
+                  value={formData.groupId}
                   onChange={handleChange}
                   input={<OutlinedInput label="Grupo" />}
                   MenuProps={MenuProps}
                   disabled={!formData.endDate}
                 >
-                  {formData.groupMatter.map((groupMatter, index: number) => (
+                  {formData.gmps.map((gmp: any, index: number) => (
                     <MenuItem
                       key={index}
-                      value={groupMatter.groupId}
-                      onClick={() => { setSelectedGroupMatter(groupMatter) }}
+                      value={gmp.group.id}
+                      onClick={() => { setSelectedGmp(gmp) }}
                     >
-                      {`${groupMatter.group.name} - (${TURNS[groupMatter.group.turnId].name})`}
+                      {`${gmp.group.name} - (${TURNS[gmp.group.turnId].name})`}
                     </MenuItem>
                   ))}
                 </Select>
@@ -522,24 +528,26 @@ const Absences = () => {
                 <InputLabel id="select-matter">Materia</InputLabel>
                 <Select
                   required
-                  name="matter"
+                  name="matterId"
                   labelId="select-matter"
-                  value={formData.matter}
+                  value={formData.matterId}
                   onChange={handleChange}
                   input={<OutlinedInput label="Materia" />}
                   MenuProps={MenuProps}
                   disabled={!formData.endDate}
                 >
-                  {(selectedGroupMatter?.matters || []).map((matter: any, index: number) => (
+                  {(selectedGmp?.matters || []).map((matter: any, index: number) => (
                     <MenuItem
                       key={index}
                       value={matter.id}
+                      onClick={() => { setGmpId(matter.gmpId) }}
                     >
                       {matter.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
+              <p>{JSON.stringify(gmpId)}</p>
             </div>
             <div>
               <FormControl className="items-center w-full mb-4">
@@ -553,10 +561,35 @@ const Absences = () => {
                   className="flex w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md align-center focus:outline-none focus:shadow-outline"
                   variant="outlined"
                   multiline
-                  disabled={!Boolean(teacherData?.teacher.name)}
+                  disabled={!Boolean(formData.name)}
                 />
               </FormControl>
             </div>
+
+            {editId && (
+              <FormControl className="w-full my-4">
+                <FormLabel id="radio-active">Estado</FormLabel>
+                <RadioGroup
+                  aria-labelledby="radio-active"
+                  name="active"
+                  defaultValue={formData.active}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                >
+                  <FormControlLabel
+                    value={true}
+                    control={<Radio />}
+                    label="Activo"
+                  />
+                  <FormControlLabel
+                    value={false}
+                    control={<Radio />}
+                    label="Inactivo"
+                  />
+                </RadioGroup>
+              </FormControl>
+            )}
+
+
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button
