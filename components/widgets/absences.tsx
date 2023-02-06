@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import CustomTable from "../table";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { signIn } from "../../libs/usersApi";
+import { getPerson } from "../../libs/personApi";
+import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
+import { getGMP } from "../../libs/gmpsApi";
+import { getMgs } from "../../libs/mgsApi";
+import { getAbsences, saveAbsence } from "../../libs/absencesApi";
+import ES from 'dayjs/locale/es';
 import {
   Button,
   Dialog,
@@ -17,131 +27,8 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import axios from "axios";
-import CustomTable from "../table";
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { signIn } from "../../libs/usersApi";
-import { getPerson } from "../../libs/personApi";
-import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
-import { getGMP } from "../../libs/gmpsApi";
-import { getMgs } from "../../libs/mgsApi";
-import { getAbsences, saveAbsence } from "../../libs/absencesApi";
-import ES from 'dayjs/locale/es';
 
 const Absences = () => {
-  const mokAbsences = [
-    {
-      id: 1,
-      name: "Juan",
-      lastname: "Pérez",
-      ci: 123456,
-      group: "A",
-      matter: "Matemáticas",
-      startDate: "01/01/2020",
-      endDate: "01/06/2020",
-      active: true,
-    },
-    {
-      id: 2,
-      name: "María",
-      lastname: "González",
-      ci: 123457,
-      group: "B",
-      matter: "Historia",
-      startDate: "01/02/2020",
-      endDate: "01/07/2020",
-      active: false,
-    },
-    {
-      id: 3,
-      name: "Pedro",
-      lastname: "Rodríguez",
-      ci: 123458,
-      group: "C",
-      matter: "Inglés",
-      startDate: "01/03/2020",
-      endDate: "01/08/2020",
-      active: true,
-    },
-    {
-      id: 4,
-      name: "Ana",
-      lastname: "Sánchez",
-      ci: 123459,
-      group: "D",
-      matter: "Física",
-      startDate: "01/04/2020",
-      endDate: "01/09/2020",
-      active: false,
-    },
-    {
-      id: 5,
-      name: "Pablo",
-      lastname: "Martínez",
-      ci: 123460,
-      group: "E",
-      matter: "Química",
-      startDate: "01/05/2020",
-      endDate: "01/10/2020",
-      active: true,
-    },
-    {
-      id: 6,
-      name: "Sandra",
-      lastname: "Lopez",
-      ci: 123461,
-      group: "F",
-      matter: "Biología",
-      startDate: "01/06/2020",
-      endDate: "01/11/2020",
-      active: false,
-    },
-    {
-      id: 7,
-      name: "Carlos",
-      lastname: "Gómez",
-      ci: 123462,
-      group: "G",
-      matter: "Geografía",
-      startDate: "01/07/2020",
-      endDate: "01/12/2020",
-      active: true,
-    },
-    {
-      id: 8,
-      name: "Laura",
-      lastname: "Díaz",
-      ci: 123463,
-      group: "H",
-      matter: "Español",
-      startDate: "01/08/2020",
-      endDate: "01/01/2021",
-      active: false,
-    },
-    {
-      id: 9,
-      name: "Alberto",
-      lastname: "Jiménez",
-      ci: 123464,
-      group: "I",
-      matter: "Lenguaje",
-      startDate: "01/09/2020",
-      endDate: "01/02/2021",
-      active: true,
-    },
-    {
-      id: 10,
-      name: "Sonia",
-      lastname: "Ruiz",
-      ci: 123465,
-      group: "J",
-      matter: "Literatura",
-      startDate: "01/10/2020",
-      endDate: "01/03/2021",
-      active: false,
-    },
-  ];
   const headers = [
     { name: "id", value: "id" },
     { name: "document", value: "CI" },
@@ -169,7 +56,6 @@ const Absences = () => {
       },
     },
   };
-
   const DEFAULT_FORM_DATA = {
     groupId: null,
     matterId: null,
@@ -185,47 +71,14 @@ const Absences = () => {
     groupMatter: [],
     active: false
   };
-  interface FromDataProps {
-  }
-  interface GroupMatterProps {
-    id: number,
-    matterId: number,
-    groupId: number,
-    matter: {
-      id: number,
-      name: string,
-      description: string
-    },
-    group: {
-      id: number,
-      grade: number,
-      name: string,
-      description: string,
-      turnId: number,
-      active: boolean
-    }
-  }
-  interface TeacherDataProps {
-    groupMatter: GroupMatterProps[],
-    teacher: {
-      active: boolean,
-      ci: number,
-      id: number,
-      name: string,
-      lastname: string,
-      personId: number
-    }
-  }
   const ERRORS = {
     search: false,
     save: false
   }
 
   const [open, setOpen] = useState(false);
-  const [professors, setProfessors] = useState(mokAbsences);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [selectedGroupMatter, setSelectedGroupMatter] = useState();
   const [errors, setErrors] = useState(ERRORS);
   const [absences, setAbsences] = useState([]);
 
@@ -242,10 +95,6 @@ const Absences = () => {
     }
     fetchData()
   }, []);
-
-  useEffect(() => {
-    console.log(selectedGmp)
-  }, [selectedGmp])
 
   const getAbsencesListFormatted = async () => {
     const absences = await getAbsences()
@@ -547,7 +396,6 @@ const Absences = () => {
                   ))}
                 </Select>
               </FormControl>
-              <p>{JSON.stringify(gmpId)}</p>
             </div>
             <div>
               <FormControl className="items-center w-full mb-4">
@@ -565,7 +413,6 @@ const Absences = () => {
                 />
               </FormControl>
             </div>
-
             {editId && (
               <FormControl className="w-full my-4">
                 <FormLabel id="radio-active">Estado</FormLabel>
@@ -588,8 +435,6 @@ const Absences = () => {
                 </RadioGroup>
               </FormControl>
             )}
-
-
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button
