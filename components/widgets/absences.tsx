@@ -8,7 +8,7 @@ import { getPerson } from "../../libs/personApi";
 import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
 import { getGMP } from "../../libs/gmpsApi";
 import { getMgs } from "../../libs/mgsApi";
-import { getAbsences, saveAbsence } from "../../libs/absencesApi";
+import { createAbsence, getAbsences, saveAbsence } from "../../libs/absencesApi";
 import ES from 'dayjs/locale/es';
 import {
   Button,
@@ -57,11 +57,13 @@ const Absences = () => {
     },
   };
   const DEFAULT_FORM_DATA = {
-    groupId: null,
-    matterId: null,
-    gmpId: null,
+    id: -1,
+    groupId: "",
+    matterId: "",
+    gmpId: "",
     gmps: [],
     turn: "",
+    turnId: -1,
     startDate: "",
     endDate: "",
     document: "",
@@ -79,7 +81,7 @@ const Absences = () => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [errors, setErrors] = useState(ERRORS);
+  const [errors, setErrors] = useState({ visible: false, error: "" });
   const [absences, setAbsences] = useState([]);
 
   const [selectedGmp, setSelectedGmp] = useState<any>()
@@ -170,6 +172,25 @@ const Absences = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
+      const body = {
+        gmpId: formData.gmpId,
+        turnId: formData.turnId,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        reason: formData.reason,
+        active: formData.active
+      }
+      console.log(body, formData)
+      const response = await saveAbsence(formData.id, body)
+      if (response) {
+        await getAbsencesList()
+        setOpen(false);
+        setEditId(null)
+        setGmpId(undefined)
+        setSelectedGmp(undefined)
+      } else {
+        setErrors({ visible: true, error: "No se han podido guardar los cambios" })
+      }
     } else {
       const body = {
         gmpId: gmpId,
@@ -179,7 +200,7 @@ const Absences = () => {
         reason: formData.reason,
         active: true
       }
-      const response = await saveAbsence(body)
+      const response = await createAbsence(body)
       if (response) {
         await getAbsencesList()
         setOpen(false);
@@ -187,7 +208,7 @@ const Absences = () => {
         setGmpId(undefined)
         setSelectedGmp(undefined)
       } else {
-        setErrors({ ...errors, save: true })
+        setErrors({ visible: true, error: "No se ha podido crear la inasistencia" })
       }
     }
   };
@@ -197,7 +218,9 @@ const Absences = () => {
     const teacherData = await getTeacherData(Number(selectedRow.document));
     if (teacherData) {
       setFormData({
-        ...selectedRow
+        ...selectedRow,
+        startDate: formatToISO(selectedRow.startDate),
+        endDate: formatToISO(selectedRow.endDate)
       })
       setSelectedGmp(selectedRow.gmpData)
       setOpen(true)
@@ -205,12 +228,15 @@ const Absences = () => {
   };
 
   const handleSearch = async () => {
-    setErrors({ ...errors, search: false })
+    setErrors({ visible: false, error: "" })
     const teacherData = await getTeacherData(Number(formData.document));
     if (teacherData) {
-      setFormData(teacherData)
+      setFormData({
+        ...formData,
+        ...teacherData,
+      })
     } else {
-      setErrors({ ...errors, search: true })
+      setErrors({ visible: true, error: "No se han encontrado resultados" })
     }
   }
 
@@ -225,7 +251,6 @@ const Absences = () => {
     const teacher = await getTeacher(document);
     const gmps = await getGmpsByTeacherId(teacher?.teacherId)
     const formattedGmps = await getGMPSortedByGroup(gmps)
-
     if (teacher && gmps) {
       return ({
         ...formData,
@@ -318,11 +343,8 @@ const Absences = () => {
                 Buscar
               </Button>
             </div>
-            {errors.search && (
-              <p className="mb-4 text-red-400">{`No se han encontrado resultados`}</p>
-            )}
-            {errors.save && (
-              <p className="mb-4 text-red-400">{`No se ha podido crear la inasistencia`}</p>
+            {errors.visible && (
+              <p className="mb-4 text-red-400">{errors.error}</p>
             )}
             {formData && (
               <p className="mb-4 ">{`Nombre: ${formData.name} ${formData.lastname}`}</p>
@@ -368,7 +390,7 @@ const Absences = () => {
                       value={gmp.group.id}
                       onClick={() => { setSelectedGmp(gmp) }}
                     >
-                      {`${gmp.group.name} - (${TURNS[gmp.group.turnId].name})`}
+                      {`${gmp.group.name} - (${TURNS[(gmp.group.turnId - 1)].name})`}
                     </MenuItem>
                   ))}
                 </Select>
@@ -416,23 +438,17 @@ const Absences = () => {
             {editId && (
               <FormControl className="w-full my-4">
                 <FormLabel id="radio-active">Estado</FormLabel>
-                <RadioGroup
-                  aria-labelledby="radio-active"
-                  name="active"
-                  defaultValue={formData.active}
-                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                <Button
+                  className="max-w-[200px]"
+                  size="large"
+                  variant="outlined"
+                  color={formData.active ? "success" : "warning"}
+                  onClick={() => {
+                    setFormData({ ...formData, active: !formData.active })
+                  }}
                 >
-                  <FormControlLabel
-                    value={true}
-                    control={<Radio />}
-                    label="Activo"
-                  />
-                  <FormControlLabel
-                    value={false}
-                    control={<Radio />}
-                    label="Inactivo"
-                  />
-                </RadioGroup>
+                  {formData.active ? "ACTIVO" : "INACTIVO"}
+                </Button>
               </FormControl>
             )}
           </DialogContent>
