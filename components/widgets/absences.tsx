@@ -84,6 +84,8 @@ const Absences = () => {
   const [errors, setErrors] = useState({ visible: false, error: "" });
   const [absences, setAbsences] = useState([]);
 
+  const [absencesState, setAbsencesState] = useState({ active: true });
+
   const [selectedGmp, setSelectedGmp] = useState<any>()
   const [gmpId, setGmpId] = useState()
 
@@ -92,14 +94,14 @@ const Absences = () => {
       const { token } = await signIn(56660749, "1234");
       if (token) {
         localStorage.setItem("token", token)
-        await getAbsencesList()
+        await getAbsencesList(true)
       }
     }
     fetchData()
   }, []);
 
-  const getAbsencesListFormatted = async () => {
-    const absences = await getAbsences()
+  const getAbsencesListFormatted = async (state: boolean) => {
+    const absences = await getAbsences(state)
     if (absences) {
       let formattedAbsences: any[] = []
       await Promise.all(
@@ -183,7 +185,7 @@ const Absences = () => {
       console.log(body, formData)
       const response = await saveAbsence(formData.id, body)
       if (response) {
-        await getAbsencesList()
+        await getAbsencesList(true)
         setOpen(false);
         setEditId(null)
         setGmpId(undefined)
@@ -202,7 +204,7 @@ const Absences = () => {
       }
       const response = await createAbsence(body)
       if (response) {
-        await getAbsencesList()
+        await getAbsencesList(true)
         setOpen(false);
         setEditId(null)
         setGmpId(undefined)
@@ -240,8 +242,9 @@ const Absences = () => {
     }
   }
 
-  const getAbsencesList = async () => {
-    const responseAbsences = await getAbsencesListFormatted()
+  const getAbsencesList = async (state: boolean) => {
+    const responseAbsences = await getAbsencesListFormatted(state)
+    console.log(responseAbsences)
     if (responseAbsences) {
       setAbsences(responseAbsences)
     }
@@ -306,6 +309,18 @@ const Absences = () => {
       >
         Nuevo Inasistencia
       </Button>
+      <Button
+        variant="outlined"
+        color={absencesState.active ? "warning" : "success"}
+        onClick={() => {
+          setAbsencesState({ active: !absencesState.active })
+          getAbsencesList(!absencesState.active)
+        }}
+        className="mx-4 my-4 normal-case"
+      >
+        {absencesState.active ? "Ver inasistencias inactivas" : "Ver inasistencias activas"}
+      </Button>
+      <p className="my-4 ml-3 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
       <CustomTable
         headers={headers}
         items={absences}

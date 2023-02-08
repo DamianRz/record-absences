@@ -1,4 +1,4 @@
-export const getAbsences = async (): Promise<any> => {
+export const getAbsences = async (active: boolean): Promise<any> => {
     const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/absences/all`, {
@@ -10,6 +10,7 @@ export const getAbsences = async (): Promise<any> => {
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },
+        body: JSON.stringify({ active: active })
     }).then(response => response.json())
 }
 
