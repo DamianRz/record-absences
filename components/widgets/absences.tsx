@@ -23,9 +23,6 @@ import {
   OutlinedInput,
   DialogTitle,
   FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
 } from "@mui/material";
 
 const Absences = () => {
@@ -73,19 +70,13 @@ const Absences = () => {
     groupMatter: [],
     active: false
   };
-  const ERRORS = {
-    search: false,
-    save: false
-  }
 
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({ visible: false, error: "" });
   const [absences, setAbsences] = useState([]);
-
   const [absencesState, setAbsencesState] = useState({ active: true });
-
   const [selectedGmp, setSelectedGmp] = useState<any>()
   const [gmpId, setGmpId] = useState()
 
@@ -182,7 +173,6 @@ const Absences = () => {
         reason: formData.reason,
         active: formData.active
       }
-      console.log(body, formData)
       const response = await saveAbsence(formData.id, body)
       if (response) {
         await getAbsencesList(true)
@@ -244,7 +234,6 @@ const Absences = () => {
 
   const getAbsencesList = async (state: boolean) => {
     const responseAbsences = await getAbsencesListFormatted(state)
-    console.log(responseAbsences)
     if (responseAbsences) {
       setAbsences(responseAbsences)
     }
