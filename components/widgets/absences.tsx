@@ -24,6 +24,7 @@ import {
   DialogTitle,
   FormLabel,
 } from "@mui/material";
+import { getTeacherData } from "../../utils/teacher";
 
 const Absences = () => {
   const headers = [
@@ -98,7 +99,7 @@ const Absences = () => {
       await Promise.all(
         absences.map(async (absence: any) => {
           const { person } = await getProfessorInfo(absence.gmp.proffessorId)
-          const teacherData = await getTeacherData(Number(person.ci))
+          const teacherData = await getTeacherData(Number(person.ci), formData)
           const filtredGmp = teacherData?.gmps.reduce((acc, gmp) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
@@ -166,7 +167,7 @@ const Absences = () => {
     event.preventDefault();
     if (editId) {
       const body = {
-        gmpId: formData.gmpId,
+        gmpId: gmpId,
         turnId: formData.turnId,
         startDate: formData.startDate,
         endDate: formData.endDate,
@@ -207,21 +208,18 @@ const Absences = () => {
 
   const handleEdit = async (selectedRow: any) => {
     setEditId(selectedRow.id)
-    const teacherData = await getTeacherData(Number(selectedRow.document));
-    if (teacherData) {
-      setFormData({
-        ...selectedRow,
-        startDate: formatToISO(selectedRow.startDate),
-        endDate: formatToISO(selectedRow.endDate)
-      })
-      setSelectedGmp(selectedRow.gmpData)
-      setOpen(true)
-    }
+    setFormData({
+      ...selectedRow,
+      startDate: formatToISO(selectedRow.startDate),
+      endDate: formatToISO(selectedRow.endDate)
+    })
+    setSelectedGmp(selectedRow.gmpData)
+    setOpen(true)
   };
 
   const handleSearch = async () => {
     setErrors({ visible: false, error: "" })
-    const teacherData = await getTeacherData(Number(formData.document));
+    const teacherData = await getTeacherData(Number(formData.document), formData);
     if (teacherData) {
       setFormData({
         ...formData,
@@ -237,54 +235,6 @@ const Absences = () => {
     if (responseAbsences) {
       setAbsences(responseAbsences)
     }
-  }
-
-  const getTeacherData = async (document: number) => {
-    const teacher = await getTeacher(document);
-    const gmps = await getGmpsByTeacherId(teacher?.teacherId)
-    const formattedGmps = await getGMPSortedByGroup(gmps)
-    if (teacher && gmps) {
-      return ({
-        ...formData,
-        ...teacher,
-        gmps: formattedGmps,
-        document: String(teacher.ci),
-      });
-    }
-    return undefined
-  }
-
-  const getGmpsByTeacherId = async (teacherId: number) => {
-    let gmps: any[] = [];
-    const gmp = await getGMP(teacherId);
-    await Promise.all(
-      gmp.map(async (item: any) => {
-        const { matter, group } = await getMgs(item.mgId);
-        if (matter && group) gmps.push({ id: item.id, matter, group })
-      }));
-    return gmps;
-  }
-
-  const getTeacher = async (document: number) => {
-    const person = await getPerson(document);
-    const teacher: any = await getProfessor(document);
-    if (person && teacher) return { ...person, teacherId: teacher.id }
-    return undefined
-  }
-
-  const getGMPSortedByGroup = (gmps: any[]) => {
-    let gmpsSorted: any[] = []
-    gmps.forEach((gmp) => {
-      if (!gmpsSorted[gmp.group.id]) {
-        gmpsSorted[gmp.group.id] = {
-          group: gmp.group,
-          matters: [{ ...gmp.matter, gmpId: gmp.id, }],
-        }
-      } else {
-        gmpsSorted[gmp.group.id].matters.push({ ...gmp.matter, gmpId: gmp.id, });
-      }
-    })
-    return Object.values(gmpsSorted);
   }
 
   return (
@@ -359,7 +309,7 @@ const Absences = () => {
                   label="Fecha inicio"
                   inputFormat="DD/MM/YYYY"
                   value={formData.startDate}
-                  onChange={(value) => setFormData({ ...formData, startDate: value })}
+                  onChange={(value: any) => setFormData({ ...formData, startDate: value })}
                   minDate={new Date()}
                   disabled={!Boolean(formData.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
@@ -368,7 +318,7 @@ const Absences = () => {
                   label="Fecha fin"
                   inputFormat="DD/MM/YYYY"
                   value={formData.endDate}
-                  onChange={(value) => setFormData({ ...formData, endDate: value })}
+                  onChange={(value: any) => setFormData({ ...formData, endDate: value })}
                   minDate={formData.startDate}
                   disabled={!Boolean(formData.name)}
                   renderInput={(params) => <TextField {...params} error={false} required />}
