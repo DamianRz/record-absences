@@ -25,29 +25,28 @@ import {
 import axios from "axios";
 import CustomTable from "../table";
 import {
+  createSpecialty,
   getSpecialties,
   getSpecialtiesByTeacher,
+  updateSpecialties,
 } from "../../libs/specialtiesApi";
+import { signIn } from "../../libs/usersApi";
+import { getProfessorInfo, getProfessors, saveProfessor } from "../../libs/proffesorsApi";
+import { getTeacherData } from "../../utils/teacher";
+import { formatToISO } from "../../utils/date";
+import { getMatters } from "../../libs/mattersApi";
+import { getStoreMatters, setStoreMatters } from "../../utils/matters";
+import { savePerson } from "../../libs/personApi";
+import { getSpecialtiesByNames } from "../../utils/specialties";
 
 const Teachers2 = () => {
-  const mokProffesors = [
-    { id: 1, name: "Juan", lastname: "Pérez", ci: 123456, active: true },
-    { id: 2, name: "María", lastname: "González", ci: 123457, active: false },
-    { id: 3, name: "Pedro", lastname: "Rodríguez", ci: 123458, active: true },
-    { id: 4, name: "Ana", lastname: "Sánchez", ci: 123459, active: false },
-    { id: 5, name: "Pablo", lastname: "Martínez", ci: 123460, active: true },
-    { id: 6, name: "Sandra", lastname: "Lopez", ci: 123461, active: false },
-    { id: 7, name: "Carlos", lastname: "Gómez", ci: 123462, active: true },
-    { id: 8, name: "Laura", lastname: "Díaz", ci: 123463, active: false },
-    { id: 9, name: "Alberto", lastname: "Jiménez", ci: 123464, active: true },
-    { id: 10, name: "Sonia", lastname: "Ruiz", ci: 123465, active: false },
-  ];
 
   const headers = [
+    { name: "id", value: "ID" },
     { name: "name", value: "Nombre" },
     { name: "lastname", value: "Apellido" },
     { name: "ci", value: "CI" },
-    { name: "active", value: "Activo" },
+    { name: "activeLabel", value: "Activo" },
   ];
 
   const ITEM_HEIGHT = 30;
@@ -62,57 +61,108 @@ const Teachers2 = () => {
   };
 
   const DEFAULT_FORM_DATA = {
+    id: -1,
+    personId: -1,
+    teacherId: -1,
+    document: "",
+    groupId: "",
+    matterId: "",
+    gmpId: "",
+    gmps: [],
+    specialties: [],
+    specialtyNames: [],
+    turn: "",
+    turnId: -1,
     name: "",
     lastname: "",
-    ci: "",
-    active: true,
-
-    /*
-      obtener las especialidades, como? 
-      por bd o obteniendo id  y texto de la materia
-    */
-
-    specialties: [
-      {
-        matterId: 1,
-        proffesorId: 1,
-      },
-    ],
+    active: false,
+    activeLabel: ""
   };
 
-  const [professors, setProfessors] = useState(mokProffesors);
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [persons, setPersons] = useState([]);
-
-  const [specialties, setSpecialties] = useState([]);
-  const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
-    string[]
-  >([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
-
-  const [selectedRow, setSelectedRow] = useState();
+  const [teachers, setTeachers] = useState([])
+  const [formData, setFormData] = useState(DEFAULT_FORM_DATA)
+  const [matters, setMatters] = useState([])
+  const [errors, setErrors] = useState({ visible: false, error: "" });
 
   useEffect(() => {
-    const fetchDataTeachers = async () => {
-      const result = await axios("/api/professors");
-      setProfessors(result.data);
-    };
-    const fetchDataSpecialties = async () => {
-      const result: any = await getSpecialties();
-      setSpecialties(result);
-    };
-    fetchDataTeachers();
-    fetchDataSpecialties();
+    const fetchToken = async () => {
+      const { token } = await signIn(56660749, "1234");
+      if (token) {
+        localStorage.setItem("token", token)
+      }
+    }
+    const fetchData = async () => {
+      setMatters(await setStoreMatters())
+      await getTeacherList(true)
+    }
+    fetchToken()
+    fetchData()
   }, []);
 
+  const getTeacherList = async (active: boolean) => {
+    const response: any = await getTeachersFormatted(active)
+    if (response) setTeachers(response)
+  }
+
+  const getTeachersFormatted = async (active: boolean) => {
+    const professors = await getProfessors(active)
+    if (professors) {
+      let formattedProfessors: any[] = []
+      await Promise.all(
+        professors.map(async (professor: any) => {
+          const { person } = await getProfessorInfo(professor.id)
+          const teacherData = await getTeacherData(Number(person.ci), {})
+
+          const specialties = await getSpecialtiesByTeacher(teacherData.teacherId)
+          let formattedSpecialties: any = []
+          specialties.forEach((specialty: any) => {
+            formattedSpecialties.push({ id: specialty.id, matter: specialty.matter })
+          });
+
+          const specialtyNames = formattedSpecialties.map(
+            (specialty: any) => (`${specialty.matter.name}`))
+
+          formattedProfessors.push({
+            ...formData,
+            ...teacherData,
+            personId: person.id,
+            specialties: formattedSpecialties,
+            specialtyNames: specialtyNames,
+            activeLabel: teacherData.active ? "Activo" : "Inactivo"
+          })
+        })
+      )
+      return formattedProfessors.sort((a, b) => a.id - b.id);
+    }
+  }
+
+  const handleEdit = async (selectedRow: any) => {
+    setEditId(selectedRow.id)
+    setFormData({
+      ...selectedRow,
+    })
+    setOpen(true)
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+  ///////////////
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
   const handleActiveChange = (event: any) => {
-    console.log(event);
     setFormData({
       ...formData,
       active: event.target.value === "true",
@@ -126,71 +176,88 @@ const Teachers2 = () => {
   };
 
   const handleClose = () => {
-    setSelectedRow(undefined);
     setOpen(false);
   };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
-      // Update existing professor
-      await axios.put(`/api/professors/${editId}`, formData);
+      const person = {
+        name: formData.name,
+        lastname: formData.lastname,
+        ci: Number(formData.document)
+      }
+      const personResponse = await savePerson(formData.personId, person)
+      const teacherResponse = await saveProfessor(formData.teacherId, { active: formData.active })
+      const specialties = await getSpecialtiesByNames(formData.specialtyNames)
+
+      // TODO refactor this
+
+      let formattedSpecialties: any = []
+      let removeSpecialties: any = []
+      specialties.map(async (specialty: any) => {
+        const specialtyBody = {
+          proffessorId: formData.teacherId,
+          matterId: specialty.id
+        }
+        formattedSpecialties.push(specialtyBody)
+
+        removeSpecialties = formData.specialties.filter((a: any) => (
+          formData.specialtyNames.indexOf(a.matter.name) === -1
+        ))
+      })
+
+      const formattedRemoveSpecialties: any = []
+      removeSpecialties.map((spe: any) => {
+        formattedRemoveSpecialties.push(spe.id)
+      })
+
+      await updateSpecialties(formattedSpecialties, formattedRemoveSpecialties)
+
+      if (personResponse && teacherResponse) {
+        await getTeacherList(true)
+        setOpen(false);
+        setEditId(null)
+      } else {
+        setErrors({ visible: true, error: "No se han podido guardar los cambios" })
+      }
     } else {
-      // Create new professor
-      await axios.post("/api/professors", formData);
+      const body = {
+        // gmpId: gmpId,
+        // turnId: selectedGmp.group.turnId,
+        // startDate: formData.startDate,
+        // endDate: formData.endDate,
+        // reason: formData.reason,
+        // active: true
+      }
+      // const response = await createAbsence(body)
+      if (response) {
+        // await getAbsencesList(true)
+        setOpen(false);
+        setEditId(null)
+        // setGmpId(undefined)
+        // setSelectedGmp(undefined)
+      } else {
+        setErrors({ visible: true, error: "No se ha podido crear el profesor" })
+      }
     }
-    setOpen(false);
-    setEditId(null);
-    const result = await axios("/api/professors");
-    setProfessors(result.data);
-  };
-
-  const handleEdit = async (id: any) => {
-    // setSelectedSpecialties([]);
-    setEditId(id);
-
-    const teacherSpecialties: any = await getSpecialtiesByTeacher(id);
-    setSelectedSpecialties(teacherSpecialties);
-
-    // get names and join
-
-    console.log(teacherSpecialties);
-
-    let specialiesNames = "";
-    teacherSpecialties.map((s) => {
-      specialiesNames += `${s.name}, `;
-    });
-
-    setSelectedSpecialtiesNames(specialiesNames);
-
-    setOpen(true);
-    setFormData(professors.find((p) => p.id === id));
-  };
-
-  // TODO
-  const handleDelete = async (id: any) => {
-    await axios.delete(`/api/professors/${id}`);
-    const result = await axios("/api/professors");
-    setProfessors(result.data);
   };
 
   const handleSpecialtyChange = (event: any) => {
     const {
       target: { value },
     } = event;
-    setSelectedSpecialtiesNames(
-      typeof value === "string" ? value.split(",") : value
-    );
+    setFormData({ ...formData, specialtyNames: typeof value === "string" ? value.split(",") : value })
   };
 
-  const handleSelectSpecialty = (specialty: any) => {
-    if (!(selectedSpecialtiesNames.indexOf(specialty.label) > -1)) {
-      setSelectedSpecialties((prev) => [...prev, specialty]);
+  const handleSelectSpecialty = (specialty: { id: number, name: string }) => {
+    if (formData.specialtyNames.indexOf(specialty.name) === -1) {
+      setFormData({ ...formData, specialtyNames: [...formData.specialtyNames, specialty.name] })
     } else {
-      const filtred = selectedSpecialties.filter(
-        (a: any) => a.value !== specialty.value
+      const filtered = formData.specialtyNames.filter(
+        (name: string) => name !== specialty.name
       );
-      setSelectedSpecialties(filtred);
+      setFormData({ ...formData, specialtyNames: filtered })
     }
   };
 
@@ -207,7 +274,7 @@ const Teachers2 = () => {
       </Button>
       <CustomTable
         headers={headers}
-        items={mokProffesors}
+        items={teachers}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="max-w-sm mx-auto">
@@ -246,9 +313,9 @@ const Teachers2 = () => {
               <TextField
                 required
                 label="CI"
-                name="ci"
+                name="document"
                 type="number"
-                value={formData.ci}
+                value={formData.document}
                 onChange={handleChange}
                 className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                 variant="outlined"
@@ -261,51 +328,47 @@ const Teachers2 = () => {
                 required
                 labelId="specialties-select"
                 multiple
-                value={selectedSpecialtiesNames}
+                value={formData.specialtyNames}
                 onChange={handleSpecialtyChange}
                 input={<OutlinedInput label="Especialidades" />}
                 renderValue={(selected) => selected.join(", ")}
                 MenuProps={MenuProps}
               >
-                {specialties.map((specialty: any, index) => (
+                {(matters || []).map((matter: any, index) => (
                   <MenuItem
                     className="h-[20px]"
                     key={index}
-                    value={specialty.name}
+                    value={matter.name}
                     onClick={() => {
-                      handleSelectSpecialty(specialty);
+                      handleSelectSpecialty(matter);
                     }}
                   >
                     <Checkbox
                       checked={
-                        selectedSpecialtiesNames.indexOf(specialty.name) > -1
+                        formData.specialtyNames.indexOf(matter.name) > -1
                       }
                     />
-                    <ListItemText primary={specialty.name} />
+                    <ListItemText primary={matter.name} />
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <FormControl className="w-full my-4">
-              <FormLabel id="radio-active">Estado</FormLabel>
-              <RadioGroup
-                aria-labelledby="radio-active"
-                name="active"
-                defaultValue={formData.active}
-                onChange={handleActiveChange}
-              >
-                <FormControlLabel
-                  value={true}
-                  control={<Radio size="small" />}
-                  label="Activo"
-                />
-                <FormControlLabel
-                  value={false}
-                  control={<Radio size="small" />}
-                  label="Inactivo"
-                />
-              </RadioGroup>
-            </FormControl>
+            {editId && (
+              <FormControl className="w-full my-4">
+                <FormLabel id="radio-active">Estado</FormLabel>
+                <Button
+                  className="max-w-[200px]"
+                  size="large"
+                  variant="outlined"
+                  color={formData.active ? "success" : "warning"}
+                  onClick={() => {
+                    setFormData({ ...formData, active: !formData.active })
+                  }}
+                >
+                  {formData.active ? "ACTIVO" : "INACTIVO"}
+                </Button>
+              </FormControl>
+            )}
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button

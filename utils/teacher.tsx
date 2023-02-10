@@ -5,7 +5,7 @@ import { getGmpsByTeacherId, getGMPSortedByGroup } from "./gmp";
 export const getTeacher = async (document: number) => {
     const person = await getPerson(document);
     const teacher: any = await getProfessor(document);
-    if (person && teacher) return { ...person, teacherId: teacher.id }
+    if (person && teacher) return { ...person, teacherId: teacher.id, active: teacher.active }
     return undefined
 }
 

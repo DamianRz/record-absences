@@ -100,7 +100,7 @@ const Absences = () => {
         absences.map(async (absence: any) => {
           const { person } = await getProfessorInfo(absence.gmp.proffessorId)
           const teacherData = await getTeacherData(Number(person.ci), formData)
-          const filtredGmp = teacherData?.gmps.reduce((acc, gmp) => {
+          const filtredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
               acc.push({ group: gmp.group, matter: selectedMatters[0] });
@@ -108,7 +108,7 @@ const Absences = () => {
             return acc;
           }, []);
           const { group, matter } = filtredGmp[0]
-          const gmpData = teacherData?.gmps.filter((gmp) => (gmp.group.id === group.id))[0]
+          const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
           formattedAbsences.push({
             id: absence.id,
             document: person.ci,
@@ -231,7 +231,7 @@ const Absences = () => {
   }
 
   const getAbsencesList = async (state: boolean) => {
-    const responseAbsences = await getAbsencesListFormatted(state)
+    const responseAbsences: any = await getAbsencesListFormatted(state)
     if (responseAbsences) {
       setAbsences(responseAbsences)
     }

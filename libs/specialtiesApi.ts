@@ -1,19 +1,76 @@
-export const getSpecialties = async () => {
-    return [
-            { id: 1, name: "Matematicas" },
-            { id: 2, name: "Filosofia" },
-            { id: 3, name: "Sistemas Operativos" },
-            { id: 4, name: "Programacion" },
-            { id: 5, name: "Base de datos" },
-            { id: 6, name: "Logica" },
-    ]
+export const getSpecialtiesByTeacher = async (teacherId: number): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/specialties/all`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ proffessorId: teacherId })
+    }).then(response => response.json())
 }
 
-export const getSpecialtiesByTeacher = async (teacherId: number) => {
-    return [
-        { id: 2, name: "Matematicas" },
-        { id: 2, name: "Geometria" },
-    ]
-    // return await fetch("/api/professors")
-    //     .then(response => response.json)
+export const getSpecialties = async (teacherId: number): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/specialties`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({})
+    }).then(response => response.json())
+}
+
+export const createSpecialty = async (specialty: any): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/specialties/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...specialty })
+    }).then(response => response.json())
+}
+
+export const removeSpecialty = async (specialtyId: any): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/specialties/${specialtyId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'DELETE',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => response.json())
+}
+
+export const updateSpecialties = async (createSpecialties: any, removeSpecialtyIds: any) => {
+    await Promise.all(
+        createSpecialties.map(async (specialty: any) => {
+            await createSpecialty(specialty)
+        })
+    );
+    await Promise.all(
+        removeSpecialtyIds.map(async (specialtyId: any) => {
+            await removeSpecialty(specialtyId)
+        })
+    );
+
 }
