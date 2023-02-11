@@ -146,18 +146,6 @@ const Teachers2 = () => {
     setOpen(true)
   };
 
-
-
-
-
-
-
-
-
-
-
-
-  ///////////////
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
