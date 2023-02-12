@@ -4,10 +4,7 @@ import CustomTable from "../table";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { signIn } from "../../libs/usersApi";
-import { getPerson } from "../../libs/personApi";
-import { getProfessor, getProfessorInfo } from "../../libs/proffesorsApi";
-import { getGMP } from "../../libs/gmpsApi";
-import { getMgs } from "../../libs/mgsApi";
+import { getProfessorInfo } from "../../libs/proffesorsApi";
 import { createAbsence, getAbsences, saveAbsence } from "../../libs/absencesApi";
 import ES from 'dayjs/locale/es';
 import {
@@ -107,28 +104,31 @@ const Absences = () => {
             }
             return acc;
           }, []);
-          const { group, matter } = filtredGmp[0]
-          const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
-          formattedAbsences.push({
-            id: absence.id,
-            document: person.ci,
-            name: person.name,
-            lastname: person.lastname,
-            group: group.name,
-            groupId: group.id,
-            matter: matter.name,
-            matterId: matter.id,
-            gmpId: matter.gmpId,
-            gmps: teacherData?.gmps,
-            gmpData: gmpData,
-            reason: absence.reason,
-            startDate: formatToLocalDate(absence.startDate),
-            endDate: formatToLocalDate(absence.endDate),
-            turnName: absence.turn.name,
-            turnId: absence.turn.id,
-            active: absence.active,
-            activeLabel: absence.active ? "Activo" : "Inactivo"
-          })
+
+          if (filtredGmp.length) {
+            const { group, matter } = filtredGmp[0]
+            const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
+            formattedAbsences.push({
+              id: absence.id,
+              document: person.ci,
+              name: person.name,
+              lastname: person.lastname,
+              group: group.name,
+              groupId: group.id,
+              matter: matter.name,
+              matterId: matter.id,
+              gmpId: matter.gmpId,
+              gmps: teacherData?.gmps,
+              gmpData: gmpData,
+              reason: absence.reason,
+              startDate: formatToLocalDate(absence.startDate),
+              endDate: formatToLocalDate(absence.endDate),
+              turnName: absence.turn.name,
+              turnId: absence.turn.id,
+              active: absence.active,
+              activeLabel: absence.active ? "Activo" : "Inactivo"
+            })
+          }
         }))
       return formattedAbsences.sort((a, b) => a.id - b.id);
     }
@@ -261,6 +261,7 @@ const Absences = () => {
       </Button>
       <p className="my-4 ml-3 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
       <CustomTable
+        className=""
         headers={headers}
         items={absences}
         onSelectRow={handleEdit}
