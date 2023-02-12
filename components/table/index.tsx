@@ -13,12 +13,14 @@ interface CustomTableProps {
   headers: { name: string, value: any }[];
   items: any;
   onSelectRow: any;
+  className: string
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
   headers,
   items,
   onSelectRow,
+  className
 }) => {
   const [selectedRow, setSelectedRow] = useState();
 
@@ -28,45 +30,38 @@ const CustomTable: React.FC<CustomTableProps> = ({
   };
 
   return (
-    <div className="w-full relative max-h-[400px] h-[400px]">
-      <Paper
-        className="w-full p-4 rounded-lg shadow-lg"
-        sx={{ width: "100%", overflow: "hidden" }}
-      >
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader className="w-full text-left">
-            <TableHead>
-              <TableRow>
-                {headers.map((header, key) => (
-                  <TableCell
-                    key={key}
-                    className="p-3 font-bold text-gray-700 bg-gray-200 select-none"
-                  >
-                    {header.value}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((row: any) => (
-                <TableRow
-                  key={row.id}
-                  onClick={() => handleSelectRow(row)}
-                  className={`${selectedRow === row && "bg-teal-50"
-                    } text-center cursor-pointer hover:bg-teal-50`}
-                >
-                  {headers.map((header, key) => (
-                    <TableCell key={key} className="p-3 font-mono text-sm border-t border-gray-200">
-                      {row[header.name]}
-                    </TableCell>
-                  ))}
-                </TableRow>
+    <TableContainer className={className}>
+      <Table stickyHeader className="w-full text-left">
+        <TableHead>
+          <TableRow>
+            {headers.map((header, key) => (
+              <TableCell
+                key={key}
+                className="p-3 font-bold text-gray-700 bg-gray-200 select-none"
+              >
+                {header.value}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {items.map((row: any) => (
+            <TableRow
+              key={row.id}
+              onClick={() => handleSelectRow(row)}
+              className={`${selectedRow === row && "bg-teal-50"
+                } text-center cursor-pointer hover:bg-teal-50`}
+            >
+              {headers.map((header, key) => (
+                <TableCell key={key} className="p-3 font-mono text-sm border-t border-gray-200">
+                  {row[header.name]}
+                </TableCell>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </div>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
