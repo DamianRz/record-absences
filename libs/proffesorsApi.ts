@@ -66,3 +66,19 @@ export const saveProfessor = async (id: number, professor: any): Promise<any> =>
         body: JSON.stringify({ ...professor })
     }).then(response => response.json())
 }
+
+export const createProfessor = async (professor: any): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/proffessors/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...professor })
+    }).then(response => response.json())
+}
