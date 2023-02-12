@@ -15,6 +15,8 @@ import {
   OutlinedInput,
   Checkbox,
   ListItemText,
+  Box,
+  Chip,
 } from "@mui/material";
 import CustomTable from "../table";
 import {
@@ -71,15 +73,12 @@ const Teachers2 = () => {
     matterId: "",
     gmpId: "",
     gmps: [],
-
     specialties: [],
     specialtyNames: [],
     matterSpecialtyIds: [],
-
     availableMGs: [],
     selectedGroupsNames: [],
     selectedMGIds: [],
-
     turn: "",
     turnId: "",
     selectedGrade: "",
@@ -477,8 +476,14 @@ const Teachers2 = () => {
                     value={formData.specialtyNames}
                     onChange={handleSpecialtyChange}
                     input={<OutlinedInput label="Especialidades" />}
-                    renderValue={(selected) => selected.join(", ")}
                     MenuProps={MenuProps}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </Box>
+                    )}
                   >
                     {(matters || []).map((matter: any, index) => (
                       <MenuItem
@@ -606,7 +611,6 @@ const Teachers2 = () => {
                     />
                   ) : (<p className="mb-4 text-center">No tiene grupos asignados</p>)
                 }
-
                 <FormControl className="w-full my-4">
                   <FormLabel id="radio-active">Estado</FormLabel>
                   <Button
