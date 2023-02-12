@@ -1,6 +1,6 @@
 import { getPerson } from "../libs/personApi";
 import { getProfessor } from "../libs/proffesorsApi";
-import { getGmpsByTeacherId, getGMPSortedByGroup } from "./gmp";
+import { getGmpsByTeacherId, getGMPSortedByGroup, getGmpsSortedByTeacherId } from "./gmp";
 
 export const getTeacher = async (document: number) => {
     const person = await getPerson(document);
@@ -11,13 +11,12 @@ export const getTeacher = async (document: number) => {
 
 export const getTeacherData = async (document: number, formData: any) => {
     const teacher = await getTeacher(document);
-    const gmps = await getGmpsByTeacherId(teacher?.teacherId)
-    const formattedGmps = await getGMPSortedByGroup(gmps)
+    const gmps = await getGmpsSortedByTeacherId(teacher?.teacherId)
     if (teacher && gmps) {
         return ({
             ...formData,
             ...teacher,
-            gmps: formattedGmps,
+            gmps: gmps,
             document: String(teacher.ci),
         });
     }
