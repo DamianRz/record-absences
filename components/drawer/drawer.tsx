@@ -40,7 +40,7 @@ const tools = [
   {
     label: "Reportes",
     icon: AssessmentIcon,
-    page: "/reports",
+    page: "/lista",
   },
 ];
 
