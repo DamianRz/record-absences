@@ -3,7 +3,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CustomTable from "../table";
 import { signIn } from "../../libs/usersApi";
 import { setStoreMatters } from "../../utils/matters";
-import { getGroups, saveGroup } from "../../libs/groupsApi";
+import { createGroup, getGroups, saveGroup } from "../../libs/groupsApi";
 import { GRADES, TURNS } from "../../utils/groups";
 import { createMg, deleteMg, getMgs } from "../../libs/mgsApi";
 import {
@@ -182,13 +182,11 @@ const Groups = () => {
             removeMgIds.push(mg.id)
           }
         })
-
         await Promise.all(
           removeMgIds.map(async (mgId) => {
             await deleteMg(mgId)
           }),
         )
-
         await Promise.all(
           formData.matterIds.map(async (matterId) => {
             await createMg({ groupId: editId, matterId: matterId })
@@ -199,7 +197,19 @@ const Groups = () => {
         setEditId(null)
       }
     } else {
-
+      const group = {
+        grade: formData.grade,
+        name: formData.name,
+        description: formData.description,
+        turnId: formData.turnId,
+        active: formData.active
+      }
+      const responseSave = await createGroup(group)
+      if (responseSave) {
+        setOpen(false);
+        await getGroupList(true)
+        setEditId(null)
+      }
     }
 
   };

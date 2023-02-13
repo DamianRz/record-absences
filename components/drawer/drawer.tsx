@@ -61,21 +61,19 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   }, []);
 
   return (
-    <div className="h-full px-4 py-4 w-max">
+    <div className="h-full px-4 py-4 w-max min-w-[150px]">
       <span className="m-auto text-xs cursor-default ">Dashboard</span>
       <ul className="pt-4">
         {tools.map((item, index) => (
           <Link href={item.page} key={index}>
             <li
-              className={`${
-                selected === index ? "rounded-md bg-blue-50" : "text-zinc-900"
-              } mb-1 py-1 cursor-pointer text-xs`}
+              className={`${selected === index ? "rounded-md bg-blue-50" : "text-zinc-900"
+                } mb-1 py-1 cursor-pointer text-xs`}
             >
               <span className="flex items-center">
                 <item.icon
-                  className={`mr-1 w-[20px] ${
-                    selected === index && "text-[#1976d2]"
-                  }`}
+                  className={`mr-1 w-[20px] ${selected === index && "text-[#1976d2]"
+                    }`}
                 />
                 {item.label}
               </span>

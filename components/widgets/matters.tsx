@@ -1,134 +1,69 @@
 import React, { useEffect, useState } from "react";
 import PostAddIcon from "@mui/icons-material/PostAdd";
+import CustomTable from "../table";
+import { signIn } from "../../libs/usersApi";
+import { createMatter, deleteMatter, getMatters, saveMatter } from "../../libs/mattersApi";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
-  IconButton,
-  TableContainer,
-  FormControlLabel,
-  Radio,
   FormLabel,
-  RadioGroup,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
 } from "@mui/material";
-import axios from "axios";
-import CustomTable from "../table";
 
 const Matters = () => {
-  const mokMatters = [
-    {
-      id: 1,
-      name: "Matemáticas",
-      description:
-        "Asignatura que estudia las relaciones entre cantidades, medidas y formas.",
-    },
-    {
-      id: 2,
-      name: "Física",
-      description:
-        "Asignatura que estudia la naturaleza y sus leyes, utilizando métodos matemáticos.",
-    },
-    {
-      id: 3,
-      name: "Química",
-      description:
-        "Asignatura que estudia la composición y propiedades de la materia, así como las reacciones químicas.",
-    },
-    {
-      id: 4,
-      name: "Historia",
-      description:
-        "Asignatura que estudia el pasado de la humanidad a través de la investigación y el análisis de documentos y artefactos.",
-    },
-    {
-      id: 5,
-      name: "Inglés",
-      description:
-        "Asignatura que se centra en el estudio y uso del idioma inglés, incluyendo gramática, vocabulario y conversación.",
-    },
-  ];
-
-  const specialties = [
-    { value: 1, label: "Matematicas" },
-    { value: 2, label: "Filosofia" },
-    { value: 3, label: "Sistemas Operativos" },
-    { value: 4, label: "Programacion" },
-    { value: 5, label: "Base de datos" },
-    { value: 6, label: "Logica" },
-  ];
-
   const headers = [
+    { name: "id", value: "ID" },
     { name: "name", value: "Nombre" },
     { name: "description", value: "Descripcion" },
   ];
 
-  const ITEM_HEIGHT = 30;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
   const DEFAULT_FORM_DATA = {
+    id: "",
     name: "",
     description: "",
-
-    /*
-      obtener las especialidades, como? 
-      por bd o obteniendo id  y texto de la materia
-    */
-
-    specialties: [
-      {
-        matterId: 1,
-        proffesorId: 1,
-      },
-    ],
   };
 
-  const [matters, setMatters] = useState(mokMatters);
+  const [matters, setMatters] = useState([]);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
-  const [persons, setPersons] = useState([]);
-
-  const [selectedSpecialtiesNames, setSelectedSpecialtiesNames] = useState<
-    string[]
-  >([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
-
-  const [selectedRow, setSelectedRow] = useState();
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
 
   useEffect(() => {
+    const fetchToken = async () => {
+      const { token } = await signIn(56660749, "1234");
+      if (token) {
+        localStorage.setItem("token", token)
+      }
+    }
     const fetchData = async () => {
-      const result = await axios("/api/matters");
-      setMatters(result.data);
-    };
-    fetchData();
+      await getMatterList(true)
+    }
+    fetchToken()
+    fetchData()
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios("/api/persons");
-      setPersons(result.data);
-    };
-    fetchData();
-  }, []);
+  const getMatterList = async (active: boolean) => {
+    const response: any = await getMattersFormatted(active)
+    if (response) setMatters(response)
+  }
+
+  const getMattersFormatted = async (active: boolean) => {
+    const matters = await getMatters()
+    if (matters) {
+      const formattedMatters: any = []
+      matters.map(async (matter: any) => {
+        formattedMatters.push({
+          ...matter
+        })
+      })
+      return formattedMatters.sort((a: any, b: any) => a.id - b.id);
+    }
+  }
 
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -141,30 +76,48 @@ const Matters = () => {
   };
 
   const handleClose = () => {
-    setSelectedRow(undefined);
     setOpen(false);
   };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
-      // Update existing professor
-      await axios.put(`/api/professors/${editId}`, formData);
+      const matter = { name: formData.name, description: formData.description }
+      const responseSave = await saveMatter(editId, matter)
+      if (responseSave) {
+        setOpen(false);
+        await getMatterList(true)
+        setEditId(null)
+      }
     } else {
-      // Create new professor
-      await axios.post("/api/professors", formData);
+      const matter = { name: formData.name, description: formData.description }
+      const responseSave = await createMatter(matter)
+      if (responseSave) {
+        setOpen(false);
+        await getMatterList(true)
+        setEditId(null)
+      }
     }
-    setOpen(false);
-    setEditId(null);
-    const result = await axios("/api/professors");
-    setMatters(result.data);
   };
 
-  const handleEdit = (id: any) => {
-    setEditId(id);
+  const handleEdit = (selectedRow: any) => {
+    setEditId(selectedRow.id);
+    setFormData({
+      ...formData,
+      ...selectedRow,
+    })
     setOpen(true);
-    setFormData(matters.find((p) => p.id === id));
   };
+
+  const handleDelete = async () => {
+    const responseSave = await deleteMatter(Number(editId))
+    if (responseSave) {
+      setShowConfirmDelete(false)
+      setOpen(false);
+      await getMatterList(true)
+      setEditId(null)
+    }
+  }
 
   return (
     <div>
@@ -178,8 +131,9 @@ const Matters = () => {
         Nuevo materia
       </Button>
       <CustomTable
+        className="max-h-[400px]"
         headers={headers}
-        items={mokMatters}
+        items={matters}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="max-w-xl mx-auto">
@@ -197,21 +151,31 @@ const Matters = () => {
                 onChange={handleChange}
                 className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                 variant="outlined"
-                size="small"
               />
             </FormControl>
             <FormControl className="w-full mt-4">
               <TextField
-                multiline
-                required
                 label="Descripcion"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                 variant="outlined"
-                size="small"
               />
+            </FormControl>
+            <FormControl className="w-full my-4">
+              <FormLabel id="radio-active">Eliminar</FormLabel>
+              <Button
+                className=""
+                size="small"
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  setShowConfirmDelete(true)
+                }}
+              >
+                ELIMINAR
+              </Button>
             </FormControl>
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
@@ -234,6 +198,30 @@ const Matters = () => {
             </Button>
           </DialogActions>
         </form>
+      </Dialog>
+      <Dialog open={showConfirmDelete} className="max-w-xl mx-auto">
+        <DialogTitle className="text-sm">
+          Esta seguro de que desea ELIMINAR esta materia?
+        </DialogTitle>
+        <DialogActions className="pb-4 pr-4 space-x-4">
+          <Button
+            onClick={() => setShowConfirmDelete(false)}
+            variant="outlined"
+            size="small"
+            className="normal-case"
+          >
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="outlined"
+            size="small"
+            className="normal-case"
+            onClick={() => handleDelete()}
+          >
+            Si, deseo ELIMINAR
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
