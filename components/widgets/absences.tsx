@@ -80,10 +80,11 @@ const Absences = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { token } = await signIn(56660749, "1234");
+      const token = localStorage.getItem("token")
       if (token) {
-        localStorage.setItem("token", token)
         await getAbsencesList(true)
+      } else {
+        window.location.href = '/';
       }
     }
     fetchData()

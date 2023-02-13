@@ -69,18 +69,16 @@ const Groups = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
-      const { token } = await signIn(56660749, "1234");
+      const token = localStorage.getItem("token")
       if (token) {
-        localStorage.setItem("token", token)
+        const mattersList: any = await setStoreMatters()
+        setMatters(mattersList)
+        await getGroupList(true)
+      } else {
+        window.location.href = '/';
       }
     }
-    const fetchData = async () => {
-      const mattersList: any = await setStoreMatters()
-      setMatters(mattersList)
-      await getGroupList(true)
-    }
     fetchToken()
-    fetchData()
   }, []);
 
   const getGroupList = async (active: boolean) => {

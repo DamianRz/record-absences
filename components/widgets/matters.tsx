@@ -35,16 +35,14 @@ const Matters = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
-      const { token } = await signIn(56660749, "1234");
+      const token = localStorage.getItem("token")
       if (token) {
-        localStorage.setItem("token", token)
+        await getMatterList(true)
+      } else {
+        window.location.href = '/';
       }
     }
-    const fetchData = async () => {
-      await getMatterList(true)
-    }
     fetchToken()
-    fetchData()
   }, []);
 
   const getMatterList = async (active: boolean) => {

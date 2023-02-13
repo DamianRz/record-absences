@@ -11,6 +11,7 @@ import { LoaderContext } from "../../contexts/loader-context";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ExitToApp } from "@mui/icons-material";
 
 interface DrawerProps {
   isAdmin: boolean;
@@ -41,6 +42,11 @@ const tools = [
     label: "Reportes",
     icon: AssessmentIcon,
     page: "/lista",
+  },
+  {
+    label: "Salir",
+    icon: ExitToApp,
+    page: "/",
   },
 ];
 
