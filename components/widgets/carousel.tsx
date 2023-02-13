@@ -53,7 +53,7 @@ const Carousel = () => {
         newArray.push(newArray.shift());
         return newArray;
       });
-    }, 2000);
+    }, 2500);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -119,10 +119,11 @@ const Carousel = () => {
     <div>
       <p className="my-4 ml-3 text-xl">Lista de Inasistencias</p>
       <CustomTable
-        className=""
+        className="text-xl"
         headers={headers}
         items={absences}
         onSelectRow={() => { }}
+        fontSize="xl"
       />
     </div>
   );

@@ -14,13 +14,15 @@ interface CustomTableProps {
   items: any;
   onSelectRow: any;
   className: string
+  fontSize?: "xs" | "sm" | "xl"
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
   headers,
   items,
   onSelectRow,
-  className
+  className,
+  fontSize
 }) => {
   const [selectedRow, setSelectedRow] = useState();
 
@@ -37,7 +39,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             {headers.map((header, key) => (
               <TableCell
                 key={key}
-                className="p-3 font-bold text-gray-700 bg-gray-200 select-none"
+                className={`${fontSize && "text-" + fontSize} p-3 font-bold text-gray-700 bg-gray-200 select-none`}
               >
                 {header.value}
               </TableCell>
@@ -53,7 +55,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 } text-center cursor-pointer hover:bg-teal-50`}
             >
               {headers.map((header, key) => (
-                <TableCell key={key} className="p-3 font-mono text-sm border-t border-gray-200">
+                <TableCell key={key} className={`${fontSize && "text-" + fontSize} p-3 font-mono text-sm border-t border-gray-200`}>
                   {row[header.name]}
                 </TableCell>
               ))}
