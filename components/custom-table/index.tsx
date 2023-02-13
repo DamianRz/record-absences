@@ -46,12 +46,12 @@ const CustomTable: React.FC<TableProps> = ({
 
   const CustomHeader = (): any => (
     <div className="flex p-4 shadow-md">
-        {headers.map((header, index) => (
-          <div key={index} className="min-w-[200px]">
-            {header.value}
-          </div>
-        ))}
-      </div>
+      {headers.map((header, index) => (
+        <div key={index} className="min-w-[200px]">
+          {header.value}
+        </div>
+      ))}
+    </div>
   )
 
   const CustomFooter = (): any => (
@@ -62,33 +62,33 @@ const CustomTable: React.FC<TableProps> = ({
 
   return (
     <>
-    {isLoading
-      ? (
-      <>
-        <div className="items-center w-full h-full mt-4 space-y-4">
-          <span>{labels.loading}</span>
-          <LinearProgress />
-        </div>
-      </>
+      {isLoading
+        ? (
+          <>
+            <div className="items-center w-full h-full mt-4 space-y-4">
+              <span>{labels.loading}</span>
+              <LinearProgress />
+            </div>
+          </>
         )
-      : (items.length > 0
+        : (items.length > 0
           && (
-        <div className={`shadow-md ${className ?? ''}`}>
-          <CustomHeader />
-          <div className="max-h-[200px] overflow-y-scroll">
-            {items.map((row, index) => (
-              <CustomRow
-                value={row}
-                key={index}
-                onSelect={handleSelect}
-                isSelected={row === selectedRow}
-              />
-            ))}
-          </div>
-          <CustomFooter />
-        </div>
-        ))}
-  </>
+            <div className={`shadow-md ${className ?? ''}`}>
+              <CustomHeader />
+              <div className="max-h-[200px] overflow-y-scroll">
+                {items.map((row, index) => (
+                  <CustomRow
+                    value={row}
+                    key={index}
+                    onSelect={handleSelect}
+                    isSelected={row === selectedRow}
+                  />
+                ))}
+              </div>
+              <CustomFooter />
+            </div>
+          ))}
+    </>
   )
 }
 

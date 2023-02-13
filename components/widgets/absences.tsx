@@ -246,10 +246,12 @@ const Absences = () => {
         onClick={handleOpen}
         endIcon={<EventBusyIcon />}
         className="mx-4 my-4 normal-case"
+        size="small"
       >
         Nuevo Inasistencia
       </Button>
       <Button
+        size="small"
         variant="outlined"
         color={absencesState.active ? "warning" : "success"}
         onClick={() => {
