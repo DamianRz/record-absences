@@ -161,20 +161,24 @@ const Matters = () => {
                 variant="outlined"
               />
             </FormControl>
-            <FormControl className="w-full my-4">
-              <FormLabel id="radio-active">Eliminar</FormLabel>
-              <Button
-                className=""
-                size="small"
-                variant="outlined"
-                color="error"
-                onClick={() => {
-                  setShowConfirmDelete(true)
-                }}
-              >
-                ELIMINAR
-              </Button>
-            </FormControl>
+            {
+              editId && (
+                <FormControl className="w-full my-4">
+                  <FormLabel id="radio-active">Eliminar</FormLabel>
+                  <Button
+                    className=""
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                      setShowConfirmDelete(true)
+                    }}
+                  >
+                    ELIMINAR
+                  </Button>
+                </FormControl>
+              )
+            }
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button
