@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CustomTable from "../table";
 import { signIn } from "../../libs/usersApi";
@@ -24,6 +24,7 @@ import {
   Box,
   Chip,
 } from "@mui/material";
+import { LoaderContext } from "../../contexts/loader";
 
 const Groups = () => {
 
@@ -64,11 +65,12 @@ const Groups = () => {
   const [editId, setEditId] = useState(null);
   const [groups, setGroups] = useState([])
   const [matters, setMatters] = useState([])
-  const [isLoading, setIsLoading] = useState(false);
   const [groupsState, setGroupsState] = useState({ active: true });
+  const { isLoading, setLoading } = useContext(LoaderContext)
 
   useEffect(() => {
     const fetchToken = async () => {
+      setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
         const mattersList: any = await setStoreMatters()
@@ -77,6 +79,7 @@ const Groups = () => {
       } else {
         window.location.href = '/';
       }
+      setLoading(false)
     }
     fetchToken()
   }, []);
@@ -153,13 +156,13 @@ const Groups = () => {
   };
 
   const importMattersByGroupId = async (groupId: number) => {
-    setIsLoading(true)
+    setLoading(true)
     const gms = await getMgs({ groupId })
     gms.map((gm: any) => {
       handleSelectMatter({ id: gm.matter.id, name: gm.matter.name })
     })
     handleMatterChange({ target: { value: formData.matterNames } })
-    setIsLoading(false)
+    setLoading(false)
   }
 
   const handleSubmit = async (event: any) => {
@@ -233,7 +236,7 @@ const Groups = () => {
         color="success"
         onClick={handleOpen}
         endIcon={<PersonAddIcon />}
-        className="mx-4 my-4 normal-case"
+        className="my-4 mr-4 normal-case"
       >
         Nuevo grupo
       </Button>
@@ -244,11 +247,12 @@ const Groups = () => {
           setGroupsState({ active: !groupsState.active })
           getGroupList(!groupsState.active)
         }}
-        className="mx-4 my-4 normal-case"
+        className="my-4 normal-case "
         disabled={isLoading}
       >
         {`Ver Grupos ${groupsState.active ? "Inactivos" : "Activos"}`}
       </Button>
+      <p className="my-4 text-xl">{groupsState.active ? "Grupos Activos" : "Grupos Inactivos"}</p>
       <CustomTable
         className=""
         headers={headers}

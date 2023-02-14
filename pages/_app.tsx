@@ -1,8 +1,8 @@
 import '../styles/globals.scss'
 import type { AppProps } from 'next/app'
-import { LoaderProvider } from '../contexts/loader-context'
+import { LoaderProvider } from '../contexts/loader'
 
-function MyApp ({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <LoaderProvider value={false}>
       <Component {...pageProps} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import {
   Button,
@@ -33,6 +33,7 @@ import { GRADES, TURNS } from "../../utils/groups";
 import { getMgs } from "../../libs/mgsApi";
 import { getGmpsSortedByTeacherId } from "../../utils/gmp";
 import { createGmp, getGMP, saveGmp } from "../../libs/gmpsApi";
+import { LoaderContext } from "../../contexts/loader";
 
 const Teachers2 = () => {
 
@@ -102,7 +103,6 @@ const Teachers2 = () => {
   const [open, setOpen] = useState(false);
   const [showConfirmChangeState, setShowConfirmChangeState] = useState(false);
   const [selectedGmp, setSelectedGmp] = useState(SELECTED_GMP);
-  const [isLoading, setIsLoading] = useState(false);
   const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([])
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA)
@@ -113,9 +113,11 @@ const Teachers2 = () => {
     errorSave: false
   });
   const [teachersState, setTeachersState] = useState({ active: true });
+  const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
     const fetchToken = async () => {
+      setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
         const mattersList: any = await setStoreMatters()
@@ -124,6 +126,7 @@ const Teachers2 = () => {
       } else {
         window.location.href = '/';
       }
+      setLoading(false)
     }
     fetchToken()
   }, []);
@@ -303,7 +306,7 @@ const Teachers2 = () => {
   };
 
   const searchGroupsByFilters = async () => {
-    setIsLoading(true)
+    setLoading(true)
     setErrors({ ...errors, errorFilters: false })
     let MGList: any = []
     await Promise.all(
@@ -344,7 +347,7 @@ const Teachers2 = () => {
     )
     setFormData({ ...formData, availableMGs: MGList })
     if (MGList.length === 0) setErrors({ ...errors, errorFilters: true })
-    setIsLoading(false)
+    setLoading(false)
   }
 
   const formatGMPbyHeaders = (gmps: any) => {
@@ -394,7 +397,8 @@ const Teachers2 = () => {
         color="success"
         onClick={handleOpen}
         endIcon={<PersonAddIcon />}
-        className="mx-4 my-4 normal-case"
+        className="my-4 mr-4 normal-case"
+        disabled={isLoading}
       >
         Nuevo profesor
       </Button>
@@ -405,12 +409,12 @@ const Teachers2 = () => {
           setTeachersState({ active: !teachersState.active })
           getTeacherList(!teachersState.active)
         }}
-        className="mx-4 my-4 normal-case"
+        className="my-4 normal-case"
         disabled={isLoading}
       >
         {teachersState.active ? "Ver profesores inactivos" : "Ver profesores activos"}
       </Button>
-      <p className="my-4 ml-3 text-xl">{teachersState.active ? "Profesores Activos" : "Profesores Inactivos"}</p>
+      <p className="my-4 text-xl">{teachersState.active ? "Profesores Activos" : "Profesores Inactivos"}</p>
       <CustomTable
         className="max-h-[400px]"
         headers={headers}

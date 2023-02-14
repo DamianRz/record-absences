@@ -1,3 +1,4 @@
+import { Box, LinearProgress } from '@mui/material'
 import React, { createContext, useState } from 'react'
 
 export const LoaderContext = createContext({
@@ -20,8 +21,15 @@ export const LoaderProvider: React.FC<LoaderProviderProps> = ({ value, children 
   const context = { isLoading, setLoading }
 
   return (
-        <LoaderContext.Provider value={context}>
-            {children}
-        </LoaderContext.Provider>
+    <LoaderContext.Provider value={context}>
+      {children}
+      {
+        isLoading && (
+          <Box sx={{ width: '100%', position: "absolute", bottom: "1px" }}>
+            <LinearProgress />
+          </Box>
+        )
+      }
+    </LoaderContext.Provider>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import CustomTable from "../table";
 import { signIn } from "../../libs/usersApi";
@@ -13,6 +13,7 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/material";
+import { LoaderContext } from "../../contexts/loader";
 
 const Matters = () => {
   const headers = [
@@ -32,15 +33,18 @@ const Matters = () => {
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const { isLoading, setLoading } = useContext(LoaderContext)
 
   useEffect(() => {
     const fetchToken = async () => {
+      setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
         await getMatterList(true)
       } else {
         window.location.href = '/';
       }
+      setLoading(false)
     }
     fetchToken()
   }, []);
@@ -124,10 +128,13 @@ const Matters = () => {
         color="success"
         onClick={handleOpen}
         endIcon={<PostAddIcon />}
-        className="mx-4 my-4 normal-case"
+        className="my-4 mr-4 normal-case"
+        disabled={isLoading}
       >
         Nuevo materia
       </Button>
+      <p className="my-4 text-xl">Materias</p>
+
       <CustomTable
         className="max-h-[400px]"
         headers={headers}

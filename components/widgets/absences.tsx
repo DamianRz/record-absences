@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import CustomTable from "../table";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -21,6 +21,7 @@ import {
   FormLabel,
 } from "@mui/material";
 import { getTeacherData } from "../../utils/teacher";
+import { LoaderContext } from "../../contexts/loader";
 
 const Absences = () => {
   const headers = [
@@ -77,8 +78,11 @@ const Absences = () => {
   const [selectedGmp, setSelectedGmp] = useState<any>()
   const [gmpId, setGmpId] = useState()
 
+  const { isLoading, setLoading } = useContext(LoaderContext)
+
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
         await getAbsencesList(true)
@@ -87,6 +91,7 @@ const Absences = () => {
       }
     }
     fetchData()
+    setLoading(false)
   }, []);
 
   const getAbsencesListFormatted = async (state: boolean) => {
@@ -244,8 +249,9 @@ const Absences = () => {
         color="success"
         onClick={handleOpen}
         endIcon={<EventBusyIcon />}
-        className="mx-4 my-4 normal-case"
+        className="my-4 mr-4 normal-case"
         size="small"
+        disabled={isLoading}
       >
         Nuevo Inasistencia
       </Button>
@@ -257,11 +263,12 @@ const Absences = () => {
           setAbsencesState({ active: !absencesState.active })
           getAbsencesList(!absencesState.active)
         }}
-        className="mx-4 my-4 normal-case"
+        className="my-4 normal-case"
+        disabled={isLoading}
       >
         {absencesState.active ? "Ver inasistencias inactivas" : "Ver inasistencias activas"}
       </Button>
-      <p className="my-4 ml-3 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
+      <p className="my-4 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
       <CustomTable
         className=""
         headers={headers}

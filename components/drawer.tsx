@@ -3,15 +3,12 @@ import GroupIcon from "@mui/icons-material/Group";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import PersonIcon from "@mui/icons-material/Person";
-
 import EventBusyIcon from "@mui/icons-material/EventBusy";
-
-
-import { LoaderContext } from "../contexts/loader-context";
-
+import { LoaderContext } from "../contexts/loader";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ExitToApp } from "@mui/icons-material";
+import { Button } from "@mui/material";
 
 interface DrawerProps {
   isAdmin: boolean;
@@ -54,38 +51,37 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const [selected, setSelected] = useState(0);
   const { asPath } = useRouter();
 
-  const { setLoading } = useContext(LoaderContext);
+  const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
     tools.map((item, index) => {
       if (item.page === `/${asPath.split("/")[1]}`) {
-        setLoading(true);
         setSelected(index);
-        setLoading(false);
+        setLoading(true)
       }
     });
   }, []);
 
   return (
-    <div className="h-full w-max min-w-[150px]">
-      <ul className="pt-4 pl-4">
-        {tools.map((item, index) => (
-          <Link href={item.page} key={index}>
-            <li
-              className={`${selected === index ? "rounded-md bg-teal-100" : "text-zinc-900"
-                } mb-1 py-1 cursor-pointer text-xs`}
-            >
-              <span className="flex items-center pl-2">
-                <item.icon
-                  className={`mr-1 w-[20px] ${selected === index && "text-teal-600"
-                    }`}
-                />
-                {item.label}
-              </span>
-            </li>
-          </Link>
-        ))}
-      </ul>
+    <div className="mt-3 h-full w-max min-w-[150px] inline-grid">
+      {tools.map((item, index) => (
+        <Button
+          className="text-black justify-start p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px] text-left text-start"
+          href={item.page}
+          onClick={() => setLoading(true)}
+          sx={{ display: "inline-flex" }}
+          startIcon={
+            <item.icon
+              className={`mr-1 w-[20px] ${selected === index ? "text-teal-300" : "text-teal-600"
+                }`}
+            />
+          }
+          disabled={isLoading}
+        >
+          {item.label}
+        </Button>
+      ))}
+
     </div>
   );
 };

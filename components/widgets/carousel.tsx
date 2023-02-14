@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CustomTable from "../table";
 import { signIn } from "../../libs/usersApi";
 import { getProfessorInfo } from "../../libs/proffesorsApi";
 import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
+import { LoaderContext } from "../../contexts/loader";
 
 const Carousel = () => {
   const headers = [
@@ -34,15 +35,18 @@ const Carousel = () => {
 
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [absences, setAbsences] = useState([]);
+  const { setLoading } = useContext(LoaderContext)
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
         await getAbsencesList(true)
       } else {
         window.location.href = '/';
       }
+      setLoading(false)
     }
     fetchData()
   }, []);
