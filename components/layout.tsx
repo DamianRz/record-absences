@@ -1,8 +1,8 @@
 
 import { CircularProgress } from '@mui/material'
 import React, { useContext } from 'react'
-import { LoaderContext } from '../../contexts/loader-context'
-import Drawer from '../drawer/drawer'
+import { LoaderContext } from '../contexts/loader-context'
+import Drawer from './drawer'
 
 interface LayoutProps {
   children: React.ReactChild

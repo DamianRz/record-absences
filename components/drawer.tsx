@@ -7,7 +7,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 
-import { LoaderContext } from "../../contexts/loader-context";
+import { LoaderContext } from "../contexts/loader-context";
 
 import Link from "next/link";
 import { useRouter } from "next/router";

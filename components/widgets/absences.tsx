@@ -3,7 +3,6 @@ import EventBusyIcon from "@mui/icons-material/EventBusy";
 import CustomTable from "../table";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { signIn } from "../../libs/usersApi";
 import { getProfessorInfo } from "../../libs/proffesorsApi";
 import { createAbsence, getAbsences, saveAbsence } from "../../libs/absencesApi";
 import ES from 'dayjs/locale/es';

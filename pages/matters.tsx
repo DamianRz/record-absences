@@ -1,7 +1,7 @@
 import React from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Layout from "../components/layout/layout";
+import Layout from "../components/layout";
 import MattersWidget from "../components/widgets/matters";
 
 const Matters: NextPage = () => {
