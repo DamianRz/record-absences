@@ -50,7 +50,7 @@ const Carousel = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setAbsences((prevArray) => {
-        const newArray = [...prevArray];
+        const newArray: any = [...prevArray];
         newArray.push(newArray.shift());
         return newArray;
       });
