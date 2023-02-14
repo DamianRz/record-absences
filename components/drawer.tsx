@@ -66,6 +66,7 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
     <div className="mt-3 h-full w-max min-w-[150px] inline-grid">
       {tools.map((item, index) => (
         <Button
+          key={index}
           className="text-black justify-start p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px] text-left text-start"
           href={item.page}
           onClick={() => setLoading(true)}
