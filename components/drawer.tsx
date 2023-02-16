@@ -5,7 +5,6 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import PersonIcon from "@mui/icons-material/Person";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import { LoaderContext } from "../contexts/loader";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
@@ -67,10 +66,17 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
       {tools.map((item, index) => (
         <Button
           key={index}
-          className="text-black justify-start p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px] text-left text-start"
+          className="p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px]"
           href={item.page}
           onClick={() => setLoading(true)}
-          sx={{ display: "inline-flex" }}
+          sx={{
+            minWidth: "150px",
+            display: "inline-flex",
+            justifyContent: "start",
+            color: "#000",
+            margin: "0 40px 0 16px",
+            textTransform: "none"
+          }}
           startIcon={
             <item.icon
               className={`mr-1 w-[20px] ${selected === index ? "text-teal-300" : "text-teal-600"

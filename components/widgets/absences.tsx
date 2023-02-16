@@ -244,30 +244,30 @@ const Absences = () => {
 
   return (
     <div>
-      <Button
-        variant="outlined"
-        color="success"
-        onClick={handleOpen}
-        endIcon={<EventBusyIcon />}
-        className="my-4 mr-4 normal-case"
-        size="small"
-        disabled={isLoading}
-      >
-        Nuevo Inasistencia
-      </Button>
-      <Button
-        size="small"
-        variant="outlined"
-        color={absencesState.active ? "warning" : "success"}
-        onClick={() => {
-          setAbsencesState({ active: !absencesState.active })
-          getAbsencesList(!absencesState.active)
-        }}
-        className="my-4 normal-case"
-        disabled={isLoading}
-      >
-        {absencesState.active ? "Ver inasistencias inactivas" : "Ver inasistencias activas"}
-      </Button>
+      <div className="my-4 space-x-4">
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={handleOpen}
+          endIcon={<EventBusyIcon />}
+          className="normal-case "
+          disabled={isLoading}
+        >
+          Nuevo Inasistencia
+        </Button>
+        <Button
+          variant="outlined"
+          color={absencesState.active ? "warning" : "success"}
+          onClick={() => {
+            setAbsencesState({ active: !absencesState.active })
+            getAbsencesList(!absencesState.active)
+          }}
+          className="normal-case"
+          disabled={isLoading}
+        >
+          {absencesState.active ? "Ver inasistencias inactivas" : "Ver inasistencias activas"}
+        </Button>
+      </div>
       <p className="my-4 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
       <CustomTable
         className=""
@@ -300,9 +300,10 @@ const Absences = () => {
                 type="button"
                 variant="outlined"
                 size="small"
-                className="normal-case max-h-[40px] min-w-[200px]"
+                className="normal-case max-h-[40px]"
                 onClick={handleSearch}
                 disabled={editId != undefined}
+                sx={{ minWidth: "200px" }}
               >
                 Buscar
               </Button>
@@ -335,8 +336,8 @@ const Absences = () => {
                 />
               </LocalizationProvider>
             </div>
-            <div className="flex space-x-2">
-              <FormControl className="w-full my-4">
+            <div className="flex py-4 space-x-2">
+              <FormControl className="w-full">
                 <InputLabel id="select-group">Grupo</InputLabel>
                 <Select
                   required
@@ -359,7 +360,7 @@ const Absences = () => {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl className="w-full my-4">
+              <FormControl className="w-full">
                 <InputLabel id="select-matter">Materia</InputLabel>
                 <Select
                   required
@@ -383,8 +384,8 @@ const Absences = () => {
                 </Select>
               </FormControl>
             </div>
-            <div>
-              <FormControl className="items-center w-full mb-4">
+            <div className="mb-4">
+              <FormControl className="items-center w-full">
                 <TextField
                   required
                   label="Motivo"

@@ -89,6 +89,41 @@ const Teachers2 = () => {
     activeLabel: ""
   };
 
+  interface IFormData {
+    id: number,
+    personId: number,
+    teacherId: number,
+    document: number | string,
+    groupId: number | string,
+    matterId: number | string,
+    gmpId: number | string | null,
+    gmps: any[],
+    specialties: any[],
+    specialtyNames: string[],
+    matterSpecialtyIds: number[],
+    availableMGs: any[],
+    selectedGroupsNames: string[],
+    selectedMGIds: number[],
+    turn: number | string,
+    turnId: number | string,
+    selectedGrade: number | string,
+    name: string,
+    lastname: string,
+    active: boolean,
+    activeLabel: string
+  }
+
+  interface IGmp {
+    id: number | null,
+    gmpId: null | number,
+    matterName: string,
+    groupName: string,
+    turnName: string,
+    grade: number | null,
+    activeLabel: string,
+    active: boolean
+  }
+
   const SELECTED_GMP = {
     id: null,
     gmpId: null,
@@ -102,10 +137,10 @@ const Teachers2 = () => {
 
   const [open, setOpen] = useState(false);
   const [showConfirmChangeState, setShowConfirmChangeState] = useState(false);
-  const [selectedGmp, setSelectedGmp] = useState(SELECTED_GMP);
+  const [selectedGmp, setSelectedGmp] = useState<IGmp>(SELECTED_GMP);
   const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([])
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA)
+  const [formData, setFormData] = useState<IFormData>(DEFAULT_FORM_DATA)
   const [matters, setMatters] = useState([])
   const [errors, setErrors] = useState({
     error: "",
@@ -381,7 +416,7 @@ const Teachers2 = () => {
   }
 
   const changeSateSelectedGmp = async () => {
-    if (selectedGmp) {
+    if (typeof selectedGmp.gmpId !== "object") {
       await saveGmp(selectedGmp.gmpId, { active: !selectedGmp.active })
       setSelectedGmp(SELECTED_GMP)
       setShowConfirmChangeState(false)
@@ -392,28 +427,30 @@ const Teachers2 = () => {
 
   return (
     <div>
-      <Button
-        variant="outlined"
-        color="success"
-        onClick={handleOpen}
-        endIcon={<PersonAddIcon />}
-        className="my-4 mr-4 normal-case"
-        disabled={isLoading}
-      >
-        Nuevo profesor
-      </Button>
-      <Button
-        variant="outlined"
-        color={teachersState.active ? "warning" : "success"}
-        onClick={() => {
-          setTeachersState({ active: !teachersState.active })
-          getTeacherList(!teachersState.active)
-        }}
-        className="my-4 normal-case"
-        disabled={isLoading}
-      >
-        {teachersState.active ? "Ver profesores inactivos" : "Ver profesores activos"}
-      </Button>
+      <div className="my-4 space-x-4">
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={handleOpen}
+          endIcon={<PersonAddIcon />}
+          className="normal-case"
+          disabled={isLoading}
+        >
+          Nuevo profesor
+        </Button>
+        <Button
+          variant="outlined"
+          color={teachersState.active ? "warning" : "success"}
+          onClick={() => {
+            setTeachersState({ active: !teachersState.active })
+            getTeacherList(!teachersState.active)
+          }}
+          className="normal-case"
+          disabled={isLoading}
+        >
+          {teachersState.active ? "Ver profesores inactivos" : "Ver profesores activos"}
+        </Button>
+      </div>
       <p className="my-4 text-xl">{teachersState.active ? "Profesores Activos" : "Profesores Inactivos"}</p>
       <CustomTable
         className="max-h-[400px]"
@@ -427,7 +464,9 @@ const Teachers2 = () => {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-            <div className="flex space-x-2">
+
+
+            <div className="flex mb-4 space-x-2">
               <FormControl className="w-full">
                 <TextField
                   required
@@ -453,25 +492,36 @@ const Teachers2 = () => {
                 />
               </FormControl>
             </div>
-            <FormControl className="w-full my-4">
-              <TextField
-                required
-                label="CI"
-                name="document"
-                type="number"
-                value={formData.document}
-                onChange={handleChange}
-                className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                variant="outlined"
-                size="small"
-                disabled={Boolean(editId)}
-              />
-            </FormControl>
+
+
+
+            <div className="mb-4">
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="CI"
+                  name="document"
+                  type="number"
+                  value={formData.document}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                  disabled={Boolean(editId)}
+                />
+              </FormControl>
+            </div>
+
+
+
             {editId && (
               <>
-                <FormControl className="w-full my-4">
+
+
+                <FormControl className="w-full">
                   <InputLabel id="specialties-select">Especialidades</InputLabel>
                   <Select
+                    className="mb-4"
                     required
                     labelId="specialties-select"
                     multiple
@@ -506,9 +556,10 @@ const Teachers2 = () => {
                     ))}
                   </Select>
                 </FormControl>
+
                 <p className="my-2 text-sm">Asignar grupos</p>
-                <div className="flex w-full space-x-2">
-                  <FormControl className="min-w-[200px]">
+                <div className="flex space-x-2">
+                  <FormControl>
                     <InputLabel id="turn-select">Turno</InputLabel>
                     <Select
                       name="turnId"
@@ -554,8 +605,8 @@ const Teachers2 = () => {
                   </Button>
                 </div>
                 {(formData.availableMGs.length > 0) && (
-                  <div className="flex w-full space-x-2">
-                    <FormControl className="w-full my-4 min-w-[350px]">
+                  <div className="flex w-full mb-4 space-x-2">
+                    <FormControl className="w-full min-w-[350px]">
                       <InputLabel id="groups-select">Seleccione Grupos</InputLabel>
                       <Select
                         labelId="groups-select"

@@ -51,17 +51,33 @@ const Groups = () => {
   const DEFAULT_FORM_DATA = {
     name: "",
     description: "",
+
     grade: "",
     turnId: "",
+    groupIdToImportMatters: "",
+
     active: false,
     matterNames: [],
     matterIds: [],
     savedMgIds: [],
-    groupIdToImportMatters: "",
   };
 
+  interface IFormData {
+    name: string,
+    description: string,
+
+    grade: number | string,
+    turnId: number | string,
+    groupIdToImportMatters: number | string,
+
+    active: boolean,
+    matterNames: string[],
+    matterIds: number[],
+    savedMgIds: number[],
+  }
+
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+  const [formData, setFormData] = useState<IFormData>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [groups, setGroups] = useState([])
   const [matters, setMatters] = useState([])
@@ -231,27 +247,29 @@ const Groups = () => {
 
   return (
     <div>
-      <Button
-        variant="outlined"
-        color="success"
-        onClick={handleOpen}
-        endIcon={<PersonAddIcon />}
-        className="my-4 mr-4 normal-case"
-      >
-        Nuevo grupo
-      </Button>
-      <Button
-        variant="outlined"
-        color={groupsState.active ? "warning" : "success"}
-        onClick={() => {
-          setGroupsState({ active: !groupsState.active })
-          getGroupList(!groupsState.active)
-        }}
-        className="my-4 normal-case "
-        disabled={isLoading}
-      >
-        {`Ver Grupos ${groupsState.active ? "Inactivos" : "Activos"}`}
-      </Button>
+      <div className="my-4 space-x-4">
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={handleOpen}
+          endIcon={<PersonAddIcon />}
+          className="normal-case"
+        >
+          Nuevo grupo
+        </Button>
+        <Button
+          variant="outlined"
+          color={groupsState.active ? "warning" : "success"}
+          onClick={() => {
+            setGroupsState({ active: !groupsState.active })
+            getGroupList(!groupsState.active)
+          }}
+          className="normal-case"
+          disabled={isLoading}
+        >
+          {`Ver Grupos ${groupsState.active ? "Inactivos" : "Activos"}`}
+        </Button>
+      </div>
       <p className="my-4 text-xl">{groupsState.active ? "Grupos Activos" : "Grupos Inactivos"}</p>
       <CustomTable
         className=""
@@ -431,7 +449,7 @@ const Groups = () => {
           </DialogActions>
         </form>
       </Dialog>
-    </div>
+    </div >
   );
 };
 

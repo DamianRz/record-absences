@@ -35,30 +35,9 @@ const Login = () => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = async (event: any) => {
-        event.preventDefault();
-        if (editId) {
-            const matter = { name: formData.name, description: formData.description }
-            const responseSave = await saveMatter(editId, matter)
-            if (responseSave) {
-                setOpen(false);
-                await getMatterList(true)
-                setEditId(null)
-            }
-        } else {
-            const matter = { name: formData.name, description: formData.description }
-            const responseSave = await createMatter(matter)
-            if (responseSave) {
-                setOpen(false);
-                await getMatterList(true)
-                setEditId(null)
-            }
-        }
-    };
-
     return (
         <div className="">
-            <form onSubmit={handleSubmit} className="m-auto mt-[200px] max-w-[350px] max-h-[600px]">
+            <form className="m-auto mt-[200px] max-w-[350px] max-h-[600px]">
                 <p className="my-4 text-xl text-center">Bienvenido al Adminstrador de Inasistencias Docentes</p>
                 <FormControl className="w-full">
                     <TextField

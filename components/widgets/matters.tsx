@@ -123,18 +123,19 @@ const Matters = () => {
 
   return (
     <div>
-      <Button
-        variant="outlined"
-        color="success"
-        onClick={handleOpen}
-        endIcon={<PostAddIcon />}
-        className="my-4 mr-4 normal-case"
-        disabled={isLoading}
-      >
-        Nuevo materia
-      </Button>
+      <div className="my-4 space-x-4">
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={handleOpen}
+          endIcon={<PostAddIcon />}
+          className="normal-case"
+          disabled={isLoading}
+        >
+          Nuevo materia
+        </Button>
+      </div>
       <p className="my-4 text-xl">Materias</p>
-
       <CustomTable
         className="max-h-[400px]"
         headers={headers}
