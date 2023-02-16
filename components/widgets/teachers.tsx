@@ -557,9 +557,12 @@ const Teachers2 = () => {
                   </Select>
                 </FormControl>
 
+
+
+
                 <p className="my-2 text-sm">Asignar grupos</p>
                 <div className="flex space-x-2">
-                  <FormControl>
+                  <FormControl sx={{ minWidth: "100px" }}>
                     <InputLabel id="turn-select">Turno</InputLabel>
                     <Select
                       name="turnId"
@@ -575,7 +578,7 @@ const Teachers2 = () => {
                       ))}
                     </Select>
                   </FormControl>
-                  <FormControl className="w-full max-w-[100px]">
+                  <FormControl className="w-full">
                     <InputLabel id="select-grade">Grado</InputLabel>
                     <Select
                       name="selectedGrade"
@@ -604,6 +607,10 @@ const Teachers2 = () => {
                     Filtrar Grupos
                   </Button>
                 </div>
+
+
+
+
                 {(formData.availableMGs.length > 0) && (
                   <div className="flex w-full mb-4 space-x-2">
                     <FormControl className="w-full min-w-[350px]">
@@ -664,20 +671,23 @@ const Teachers2 = () => {
                     />
                   ) : (<p className="mb-4 text-center">No tiene grupos asignados</p>)
                 }
-                <FormControl className="w-full my-4">
-                  <FormLabel id="radio-active">Estado</FormLabel>
-                  <Button
-                    className="max-w-[200px]"
-                    size="large"
-                    variant="outlined"
-                    color={formData.active ? "success" : "warning"}
-                    onClick={() => {
-                      setFormData({ ...formData, active: !formData.active })
-                    }}
-                  >
-                    {formData.active ? "ACTIVO" : "INACTIVO"}
-                  </Button>
-                </FormControl>
+
+                <div className="my-4">
+                  <FormControl className="w-full">
+                    <FormLabel id="radio-active">Estado</FormLabel>
+                    <Button
+                      className="max-w-[200px]"
+                      size="large"
+                      variant="outlined"
+                      color={formData.active ? "success" : "warning"}
+                      onClick={() => {
+                        setFormData({ ...formData, active: !formData.active })
+                      }}
+                    >
+                      {formData.active ? "ACTIVO" : "INACTIVO"}
+                    </Button>
+                  </FormControl>
+                </div>
               </>
             )}
           </DialogContent>

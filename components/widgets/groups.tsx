@@ -295,22 +295,25 @@ const Groups = () => {
                   variant="outlined"
                 />
               </FormControl>
-              <FormControl className="min-w-[200px]">
-                <InputLabel id="turn-select">Turno</InputLabel>
-                <Select
-                  labelId="turn-select"
-                  name="turnId"
-                  value={formData.turnId}
-                  onChange={handleChange}
-                  input={<OutlinedInput label="Turno" />}
-                >
-                  {TURNS.map((turn) => (
-                    <MenuItem key={turn.id} value={turn.id}>
-                      {turn.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <div>
+                <FormControl>
+                  <InputLabel id="turn-select">Turno</InputLabel>
+                  <Select
+                    labelId="turn-select"
+                    name="turnId"
+                    value={formData.turnId}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Turno" />}
+                  >
+                    {TURNS.map((turn) => (
+                      <MenuItem key={turn.id} value={turn.id}>
+                        {turn.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+
               <FormControl className="w-full max-w-[100px]">
                 <InputLabel id="select-grade">Grado</InputLabel>
                 <Select
@@ -332,20 +335,24 @@ const Groups = () => {
                 </Select>
               </FormControl>
             </div>
-            <FormControl className="w-full">
-              <TextField
-                label="Descripción"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                variant="outlined"
-              />
-            </FormControl>
+
+            <div className="mb-4">
+              <FormControl className="w-full">
+                <TextField
+                  label="Descripción"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                />
+              </FormControl>
+            </div>
+
             {editId && (
               <>
-                <div className="flex space-x-2">
-                  <FormControl className="w-full my-4">
+                <div className="flex mb-4 space-x-2">
+                  <FormControl className="w-full">
                     <InputLabel id="select-import">Importar materias del grupo</InputLabel>
                     <Select
                       name="groupIdToImportMatters"
@@ -375,58 +382,63 @@ const Groups = () => {
                     Importar Materias
                   </Button>
                 </div>
-                <FormControl className="w-full mb-4">
-                  <InputLabel id="matters-select">Materias Asignadas</InputLabel>
-                  <Select
-                    labelId="matters-select"
-                    multiple
-                    value={formData.matterNames}
-                    onChange={handleMatterChange}
-                    input={<OutlinedInput label="Materias Asignadas" />}
-                    MenuProps={MenuProps}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value: any) => (
-                          <Chip key={value} label={value} />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    {(matters || []).map((matter: any, index) => (
-                      <MenuItem
-                        className="h-[20px]"
-                        key={index}
-                        value={matter.name}
-                        onClick={() => {
-                          handleSelectMatter(matter);
-                        }}
-                      >
-                        <Checkbox
-                          checked={
-                            formData.matterNames.indexOf(matter.name) > -1
-                          }
-                        />
-                        <ListItemText primary={matter.name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <div className="mb-4 ">
+                  <FormControl className="w-full">
+                    <InputLabel id="matters-select">Materias Asignadas</InputLabel>
+                    <Select
+                      labelId="matters-select"
+                      multiple
+                      value={formData.matterNames}
+                      onChange={handleMatterChange}
+                      input={<OutlinedInput label="Materias Asignadas" />}
+                      MenuProps={MenuProps}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value: any) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {(matters || []).map((matter: any, index) => (
+                        <MenuItem
+                          className="h-[20px]"
+                          key={index}
+                          value={matter.name}
+                          onClick={() => {
+                            handleSelectMatter(matter);
+                          }}
+                        >
+                          <Checkbox
+                            checked={
+                              formData.matterNames.indexOf(matter.name) > -1
+                            }
+                          />
+                          <ListItemText primary={matter.name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
               </>
             )}
-            <FormControl className="w-full my-4">
-              <FormLabel id="radio-active">Estado</FormLabel>
-              <Button
-                className="max-w-[200px]"
-                size="large"
-                variant="outlined"
-                color={formData.active ? "success" : "warning"}
-                onClick={() => {
-                  setFormData({ ...formData, active: !formData.active })
-                }}
-              >
-                {formData.active ? "ACTIVO" : "INACTIVO"}
-              </Button>
-            </FormControl>
+            <div className="mb-4">
+              <FormControl className="w-full">
+                <FormLabel id="radio-active">Estado</FormLabel>
+                <Button
+                  className="max-w-[200px]"
+                  size="large"
+                  variant="outlined"
+                  color={formData.active ? "success" : "warning"}
+                  onClick={() => {
+                    setFormData({ ...formData, active: !formData.active })
+                  }}
+                >
+                  {formData.active ? "ACTIVO" : "INACTIVO"}
+                </Button>
+              </FormControl>
+            </div>
+
           </DialogContent>
           <DialogActions className="pb-4 pr-4 space-x-4">
             <Button

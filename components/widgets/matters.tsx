@@ -148,43 +148,49 @@ const Matters = () => {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-            <FormControl className="w-full">
-              <TextField
-                required
-                label="Nombre"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl className="w-full mt-4">
-              <TextField
-                label="Descripcion"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                variant="outlined"
-              />
-            </FormControl>
+            <div className="mb-4">
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Nombre"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                />
+              </FormControl>
+            </div>
+            <div className="mb-4">
+              <FormControl className="w-full mt-4">
+                <TextField
+                  label="Descripcion"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                />
+              </FormControl>
+            </div>
             {
               editId && (
-                <FormControl className="w-full my-4">
-                  <FormLabel id="radio-active">Eliminar</FormLabel>
-                  <Button
-                    className=""
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    onClick={() => {
-                      setShowConfirmDelete(true)
-                    }}
-                  >
-                    ELIMINAR
-                  </Button>
-                </FormControl>
+                <div className="mb-4">
+                  <FormControl className="w-full">
+                    <FormLabel id="radio-active">Eliminar</FormLabel>
+                    <Button
+                      className=""
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                      onClick={() => {
+                        setShowConfirmDelete(true)
+                      }}
+                    >
+                      ELIMINAR
+                    </Button>
+                  </FormControl>
+                </div>
               )
             }
           </DialogContent>
