@@ -27,7 +27,7 @@ import { signIn } from "../../libs/usersApi";
 import { createProfessor, getProfessorInfo, getProfessors, saveProfessor } from "../../libs/proffesorsApi";
 import { getTeacherData } from "../../utils/teacher";
 import { setStoreMatters } from "../../utils/matters";
-import { createPerson, savePerson } from "../../libs/personApi";
+import { createPerson, getPerson, savePerson } from "../../libs/personApi";
 import { getSpecialtiesByNames } from "../../utils/specialties";
 import { GRADES, TURNS } from "../../utils/groups";
 import { getMgs } from "../../libs/mgsApi";
@@ -276,17 +276,20 @@ const Teachers2 = () => {
       }
       const personResponse = await createPerson(person)
       if (personResponse) {
-        const teacher: any = {
-          personId: Number(personResponse.raw.insertId),
-          active: true
-        }
-        const teacherResponse = await createProfessor(teacher)
-        if (personResponse && teacherResponse) {
-          await getTeacherList(true)
-          setOpen(false);
-          setEditId(null)
-        } else {
-          // setErrors({ visible: true, error: "No se han podido guardar los cambios" })
+        const newPerson = await getPerson(person.ci)
+        if (newPerson) {
+          const teacher: any = {
+            personId: newPerson.id,
+            active: true
+          }
+          const teacherResponse = await createProfessor(teacher)
+          if (personResponse && teacherResponse) {
+            await getTeacherList(true)
+            setOpen(false);
+            setEditId(null)
+          } else {
+            // setErrors({ visible: true, error: "No se han podido guardar los cambios" })
+          }
         }
       }
     }
