@@ -34,6 +34,7 @@ import { getMgs } from "../../libs/mgsApi";
 import { getGmpsSortedByTeacherId } from "../../utils/gmp";
 import { createGmp, getGMP, saveGmp } from "../../libs/gmpsApi";
 import { LoaderContext } from "../../contexts/loader";
+import { getFilteredMGs } from "../../utils/mg";
 
 const Teachers2 = () => {
 
@@ -178,13 +179,15 @@ const Teachers2 = () => {
   }
 
   const getTeachersFormatted = async (active: boolean) => {
-    const professors = await getProfessors(active)
-    if (professors) {
+    const professors: any[] = await getProfessors(active)
+    if (professors.length) {
       let formattedProfessors: any[] = []
       await Promise.all(
         professors.map(async (professor: any) => {
           const { person } = await getProfessorInfo(professor.id)
           const teacherData = await getTeacherData(Number(person.ci), {})
+          console.log("teacher", teacherData)
+
 
           const specialties = await getSpecialtiesByTeacher(teacherData.teacherId)
           let formattedSpecialties: any = []
@@ -213,6 +216,7 @@ const Teachers2 = () => {
   }
 
   const handleEdit = async (selectedRow: any) => {
+    console.log(selectedRow)
     setEditId(selectedRow.id)
     setFormData({
       ...selectedRow,
@@ -230,7 +234,9 @@ const Teachers2 = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    await getTeacherList(true)
+    setEditId(null)
     setOpen(false);
   };
 
@@ -326,14 +332,12 @@ const Teachers2 = () => {
   };
 
   const handleSelectGroup = (mg: any) => {
-    if (formData.selectedGroupsNames.indexOf(mg.group.name) === -1) {
-
+    if (formData.selectedGroupsNames.indexOf(`${mg.group.name}-${mg.matter.name}`) === -1) {
       formData.selectedMGIds.push(mg.id)
-
-      formData.selectedGroupsNames.push(mg.group.name)
+      formData.selectedGroupsNames.push(`${mg.group.name}-${mg.matter.name}`)
     } else {
       const filteredNames = formData.selectedGroupsNames.filter(
-        (name: string) => name !== mg.group.name
+        (name: string) => name !== `${mg.group.name}-${mg.matter.name}`
       );
       const filteredIds = formData.selectedMGIds.filter(
         (id: number) => id !== mg.id
@@ -358,7 +362,8 @@ const Teachers2 = () => {
           }
         }
 
-        const MGs = await getMgs(mgFilters)
+        // const MGs = await getMgs(mgFilters)
+        const MGs = await getFilteredMGs(mgFilters)
 
         // TODO CHECK THIS IN ABCENCES
         let mgsFilteredByGMPs: any = []
@@ -383,13 +388,17 @@ const Teachers2 = () => {
         MGList = [...MGList, ...filteredNotSavedInGmps]
       })
     )
-    setFormData({ ...formData, availableMGs: MGList })
+    setFormData({
+      ...formData,
+      availableMGs: MGList,
+      selectedGroupsNames: [],
+      selectedMGIds: []
+    })
     if (MGList.length === 0) setErrors({ ...errors, errorFilters: true })
     setLoading(false)
   }
 
   const formatGMPbyHeaders = (gmps: any) => {
-    console.log(gmps)
     const formatted = gmps.map((gmp: any) => ({
       id: gmp.group.id,
       gmpId: gmp.matters[0].gmpId,
@@ -403,7 +412,7 @@ const Teachers2 = () => {
     return formatted
   }
 
-  const onSaveGMP = async () => {
+  const onAddGMP = async () => {
     await Promise.all(
       formData.selectedMGIds.map(async (mgId: number) => {
         const gmp = {
@@ -467,8 +476,6 @@ const Teachers2 = () => {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-
-
             <div className="flex mb-4 space-x-2">
               <FormControl className="w-full">
                 <TextField
@@ -495,9 +502,6 @@ const Teachers2 = () => {
                 />
               </FormControl>
             </div>
-
-
-
             <div className="mb-4">
               <FormControl className="w-full">
                 <TextField
@@ -514,13 +518,8 @@ const Teachers2 = () => {
                 />
               </FormControl>
             </div>
-
-
-
             {editId && (
               <>
-
-
                 <FormControl className="w-full">
                   <InputLabel id="specialties-select">Especialidades</InputLabel>
                   <Select
@@ -559,13 +558,9 @@ const Teachers2 = () => {
                     ))}
                   </Select>
                 </FormControl>
-
-
-
-
                 <p className="my-2 text-sm">Asignar grupos</p>
                 <div className="flex space-x-2">
-                  <FormControl sx={{ minWidth: "100px" }}>
+                  <FormControl sx={{ minWidth: "150px" }}>
                     <InputLabel id="turn-select">Turno</InputLabel>
                     <Select
                       name="turnId"
@@ -614,8 +609,9 @@ const Teachers2 = () => {
 
 
 
+
                 {(formData.availableMGs.length > 0) && (
-                  <div className="flex w-full mb-4 space-x-2">
+                  <div className="flex w-full mt-4 mb-4 space-x-2">
                     <FormControl className="w-full min-w-[350px]">
                       <InputLabel id="groups-select">Seleccione Grupos</InputLabel>
                       <Select
@@ -631,14 +627,14 @@ const Teachers2 = () => {
                           <MenuItem
                             className="h-[20px]"
                             key={index}
-                            value={mg.group.name}
+                            value={`${mg.group.name}-${mg.matter.name}`}
                             onClick={() => {
                               handleSelectGroup(mg);
                             }}
                           >
                             <Checkbox
                               checked={
-                                formData.selectedGroupsNames.indexOf(mg.group.name) > -1
+                                formData.selectedGroupsNames.indexOf(`${mg.group.name}-${mg.matter.name}`) > -1
                               }
                             />
                             <ListItemText primary={`${mg.group.name}-${mg.matter.name}`} />
@@ -649,14 +645,15 @@ const Teachers2 = () => {
                     <Button
                       color="success"
                       variant="outlined"
-                      onClick={() => onSaveGMP()}
-                      className="w-full mx-4 my-4 normal-case"
-                      disabled={!(formData.selectedGroupsNames) && isLoading}
+                      onClick={() => onAddGMP()}
+                      className="w-full mx-4 normal-case"
+                      disabled={formData.selectedGroupsNames.length === 0}
                     >
-                      Guardar
+                      Agregar
                     </Button>
                   </div>
                 )}
+
                 {errors.errorFilters && (
                   <p className="mb-4 text-red-400">No se han encontrado grupos con los filtros seleccionados</p>
                 )}

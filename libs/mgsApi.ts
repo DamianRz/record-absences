@@ -29,6 +29,22 @@ export const getMgs = async (filters: any): Promise<any> => {
     }).then(response => response.json());
 }
 
+export const getMgsBasicIds = async (filters: any): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const token = localStorage.getItem('token');
+    return await fetch(`${apiUrl}/mgs`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...filters })
+    }).then(response => response.json());
+}
+
 export const createMg = async (mg: any): Promise<any> => {
     const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');

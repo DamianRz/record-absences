@@ -1,7 +1,7 @@
-export const getProfessor = async (ci: number): Promise<{ id: number, personId: number, active: boolean } | undefined> => {
+export const getProfessor = async (personId: number): Promise<any> => {
     const apiUrl = process.env.API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('token');
-    const response = await fetch(`${apiUrl}/proffessors`, {
+    return await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -10,14 +10,8 @@ export const getProfessor = async (ci: number): Promise<{ id: number, personId: 
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ person: { ci } })
-    });
-    const data = await response.json();
-    if (data.length > 0) {
-        return { id: data[0].id, personId: data[0].personId, active: data[0].active }
-    } else {
-        return undefined;
-    }
+        body: JSON.stringify({ personId })
+    }).then(response => response.json())
 }
 
 export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
