@@ -1,5 +1,5 @@
-export const getProfessor = async (personId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+export const getProfessor = async (ci: number): Promise<any> => {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
@@ -10,14 +10,14 @@ export const getProfessor = async (personId: number): Promise<any> => {
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ personId })
+        body: JSON.stringify({ ci })
     }).then(response => response.json())
 }
 
 export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/proffessors/${proffesorId}/all`, {
+    return await fetch(`${apiUrl}/proffessors/${proffesorId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
 }
 
 export const getProfessors = async (active: boolean): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/`, {
         method: 'POST',
@@ -46,14 +46,14 @@ export const getProfessors = async (active: boolean): Promise<any> => {
 }
 
 export const saveProfessor = async (id: number, professor: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Methods': 'PUT',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },
@@ -62,7 +62,7 @@ export const saveProfessor = async (id: number, professor: any): Promise<any> =>
 }
 
 export const createProfessor = async (professor: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/create`, {
         method: 'POST',

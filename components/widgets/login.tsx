@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { signIn } from "../../libs/usersApi";
+import { signIn, signUp } from "../../libs/usersApi";
 import {
     Button,
     TextField,
@@ -28,6 +28,26 @@ const Login = () => {
             window.location.href = '/absences';
         } else {
             setError({ visible: true, error: "No se pudo iniciar sesion verifique usuario o contrasena" })
+        }
+    }
+
+    const handleRegister = async () => {
+        setError({ visible: false, error: "" })
+        const { token: exists = undefined } = await signIn(Number(formData.ci), formData.password);
+        if (!exists) {
+            const response = await signUp(Number(formData.ci), formData.password);
+            if (response) {
+                const { token } = await signIn(Number(formData.ci), formData.password);
+                if (token) {
+                    localStorage.setItem("token", token)
+                    window.location.href = '/absences';
+                } else {
+                    setError({ visible: true, error: "Ocurrio un error, vuelva a intentarlo" })
+                }
+
+            }
+        } else {
+            setError({ visible: true, error: "El documento ya existe, inicie sesion" })
         }
     }
 
@@ -69,16 +89,28 @@ const Login = () => {
                 {error.visible && (
                     <p className="mt-2 text-sm text-red-400">{error.error}</p>
                 )}
-                <div className="flex justify-center">
+                <div className="flex justify-center space-x-2">
                     <Button
                         className="w-full align-middle max-w-[200px] m-auto items-center flex mt-4"
                         variant="outlined"
                         color="success"
+                        size="small"
                         onClick={() => {
                             handleLogin()
                         }}
                     >
                         Acceder
+                    </Button>
+                    <Button
+                        className="w-full align-middle max-w-[200px] m-auto items-center flex mt-4"
+                        variant="outlined"
+                        color="success"
+                        size="small"
+                        onClick={() => {
+                            handleRegister()
+                        }}
+                    >
+                        Registrarse
                     </Button>
                 </div>
             </form>

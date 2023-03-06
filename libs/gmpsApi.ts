@@ -1,5 +1,5 @@
 export const getGMP = async (professorId: number | null, gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     let body = { ...gmp }
     if (professorId !== null) {
@@ -25,7 +25,7 @@ export const getGMP = async (professorId: number | null, gmp: any): Promise<any>
 }
 
 export const createGmp = async (gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/gmps/create`, {
         method: 'POST',
@@ -41,7 +41,7 @@ export const createGmp = async (gmp: any): Promise<any> => {
 }
 
 export const saveGmp = async (gmpId: number, gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/gmps/${gmpId}`, {
         method: 'PATCH',
@@ -57,7 +57,7 @@ export const saveGmp = async (gmpId: number, gmp: any): Promise<any> => {
 }
 
 export const deleteGmp = async (gmpId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/gmps/${gmpId}`, {
         method: 'DELETE',

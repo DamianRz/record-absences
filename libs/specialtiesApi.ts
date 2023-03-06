@@ -1,5 +1,5 @@
 export const getSpecialtiesByTeacher = async (teacherId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties/all`, {
         method: 'POST',
@@ -15,7 +15,7 @@ export const getSpecialtiesByTeacher = async (teacherId: number): Promise<any> =
 }
 
 export const getSpecialties = async (teacherId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export const getSpecialties = async (teacherId: number): Promise<any> => {
 }
 
 export const createSpecialty = async (specialty: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties/create`, {
         method: 'POST',
@@ -47,7 +47,7 @@ export const createSpecialty = async (specialty: any): Promise<any> => {
 }
 
 export const removeSpecialty = async (specialtyId: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties/${specialtyId}`, {
         method: 'DELETE',
@@ -62,15 +62,12 @@ export const removeSpecialty = async (specialtyId: any): Promise<any> => {
 }
 
 export const updateSpecialties = async (createSpecialties: any, removeSpecialtyIds: any) => {
-    await Promise.all(
-        createSpecialties.map(async (specialty: any) => {
+    Promise.all([
+        ...createSpecialties.map(async (specialty: any) => {
             await createSpecialty(specialty)
-        })
-    );
-    await Promise.all(
-        removeSpecialtyIds.map(async (specialtyId: any) => {
+        }),
+        ...removeSpecialtyIds.map(async (specialtyId: any) => {
             await removeSpecialty(specialtyId)
         })
-    );
-
+    ]);
 }

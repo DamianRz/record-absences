@@ -1,5 +1,5 @@
 export const getAbsences = async (active: boolean): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/absences/all`, {
         method: 'POST',
@@ -15,7 +15,7 @@ export const getAbsences = async (active: boolean): Promise<any> => {
 }
 
 export const createAbsence = async (absenceData: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/absences/create`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export const createAbsence = async (absenceData: any): Promise<any> => {
 }
 
 export const saveAbsence = async (absenceId: number, absenceData: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/absences/${absenceId}`, {
         method: 'PATCH',

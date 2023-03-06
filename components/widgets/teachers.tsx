@@ -23,14 +23,11 @@ import {
   getSpecialtiesByTeacher,
   updateSpecialties,
 } from "../../libs/specialtiesApi";
-import { signIn } from "../../libs/usersApi";
 import { createProfessor, getProfessorInfo, getProfessors, saveProfessor } from "../../libs/proffesorsApi";
 import { getTeacherData } from "../../utils/teacher";
 import { setStoreMatters } from "../../utils/matters";
-import { createPerson, getPerson, savePerson } from "../../libs/personApi";
 import { getSpecialtiesByNames } from "../../utils/specialties";
 import { GRADES, TURNS } from "../../utils/groups";
-import { getMgs } from "../../libs/mgsApi";
 import { getGmpsSortedByTeacherId } from "../../utils/gmp";
 import { createGmp, getGMP, saveGmp } from "../../libs/gmpsApi";
 import { LoaderContext } from "../../contexts/loader";
@@ -184,10 +181,7 @@ const Teachers2 = () => {
       let formattedProfessors: any[] = []
       await Promise.all(
         professors.map(async (professor: any) => {
-          const { person } = await getProfessorInfo(professor.id)
-          const teacherData = await getTeacherData(Number(person.ci), {})
-          console.log("teacher", teacherData)
-
+          const teacherData = await getTeacherData(Number(professor.ci), {})
 
           const specialties = await getSpecialtiesByTeacher(teacherData.teacherId)
           let formattedSpecialties: any = []
@@ -203,7 +197,7 @@ const Teachers2 = () => {
           formattedProfessors.push({
             ...formData,
             ...teacherData,
-            personId: person.id,
+            personId: teacherData.teacherId,
             specialties: formattedSpecialties,
             specialtyNames: specialtyNames,
             matterSpecialtyIds: matterSpecialtyIds,
@@ -216,7 +210,6 @@ const Teachers2 = () => {
   }
 
   const handleEdit = async (selectedRow: any) => {
-    console.log(selectedRow)
     setEditId(selectedRow.id)
     setFormData({
       ...selectedRow,
@@ -243,18 +236,19 @@ const Teachers2 = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
-      const person = {
+      const teacher = {
         name: formData.name,
         lastname: formData.lastname,
+        active: formData.active
       }
-      const personResponse = await savePerson(formData.personId, person)
-      const teacherResponse = await saveProfessor(formData.teacherId, { active: formData.active })
+      const teacherResponse = await saveProfessor(editId, teacher)
+
       const specialties = await getSpecialtiesByNames(formData.specialtyNames)
       let formattedSpecialties: any = []
       let removeSpecialties: any = []
       specialties.map(async (specialty: any) => {
         const specialtyBody = {
-          proffessorId: formData.teacherId,
+          proffessorId: editId,
           matterId: specialty.id
         }
         formattedSpecialties.push(specialtyBody)
@@ -267,7 +261,7 @@ const Teachers2 = () => {
         formattedRemoveSpecialties.push(spe.id)
       })
       await updateSpecialties(formattedSpecialties, formattedRemoveSpecialties)
-      if (personResponse && teacherResponse) {
+      if (teacherResponse) {
         setOpen(false);
         await getTeacherList(true)
         setEditId(null)
@@ -275,28 +269,17 @@ const Teachers2 = () => {
         setErrors({ ...errors, errorSave: true, error: "No se han podido guardar los cambios" })
       }
     } else {
-      const person: any = {
+      const teacher: any = {
         name: formData.name,
         lastname: formData.lastname,
-        ci: Number(formData.document)
+        ci: Number(formData.document),
+        active: true
       }
-      const personResponse = await createPerson(person)
-      if (personResponse) {
-        const newPerson = await getPerson(person.ci)
-        if (newPerson) {
-          const teacher: any = {
-            personId: newPerson.id,
-            active: true
-          }
-          const teacherResponse = await createProfessor(teacher)
-          if (personResponse && teacherResponse) {
-            await getTeacherList(true)
-            setOpen(false);
-            setEditId(null)
-          } else {
-            // setErrors({ visible: true, error: "No se han podido guardar los cambios" })
-          }
-        }
+      const teacherResponse = await createProfessor(teacher)
+      if (teacherResponse) {
+        await getTeacherList(true)
+        setOpen(false);
+        setEditId(null)
       }
     }
   };
@@ -362,10 +345,8 @@ const Teachers2 = () => {
           }
         }
 
-        // const MGs = await getMgs(mgFilters)
         const MGs = await getFilteredMGs(mgFilters)
 
-        // TODO CHECK THIS IN ABCENCES
         let mgsFilteredByGMPs: any = []
         await Promise.all(
           MGs.map(async (mg: any) => {
