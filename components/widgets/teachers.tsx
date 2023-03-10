@@ -206,6 +206,8 @@ const Teachers2 = () => {
         })
       )
       return formattedProfessors.sort((a, b) => a.id - b.id);
+    } else {
+      return []
     }
   }
 

@@ -32,7 +32,7 @@ export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
 export const getProfessors = async (active: boolean): Promise<any> => {
     const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/proffessors/`, {
+    return await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export const getProfessors = async (active: boolean): Promise<any> => {
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ active: active })
+        body: JSON.stringify({ active })
     }).then(response => response.json())
 }
 
