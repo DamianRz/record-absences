@@ -409,7 +409,7 @@ const Teachers2 = () => {
         await createGmp(gmp)
       })
     )
-    const gmps: any = await getGmpsSortedByTeacherId(editId)
+    const gmps: any = await getGmpsSortedByTeacherId(Number(editId))
     setFormData({ ...formData, gmps })
   }
 
