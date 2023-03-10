@@ -284,7 +284,7 @@ const Groups = () => {
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
             <div className="flex mb-4 space-x-2">
-              <FormControl className="w-full  min-w-[100px]">
+              <FormControl className="w-full">
                 <TextField
                   required
                   label="Nombre"
@@ -295,24 +295,23 @@ const Groups = () => {
                   variant="outlined"
                 />
               </FormControl>
-              <div>
-                <FormControl>
-                  <InputLabel id="turn-select">Turno</InputLabel>
-                  <Select
-                    labelId="turn-select"
-                    name="turnId"
-                    value={formData.turnId}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Turno" />}
-                  >
-                    {TURNS.map((turn) => (
-                      <MenuItem key={turn.id} value={turn.id}>
-                        {turn.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
+
+              <FormControl className="min-w-[100px]">
+                <InputLabel id="turn-select">Turno</InputLabel>
+                <Select
+                  labelId="turn-select"
+                  name="turnId"
+                  value={formData.turnId}
+                  onChange={handleChange}
+                  input={<OutlinedInput label="Turno" />}
+                >
+                  {TURNS.map((turn) => (
+                    <MenuItem key={turn.id} value={turn.id}>
+                      {turn.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <FormControl className="w-full max-w-[100px]">
                 <InputLabel id="select-grade">Grado</InputLabel>

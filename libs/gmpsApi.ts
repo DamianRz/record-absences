@@ -44,11 +44,11 @@ export const saveGmp = async (gmpId: number, gmp: any): Promise<any> => {
     const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/gmps/${gmpId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PATCH',
+            'Access-Control-Allow-Methods': 'PUT',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Authorization': `Bearer ${token}`
         },

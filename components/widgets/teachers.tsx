@@ -215,6 +215,7 @@ const Teachers2 = () => {
     setEditId(selectedRow.id)
     setFormData({
       ...selectedRow,
+      teacherId: selectedRow.id
     })
     setOpen(true)
   };
@@ -237,6 +238,7 @@ const Teachers2 = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    console.log("editId", editId)
     if (editId) {
       const teacher = {
         name: formData.name,
@@ -262,6 +264,7 @@ const Teachers2 = () => {
       removeSpecialties.map((spe: any) => {
         formattedRemoveSpecialties.push(spe.id)
       })
+      console.log(formattedSpecialties, formattedRemoveSpecialties)
       await updateSpecialties(formattedSpecialties, formattedRemoveSpecialties)
       if (teacherResponse) {
         setOpen(false);
@@ -400,13 +403,13 @@ const Teachers2 = () => {
       formData.selectedMGIds.map(async (mgId: number) => {
         const gmp = {
           mgId: mgId,
-          proffessorId: formData.teacherId,
+          proffessorId: editId,
           active: true
         }
         await createGmp(gmp)
       })
     )
-    const gmps: any = await getGmpsSortedByTeacherId(formData.teacherId)
+    const gmps: any = await getGmpsSortedByTeacherId(editId)
     setFormData({ ...formData, gmps })
   }
 
