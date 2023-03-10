@@ -182,6 +182,7 @@ const Groups = () => {
   }
 
   const handleSubmit = async (event: any) => {
+    console.log("handle")
     event.preventDefault();
     if (editId) {
       const group = {
@@ -199,20 +200,24 @@ const Groups = () => {
             removeMgIds.push(mg.id)
           }
         })
-        await Promise.all(
-          removeMgIds.map(async (mgId) => {
-            await deleteMg(mgId)
-          }),
-        )
-        await Promise.all(
-          formData.matterIds.map(async (matterId) => {
-            await createMg({ groupId: editId, matterId: matterId })
-          }),
-        )
-        setOpen(false);
-        await getGroupList(true)
-        setEditId(null)
+        try {
+          await Promise.all(
+            removeMgIds.map(async (mgId) => {
+              await deleteMg(mgId)
+            }),
+          )
+          await Promise.all(
+            formData.matterIds.map(async (matterId) => {
+              await createMg({ groupId: editId, matterId: matterId })
+            }),
+          )
+        } catch (error) {
+          console.log(error)
+        }
       }
+      setOpen(false);
+      await getGroupList(true)
+      setEditId(null)
     } else {
       const group = {
         grade: formData.grade,
@@ -375,7 +380,7 @@ const Groups = () => {
                     color="success"
                     variant="outlined"
                     onClick={() => importMattersByGroupId(Number(formData.groupIdToImportMatters))}
-                    className="w-full mx-4 my-4 normal-case max-w-[150px]"
+                    className="w-full mx-4 normal-case max-w-[150px]"
                     disabled={!formData.groupIdToImportMatters}
                   >
                     Importar Materias
