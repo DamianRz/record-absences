@@ -68,8 +68,8 @@ const Carousel = () => {
       let formattedAbsences: any[] = []
       await Promise.all(
         absences.map(async (absence: any) => {
-          const { person } = await getProfessorInfo(absence.gmp.proffessorId)
-          const teacherData = await getTeacherData(Number(person.ci), formData)
+          const { ci } = await getProfessorInfo(absence.gmp.proffessorId)
+          const teacherData = await getTeacherData(Number(ci), formData)
           const filtredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
@@ -83,9 +83,9 @@ const Carousel = () => {
             const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
             formattedAbsences.push({
               id: absence.id,
-              document: person.ci,
-              name: person.name,
-              lastname: person.lastname,
+              document: teacherData.ci,
+              name: teacherData.name,
+              lastname: teacherData.lastname,
               group: group.name,
               groupId: group.id,
               matter: matter.name,
