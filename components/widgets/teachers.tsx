@@ -238,7 +238,6 @@ const Teachers2 = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    console.log("editId", editId)
     if (editId) {
       const teacher = {
         name: formData.name,
@@ -264,7 +263,6 @@ const Teachers2 = () => {
       removeSpecialties.map((spe: any) => {
         formattedRemoveSpecialties.push(spe.id)
       })
-      console.log(formattedSpecialties, formattedRemoveSpecialties)
       await updateSpecialties(formattedSpecialties, formattedRemoveSpecialties)
       if (teacherResponse) {
         setOpen(false);

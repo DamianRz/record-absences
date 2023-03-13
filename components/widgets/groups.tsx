@@ -182,7 +182,6 @@ const Groups = () => {
   }
 
   const handleSubmit = async (event: any) => {
-    console.log("handle")
     event.preventDefault();
     if (editId) {
       const group = {
