@@ -1,5 +1,5 @@
 export const getGroups = async (groupFilters: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/groups`, {
         method: 'POST',
@@ -15,7 +15,7 @@ export const getGroups = async (groupFilters: any): Promise<any> => {
 }
 
 export const createGroup = async (group: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/groups/create`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export const createGroup = async (group: any): Promise<any> => {
 }
 
 export const deleteGroup = async (groupId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/groups/${groupId}`, {
         method: 'DELETE',
@@ -46,7 +46,7 @@ export const deleteGroup = async (groupId: number): Promise<any> => {
 }
 
 export const saveGroup = async (groupId: number, groupData: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/groups/${groupId}`, {
         method: 'PUT',

@@ -1,4 +1,4 @@
-const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
 
 export const signIn = (ci: number, password: string): Promise<{ token: string }> => {
     return fetch(`${apiUrl}/users/signin`, {

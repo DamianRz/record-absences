@@ -1,5 +1,5 @@
 export const getPerson = async (ci: number): Promise<{ id: number, name: string, lastname: string, ci: number } | undefined> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     return await fetch(`${apiUrl}/people`, {
         method: 'POST',
         headers: {
@@ -19,7 +19,7 @@ export const getPerson = async (ci: number): Promise<{ id: number, name: string,
 }
 
 export const savePerson = async (id: number, person: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/people/${id}`, {
         method: 'PUT',
@@ -35,7 +35,7 @@ export const savePerson = async (id: number, person: any): Promise<any> => {
 }
 
 export const createPerson = async (person: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/people/create`, {
         method: 'POST',

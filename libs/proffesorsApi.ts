@@ -1,5 +1,5 @@
 export const getProfessor = async (ci: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
@@ -15,7 +15,7 @@ export const getProfessor = async (ci: number): Promise<any> => {
 }
 
 export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/${proffesorId}`, {
         method: 'GET',
@@ -30,7 +30,7 @@ export const getProfessorInfo = async (proffesorId: number): Promise<any> => {
 }
 
 export const getProfessors = async (active: boolean): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors`, {
         method: 'POST',
@@ -46,7 +46,7 @@ export const getProfessors = async (active: boolean): Promise<any> => {
 }
 
 export const saveProfessor = async (id: number, professor: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/${id}`, {
         method: 'PUT',
@@ -62,7 +62,7 @@ export const saveProfessor = async (id: number, professor: any): Promise<any> =>
 }
 
 export const createProfessor = async (professor: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/proffessors/create`, {
         method: 'POST',

@@ -1,5 +1,5 @@
 export const getMatters = async (): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/matters`, {
         method: 'POST',
@@ -15,7 +15,7 @@ export const getMatters = async (): Promise<any> => {
 }
 
 export const createMatter = async (matter: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/matters/create`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export const createMatter = async (matter: any): Promise<any> => {
 }
 
 export const saveMatter = async (matterId: number, matter: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/matters/${matterId}`, {
         method: 'PUT',
@@ -47,7 +47,7 @@ export const saveMatter = async (matterId: number, matter: any): Promise<any> =>
 }
 
 export const deleteMatter = async (matterId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/matters/${matterId}`, {
         method: 'DELETE',

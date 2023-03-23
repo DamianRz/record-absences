@@ -1,5 +1,5 @@
 export const getMgById = async (mgId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs/${mgId}/all`, {
         method: 'GET',
@@ -14,7 +14,7 @@ export const getMgById = async (mgId: number): Promise<any> => {
 }
 
 export const getMgs = async (filters: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs/all`, {
         method: 'POST',
@@ -30,7 +30,7 @@ export const getMgs = async (filters: any): Promise<any> => {
 }
 
 export const getMgsBasicIds = async (filters: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs`, {
         method: 'POST',
@@ -46,7 +46,7 @@ export const getMgsBasicIds = async (filters: any): Promise<any> => {
 }
 
 export const createMg = async (mg: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs/create`, {
         method: 'POST',
@@ -62,7 +62,7 @@ export const createMg = async (mg: any): Promise<any> => {
 }
 
 export const saveMg = async (mgId: number, mg: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs/${mgId}`, {
         method: 'PUT',
@@ -78,7 +78,7 @@ export const saveMg = async (mgId: number, mg: any): Promise<any> => {
 }
 
 export const deleteMg = async (mgId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/mgs/${mgId}`, {
         method: 'DELETE',
