@@ -31,7 +31,7 @@ export const getSpecialties = async (teacherId: number): Promise<any> => {
 }
 
 export const createSpecialty = async (specialty: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties/create`, {
         method: 'POST',
@@ -47,7 +47,7 @@ export const createSpecialty = async (specialty: any): Promise<any> => {
 }
 
 export const removeSpecialty = async (specialtyId: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000/api'
+    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
     const token = localStorage.getItem('token');
     return await fetch(`${apiUrl}/specialties/${specialtyId}`, {
         method: 'DELETE',
