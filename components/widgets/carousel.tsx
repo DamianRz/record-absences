@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import CustomTable from "../table";
-import { signIn } from "../../libs/usersApi";
 import { getProfessorInfo } from "../../libs/proffesorsApi";
 import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
@@ -52,14 +51,16 @@ const Carousel = () => {
   }, []);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setAbsences((prevArray) => {
-        const newArray: any = [...prevArray];
-        newArray.push(newArray.shift());
-        return newArray;
-      });
-    }, 2500);
-    return () => clearInterval(intervalId);
+    if (absences.length) {
+      const intervalId = setInterval(() => {
+        setAbsences((prevArray) => {
+          const newArray: any = [...prevArray];
+          newArray.push(newArray.shift());
+          return newArray;
+        });
+      }, 2500);
+      return () => clearInterval(intervalId);
+    }
   }, []);
 
   const getAbsencesListFormatted = async (state: boolean) => {
@@ -70,7 +71,7 @@ const Carousel = () => {
         absences.map(async (absence: any) => {
           const { ci } = await getProfessorInfo(absence.gmp.proffessorId)
           const teacherData = await getTeacherData(Number(ci), formData)
-          const filtredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
+          const filteredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
               acc.push({ group: gmp.group, matter: selectedMatters[0] });
@@ -78,8 +79,8 @@ const Carousel = () => {
             return acc;
           }, []);
 
-          if (filtredGmp.length) {
-            const { group, matter } = filtredGmp[0]
+          if (filteredGmp.length) {
+            const { group, matter } = filteredGmp[0]
             const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
             formattedAbsences.push({
               id: absence.id,
