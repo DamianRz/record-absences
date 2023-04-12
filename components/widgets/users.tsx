@@ -169,10 +169,9 @@ const Users = () => {
             {
               editId && (
                 <div className="mb-4">
-                  <FormControl className="w-full">
-                    <FormLabel id="radio-active">Eliminar</FormLabel>
+                  <FormControl className="w-full mt-4">
                     <Button
-                      className=""
+                      className="m-auto"
                       size="small"
                       variant="outlined"
                       color="error"
@@ -180,7 +179,7 @@ const Users = () => {
                         setShowConfirmDelete(true)
                       }}
                     >
-                      ELIMINAR
+                      ELIMINAR USUARIO
                     </Button>
                   </FormControl>
                 </div>
