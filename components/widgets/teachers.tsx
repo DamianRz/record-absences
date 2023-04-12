@@ -23,7 +23,7 @@ import {
   getSpecialtiesByTeacher,
   updateSpecialties,
 } from "../../libs/specialtiesApi";
-import { createProfessor, getProfessorInfo, getProfessors, saveProfessor } from "../../libs/proffesorsApi";
+import { createProfessor, getProfessorInfo, getProfessors, saveProfessor } from "../../libs/professorsApi";
 import { getTeacherData } from "../../utils/teacher";
 import { setStoreMatters } from "../../utils/matters";
 import { getSpecialtiesByNames } from "../../utils/specialties";

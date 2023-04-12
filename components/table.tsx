@@ -71,7 +71,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           </Table>
         </TableContainer>
       )}
-      {values.length === 0 && <p className="ml-3">No hay inasistencias creadas por el momento</p>}
+      {values.length === 0 && <p>No se encontraron resultados pre-cargados</p>}
     </>
   );
 };

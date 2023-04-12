@@ -1,13 +1,10 @@
-export const getPerson = async (ci: number): Promise<{ id: number, name: string, lastname: string, ci: number } | undefined> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    return await fetch(`${apiUrl}/people`, {
+import { API_URL, getHeader } from "../utils/apiSettings";
+
+export const getPerson = async (ci: number):
+    Promise<{ id: number, name: string, lastname: string, ci: number } | undefined> => {
+    return await fetch(`${API_URL}/people`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ci })
     }).then(response => response.json())
         .then(data => {
@@ -19,33 +16,17 @@ export const getPerson = async (ci: number): Promise<{ id: number, name: string,
 }
 
 export const savePerson = async (id: number, person: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/people/${id}`, {
+    return await fetch(`${API_URL}/people/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PUT',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...person })
     }).then(response => response.json())
 }
 
 export const createPerson = async (person: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/people/create`, {
+    return await fetch(`${API_URL}/people/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...person })
     }).then(response => response.json())
 }

@@ -1,62 +1,32 @@
+import { API_URL, getHeader } from "../utils/apiSettings";
+
 export const getMatters = async (): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/matters`, {
+    return await fetch(`${API_URL}/matters`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({})
     }).then(response => response.json())
 }
 
 export const createMatter = async (matter: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/matters/create`, {
+    return await fetch(`${API_URL}/matters/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...matter })
     }).then(response => response.json())
 }
 
 export const saveMatter = async (matterId: number, matter: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/matters/${matterId}`, {
+    return await fetch(`${API_URL}/matters/${matterId}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PUT',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...matter })
     }).then(response => response.json())
 }
 
 export const deleteMatter = async (matterId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/matters/${matterId}`, {
+    return await fetch(`${API_URL}/matters/${matterId}`, {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        }
+        headers: getHeader(),
     }).then(response => response.json())
 }

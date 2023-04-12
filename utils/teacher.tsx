@@ -1,5 +1,5 @@
 import { getPerson } from "../libs/personApi";
-import { getProfessor } from "../libs/proffesorsApi";
+import { getProfessor } from "../libs/professorsApi";
 import { getGmpsSortedByTeacherId } from "./gmp";
 
 export const getTeacher = async (document: number) => {

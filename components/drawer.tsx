@@ -6,7 +6,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import { LoaderContext } from "../contexts/loader";
 import { useRouter } from "next/router";
-import { ExitToApp } from "@mui/icons-material";
+import { AccountBox, ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
 
 interface DrawerProps {
@@ -38,6 +38,11 @@ const tools = [
     label: "Reportes",
     icon: AssessmentIcon,
     page: "/lista",
+  },
+  {
+    label: "Usuarios",
+    icon: AccountBox,
+    page: "/users",
   },
   {
     label: "Salir",

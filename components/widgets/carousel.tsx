@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import CustomTable from "../table";
-import { getProfessorInfo } from "../../libs/proffesorsApi";
+import { getProfessorInfo } from "../../libs/professorsApi";
 import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";

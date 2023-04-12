@@ -1,63 +1,33 @@
+import { API_URL, getHeader } from "../utils/apiSettings";
+
 export const getSpecialtiesByTeacher = async (teacherId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/specialties/all`, {
+    return await fetch(`${API_URL}/specialties/all`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ proffessorId: teacherId })
     }).then(response => response.json())
 }
 
 export const getSpecialties = async (teacherId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/specialties`, {
+    return await fetch(`${API_URL}/specialties`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({})
     }).then(response => response.json())
 }
 
 export const createSpecialty = async (specialty: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/specialties/create`, {
+    return await fetch(`${API_URL}/specialties/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...specialty })
     }).then(response => response.json())
 }
 
 export const removeSpecialty = async (specialtyId: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://192.168.2.212:3000/api'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/specialties/${specialtyId}`, {
+    return await fetch(`${API_URL}/specialties/${specialtyId}`, {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        }
+        headers: getHeader(),
     }).then(response => response.json())
 }
 
