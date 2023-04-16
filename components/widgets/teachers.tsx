@@ -23,7 +23,7 @@ import {
   getSpecialtiesByTeacher,
   updateSpecialties,
 } from "../../libs/specialtiesApi";
-import { createProfessor, getProfessorInfo, getProfessors, saveProfessor } from "../../libs/professorsApi";
+import { createProfessor, getProfessors, saveProfessor } from "../../libs/professorsApi";
 import { getTeacherData } from "../../utils/teacher";
 import { setStoreMatters } from "../../utils/matters";
 import { getSpecialtiesByNames } from "../../utils/specialties";
@@ -171,8 +171,10 @@ const Teachers2 = () => {
   }, [formData.specialtyNames])
 
   const getTeacherList = async (active: boolean) => {
+    setLoading(true)
     const response: any = await getTeachersFormatted(active)
     if (response) setTeachers(response)
+    setLoading(false)
   }
 
   const getTeachersFormatted = async (active: boolean) => {
@@ -237,6 +239,7 @@ const Teachers2 = () => {
   };
 
   const handleSubmit = async (event: any) => {
+    setLoading(true)
     event.preventDefault();
     if (editId) {
       const teacher = {
@@ -285,6 +288,7 @@ const Teachers2 = () => {
         setEditId(null)
       }
     }
+    setLoading(false)
   };
 
   const handleSpecialtyChange = (event: any) => {
@@ -589,11 +593,6 @@ const Teachers2 = () => {
                     Filtrar Grupos
                   </Button>
                 </div>
-
-
-
-
-
                 {(formData.availableMGs.length > 0) && (
                   <div className="flex w-full mt-4 mb-4 space-x-2">
                     <FormControl className="w-full min-w-[350px]">
@@ -637,7 +636,6 @@ const Teachers2 = () => {
                     </Button>
                   </div>
                 )}
-
                 {errors.errorFilters && (
                   <p className="mb-4 text-red-400">No se han encontrado grupos con los filtros seleccionados</p>
                 )}
@@ -655,7 +653,6 @@ const Teachers2 = () => {
                     />
                   ) : (<p className="mb-4 text-center">No tiene grupos asignados</p>)
                 }
-
                 <div className="my-4">
                   <FormControl className="w-full">
                     <FormLabel id="radio-active">Estado</FormLabel>
@@ -707,6 +704,7 @@ const Teachers2 = () => {
             variant="outlined"
             size="small"
             className="normal-case"
+            disabled={isLoading}
           >
             Cancelar
           </Button>

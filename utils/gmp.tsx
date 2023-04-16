@@ -1,13 +1,27 @@
 import { getGMP } from "../libs/gmpsApi";
 import { getMgById } from "../libs/mgsApi";
+import { getStoreMGs } from "./mg";
 
-export const getGmpsByTeacherId = async (teacherId: number) => {
+export const getGmpsByTeacherId = async (teacherId: number, usingStore = false) => {
     let gmps: any[] = [];
-    const gmp = await getGMP(teacherId, {});
+    let gmp;
+
+    if (usingStore) {
+        gmp = getStoreGMPs().filter(item => item.proffessorId === teacherId);
+    } else {
+        gmp = await getGMP(teacherId, {});
+    }
+
     if (gmp) {
         await Promise.all(
             gmp.map(async (item: any) => {
-                const { matter, group } = await getMgById(item.mgId);
+                let mgs;
+                if (usingStore) {
+                    mgs = getStoreMGs().filter(mg => mg.id === item.mgId)[0];
+                } else {
+                    mgs = await getMgById(item.mgId);
+                }
+                const { matter, group } = mgs;
                 if (matter && group) gmps.push({ id: item.id, matter, group, active: item.active })
             }));
     }
@@ -31,6 +45,15 @@ export const getGMPSortedByGroup = (gmps: any[]) => {
 }
 
 export const getGmpsSortedByTeacherId = async (teacherId: number) => {
-    const gmps = await getGmpsByTeacherId(teacherId)
-    return await getGMPSortedByGroup(gmps)
+    const gmps = await getGmpsByTeacherId(teacherId, true)
+    return getGMPSortedByGroup(gmps)
+}
+
+export const loadStoreGMPs = async () => {
+    const gmps = await getGMP(null, {})
+    localStorage.setItem("gmps", JSON.stringify(gmps))
+}
+
+export const getStoreGMPs: () => any[] = () => {
+    return JSON.parse(localStorage.getItem("gmps") || "[]")
 }
