@@ -8,7 +8,7 @@ import ES from 'dayjs/locale/es';
 import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";
 import { useDialog } from "../../hooks/useDialog";
-import { ABSENCES_FORM, HEADERS, IAbsencesFormatted, MenuProps, TURNS } from "../../constants/absences";
+import { ABSENCES_FORM, HEADERS, IAbsencesFormatted, TURNS } from "../../constants/absences";
 import { getAbsencesListFormatted } from "../../adapters/absencens";
 import { formatToISO } from "../../utils/date";
 import {
@@ -27,6 +27,7 @@ import {
 } from "@mui/material";
 import { loadStoreGMPs } from "../../utils/gmp";
 import { loadStoreMGs } from "../../utils/mg";
+import { MenuProps } from "../../constants/styles";
 
 export const Absences = () => {
 
@@ -132,7 +133,7 @@ export const Absences = () => {
 
   const handleSearch = async () => {
     setErrors({ visible: false, error: "" })
-    const teacherData = await getTeacherData(Number(formData.document), formData);
+    const teacherData = await getTeacherData(Number(formData.document), formData, true);
     if (teacherData) {
       setFormData({
         ...formData,

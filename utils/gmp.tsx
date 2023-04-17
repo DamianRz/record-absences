@@ -2,7 +2,7 @@ import { getGMP } from "../libs/gmpsApi";
 import { getMgById } from "../libs/mgsApi";
 import { getStoreMGs } from "./mg";
 
-export const getGmpsByTeacherId = async (teacherId: number, usingStore = false) => {
+export const getGmpsByTeacherId = async (teacherId: number, usingStore: boolean) => {
     let gmps: any[] = [];
     let gmp;
 
@@ -17,7 +17,7 @@ export const getGmpsByTeacherId = async (teacherId: number, usingStore = false) 
             gmp.map(async (item: any) => {
                 let mgs;
                 if (usingStore) {
-                    mgs = getStoreMGs().filter(mg => mg.id === item.mgId)[0];
+                    mgs = await getStoreMGs().filter(mg => mg.id === item.mgId)[0];
                 } else {
                     mgs = await getMgById(item.mgId);
                 }
@@ -35,7 +35,8 @@ export const getGMPSortedByGroup = (gmps: any[]) => {
             gmpsSorted[gmp.group.id] = {
                 group: gmp.group,
                 matters: [{ ...gmp.matter, gmpId: gmp.id, }],
-                active: gmp.active
+                active: gmp.active,
+                updated: false,
             }
         } else {
             gmpsSorted[gmp.group.id].matters.push({ ...gmp.matter, gmpId: gmp.id, });
@@ -44,8 +45,8 @@ export const getGMPSortedByGroup = (gmps: any[]) => {
     return Object.values(gmpsSorted);
 }
 
-export const getGmpsSortedByTeacherId = async (teacherId: number) => {
-    const gmps = await getGmpsByTeacherId(teacherId, true)
+export const getGmpsSortedByTeacherId = async (teacherId: number, usingStore: boolean) => {
+    const gmps = await getGmpsByTeacherId(teacherId, usingStore)
     return getGMPSortedByGroup(gmps)
 }
 

@@ -6,7 +6,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { LoaderContext } from "../contexts/loader"
 
 interface CustomTableProps {
   headers: { name: string, value: any }[];
@@ -25,6 +26,8 @@ const CustomTable: React.FC<CustomTableProps> = ({
 }) => {
   const [selectedRow, setSelectedRow] = useState();
   const [values, setValues] = useState([])
+
+  const { isLoading } = useContext(LoaderContext);
 
   const handleSelectRow = (row: any) => {
     setSelectedRow(row);
@@ -56,12 +59,13 @@ const CustomTable: React.FC<CustomTableProps> = ({
               {values.map((row: any) => (
                 <TableRow
                   key={row.id}
-                  onClick={() => handleSelectRow(row)}
+                  onClick={() => { if (!isLoading) handleSelectRow(row) }}
                   className={`${selectedRow === row && "bg-teal-50"
                     } text-center cursor-pointer hover:bg-teal-50`}
                 >
                   {headers.map((header, key) => (
-                    <TableCell key={key} className={`${fontSize && "text-" + fontSize} p-3 font-mono text-sm border-t border-gray-200`}>
+                    <TableCell key={key} className={`${fontSize && "text-" + fontSize} ${isLoading && 'text-gray-400'} 
+                    p-3 font-mono text-sm border-t border-gray-200`}>
                       {row[header.name]}
                     </TableCell>
                   ))}
@@ -76,4 +80,4 @@ const CustomTable: React.FC<CustomTableProps> = ({
   );
 };
 
-export default CustomTable;
+export default React.memo(CustomTable);

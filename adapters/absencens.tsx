@@ -11,7 +11,7 @@ export const getAbsencesListFormatted = async (state: boolean, formData: typeof 
         await Promise.all(
             await absences.map(async (absence) => {
                 const { ci = undefined } = await getProfessorInfo(Number(absence.gmp.proffessorId));
-                const teacherData = await getTeacherData(ci, formData)
+                const teacherData = await getTeacherData(ci, formData, true)
 
                 const filteredGmp: any[] = (teacherData?.gmps || []).reduce((acc: any, gmp: any) => {
                     const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);

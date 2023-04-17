@@ -7,10 +7,10 @@ export const getTeacher = async (document: number) => {
     return undefined
 }
 
-export const getTeacherData = async (document: number, formData: any) => {
+export const getTeacherData = async (document: number, formData: any, usingStore: boolean) => {
     const teacher = await getTeacher(document)
     if (teacher) {
-        const gmps = await getGmpsSortedByTeacherId(teacher?.id)
+        const gmps = await getGmpsSortedByTeacherId(teacher?.id, usingStore)
         if (gmps) {
             return ({
                 ...formData,
