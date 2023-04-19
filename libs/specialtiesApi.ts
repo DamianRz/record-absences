@@ -21,7 +21,7 @@ export const createSpecialty = async (specialty: any): Promise<any> => {
         method: 'POST',
         headers: getHeader(),
         body: JSON.stringify({ ...specialty })
-    }).then(response => response.json())
+    })
 }
 
 export const removeSpecialty = async (specialtyId: any): Promise<any> => {

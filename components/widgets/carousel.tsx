@@ -4,6 +4,7 @@ import { getProfessorInfo } from "../../libs/professorsApi";
 import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";
+import { formatToLocalDate } from "../../utils/date";
 
 const Carousel = () => {
   const headers = [
@@ -58,7 +59,7 @@ const Carousel = () => {
           newArray.push(newArray.shift());
           return newArray;
         });
-      }, 2500);
+      }, 1200);
       return () => clearInterval(intervalId);
     }
   }, []);
@@ -70,7 +71,7 @@ const Carousel = () => {
       await Promise.all(
         absences.map(async (absence: any) => {
           const { ci } = await getProfessorInfo(absence.gmp.proffessorId)
-          const teacherData = await getTeacherData(Number(ci), formData)
+          const teacherData = await getTeacherData(Number(ci), formData, false)
           const filteredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
@@ -106,12 +107,6 @@ const Carousel = () => {
         }))
       return formattedAbsences.sort((a, b) => a.id - b.id);
     }
-  }
-
-  const formatToLocalDate = (newDate: string) => {
-    const date = new Date(newDate);
-    const options: any = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return date.toLocaleDateString('es-ES', options)
   }
 
   const getAbsencesList = async (state: boolean) => {

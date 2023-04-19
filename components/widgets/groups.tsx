@@ -101,8 +101,10 @@ const Groups = () => {
   }, []);
 
   const getGroupList = async (active: boolean) => {
+    setLoading(true)
     const response: any = await getGroupsFormatted(active)
     if (response) setGroups(response)
+    setLoading(false)
   }
 
   const getGroupsFormatted = async (active: boolean) => {
@@ -182,6 +184,7 @@ const Groups = () => {
   }
 
   const handleSubmit = async (event: any) => {
+    setLoading(true)
     event.preventDefault();
     if (editId) {
       const group = {
@@ -232,7 +235,7 @@ const Groups = () => {
         setEditId(null)
       }
     }
-
+    setLoading(false)
   };
 
   const handleChange = (event: any) => {

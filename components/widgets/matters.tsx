@@ -50,8 +50,10 @@ const Matters = () => {
   }, []);
 
   const getMatterList = async (active: boolean) => {
+    setLoading(true)
     const response: any = await getMattersFormatted(active)
     if (response) setMatters(response)
+    setLoading(false)
   }
 
   const getMattersFormatted = async (active: boolean) => {
@@ -82,6 +84,7 @@ const Matters = () => {
   };
 
   const handleSubmit = async (event: any) => {
+    setLoading(true)
     event.preventDefault();
     if (editId) {
       const matter = { name: formData.name, description: formData.description }
@@ -100,6 +103,7 @@ const Matters = () => {
         setEditId(null)
       }
     }
+    setLoading(false)
   };
 
   const handleEdit = (selectedRow: any) => {
@@ -200,6 +204,7 @@ const Matters = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              disabled={isLoading}
             >
               Cancelar
             </Button>
@@ -209,6 +214,7 @@ const Matters = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              disabled={isLoading}
             >
               {editId ? "Guardar" : "Crear"}
             </Button>
