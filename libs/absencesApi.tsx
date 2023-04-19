@@ -1,6 +1,7 @@
+import { IAbsence } from "../constants/absences"
 import { API_URL, getHeader } from "../utils/apiSettings"
 
-export const getAbsences = async (active: boolean): Promise<any> => {
+export const getAbsences = async (active: boolean): Promise<IAbsence[]> => {
     return await fetch(`${API_URL}/absences/all`, {
         method: 'POST',
         headers: getHeader(),

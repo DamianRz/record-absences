@@ -1,5 +1,5 @@
 import { getGroups } from "../libs/groupsApi";
-import { getMgById, getMgsBasicIds } from "../libs/mgsApi";
+import { getMgById, getMgs, getMgsBasicIds } from "../libs/mgsApi";
 
 export const getFilteredMGs = async (filters: any) => {
     let mgs: any[] = []
@@ -24,3 +24,13 @@ export const getFilteredMGs = async (filters: any) => {
     }
     return mgs
 }
+
+export const loadStoreMGs = async () => {
+    const mgs = await getMgs({})
+    localStorage.setItem("mgs", JSON.stringify(mgs))
+}
+
+export const getStoreMGs: () => any[] = () => {
+    return JSON.parse(localStorage.getItem("mgs") || "[]")
+}
+

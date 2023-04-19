@@ -15,7 +15,7 @@ export const LoaderProvider: React.FC<LoaderProviderProps> = ({ value, children 
   const [isLoading, setIsLoading] = useState(false)
 
   const setLoading = (value: boolean) => {
-    // setIsLoading(value)
+    setIsLoading(value)
   }
 
   const context = { isLoading, setLoading }
