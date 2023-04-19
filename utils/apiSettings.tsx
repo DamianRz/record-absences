@@ -1,4 +1,4 @@
-export const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+export const API_URL = process.env.API_URL || 'http://192.168.2.212:3000/api';
 
 export const getHeader = (allowMethods = 'GET, POST, PUT, DELETE, OPTIONS') => {
     const token = window.localStorage.getItem('token');
