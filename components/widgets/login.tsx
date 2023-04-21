@@ -22,7 +22,7 @@ const Login = () => {
 
     const handleLogin = async () => {
         setError({ visible: false, error: "" })
-        const { token } = await signIn(Number(formData.ci), formData.password);
+        const { token } = await signIn(formData.ci, formData.password);
         if (token) {
             localStorage.setItem("token", token)
             window.location.href = '/absences';
