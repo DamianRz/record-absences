@@ -8,12 +8,13 @@ import { LoaderContext } from "../contexts/loader";
 import { useRouter } from "next/router";
 import { AccountBox, ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { getUserLogged } from "../utils/user";
 
 interface DrawerProps {
   isAdmin: boolean;
 }
 
-const tools = [
+const TOOLS = [
   {
     label: "Inasistencias",
     icon: EventBusyIcon,
@@ -53,11 +54,17 @@ const tools = [
 
 const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const [selected, setSelected] = useState(0);
+  const [tools, setTools] = useState(TOOLS)
   const { asPath } = useRouter();
 
   const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
+    if (getUserLogged() !== 'admin') {
+      const filteredTools = tools.filter(item => item.page !== "/users")
+      setTools(filteredTools)
+    }
+
     tools.map((item, index) => {
       if (item.page === `/${asPath.split("/")[1]}`) {
         setSelected(index);

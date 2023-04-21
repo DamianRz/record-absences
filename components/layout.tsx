@@ -1,7 +1,5 @@
 
-// import { CircularProgress } from '@mui/material'
-import React, { useContext } from 'react'
-import { LoaderContext } from '../contexts/loader'
+import React from 'react'
 import Drawer from './drawer'
 
 interface LayoutProps {
@@ -9,8 +7,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  // const { isLoading } = useContext(LoaderContext)
-
   return (
     <div className="absolute block w-full h-full">
       <div className="w-full py-2 bg-teal-100 h-fit">
@@ -21,19 +17,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="w-full px-4">
           {children}
         </div>
-        {/* {
-          isLoading
-            ? (
-              <div className="flex items-center justify-center w-full h-full">
-                <CircularProgress />
-              </div>
-            )
-            : (
-              <div className="w-full px-4">
-                {children}
-              </div>
-            )
-        } */}
       </div>
     </div>
   )

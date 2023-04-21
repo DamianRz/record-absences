@@ -1,15 +1,15 @@
 import { API_URL, getHeader } from "../utils/apiSettings";
 import { setUserLogged } from "../utils/user";
 
-export const signIn = (ci: number, password: string): Promise<{ token: string }> => {
+export const signIn = (document: number | string, password: string): Promise<{ token: string }> => {
     return fetch(`${API_URL}/users/signin`, {
         method: 'POST',
         headers: getHeader(),
-        body: JSON.stringify({ name: String(ci), password })
+        body: JSON.stringify({ name: String(document), password })
     })
         .then(response => response.json())
         .then(data => {
-            setUserLogged(ci)
+            setUserLogged(document)
             return { token: data.token };
         }).catch(error => { return error });
 }
