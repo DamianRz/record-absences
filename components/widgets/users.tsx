@@ -144,7 +144,6 @@ const Users = () => {
                   label="Documento"
                   name="name"
                   value={formData.name}
-                  type="number"
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
