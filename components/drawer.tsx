@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { AccountBox, ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { getUserLogged } from "../utils/user";
+import { USER_TYPES } from "../constants/users";
 
 interface DrawerProps {
   isAdmin: boolean;
@@ -60,7 +61,13 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
-    if (getUserLogged() !== 'admin') {
+    // Adscrito
+    if (getUserLogged() === USER_TYPES[0].value) {
+      const filteredTools = [tools[0], tools[4], tools[6]]
+      setTools(filteredTools)
+    }
+    // Administrativo
+    if (getUserLogged() === USER_TYPES[1].value) {
       const filteredTools = tools.filter(item => item.page !== "/users")
       setTools(filteredTools)
     }

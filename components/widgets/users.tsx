@@ -10,10 +10,15 @@ import {
   DialogTitle,
   TextField,
   FormControl,
-  FormLabel,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  MenuItem,
 } from "@mui/material";
 import { LoaderContext } from "../../contexts/loader";
 import { getUserLogged } from "../../utils/user";
+import { MenuProps } from "../../constants/styles";
+import { USER_TYPES } from "../../constants/users";
 
 const Users = () => {
   const headers = [
@@ -25,6 +30,7 @@ const Users = () => {
     id: "",
     name: "",
     password: "",
+    type: "",
   };
 
   const [users, setUsers] = useState<any[]>([]);
@@ -49,7 +55,7 @@ const Users = () => {
   }, []);
 
   const getUserList = async (active: boolean) => {
-    const users: { id: number, name: string }[] = await getUsers(active);
+    const users: { id: number, name: string, type: string }[] = await getUsers(active);
     const filteredUsers = users.filter((user) => user.name !== getUserLogged())
     if (filteredUsers) setUsers(filteredUsers)
   }
@@ -71,7 +77,7 @@ const Users = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (editId) {
-      let data = { name: formData.name }
+      let data = { name: formData.name, type: formData.type }
       if (formData.password) {
         Object.assign(data, { password: formData.password })
       }
@@ -82,7 +88,7 @@ const Users = () => {
         setEditId(null)
       }
     } else {
-      const responseSave = await signUp(Number(formData.name), formData.password)
+      const responseSave = await signUp(Number(formData.name), formData.password, formData.type)
       if (responseSave) {
         setOpen(false);
         await getUserList(true)
@@ -137,6 +143,27 @@ const Users = () => {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
+            <FormControl className="w-full mb-4">
+              <InputLabel id="select-grade">Tipo de usuario</InputLabel>
+              <Select
+                name="type"
+                required
+                labelId="select-type"
+                value={formData.type}
+                onChange={handleChange}
+                input={<OutlinedInput label="Tipo de usuario" />}
+                MenuProps={MenuProps}
+              >
+                {USER_TYPES.map((type, index: number) => (
+                  <MenuItem
+                    key={index}
+                    value={type.value}
+                  >
+                    {type.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <div className="mb-4">
               <FormControl className="w-full">
                 <TextField
