@@ -9,16 +9,16 @@ export const signIn = (document: number | string, password: string): Promise<{ t
     })
         .then(response => response.json())
         .then(data => {
-            setUserLogged(document)
+            setUserLogged(data.type)
             return { token: data.token };
         }).catch(error => { return error });
 }
 
-export const signUp = (ci: number, password: string): Promise<any> => {
+export const signUp = (ci: number, password: string, type: string): Promise<any> => {
     return fetch(`${API_URL}/users/signup`, {
         method: 'POST',
         headers: getHeader(),
-        body: JSON.stringify({ name: String(ci), password })
+        body: JSON.stringify({ name: String(ci), password, type })
     })
         .then(response => response.json())
         .then(data => {
