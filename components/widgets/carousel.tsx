@@ -5,6 +5,7 @@ import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";
 import { formatToLocalDate } from "../../utils/date";
+import { Button } from "@mui/material";
 
 const Carousel = () => {
   const headers = [
@@ -52,16 +53,14 @@ const Carousel = () => {
   }, []);
 
   useEffect(() => {
-    if (absences.length) {
-      const intervalId = setInterval(() => {
-        setAbsences((prevArray) => {
-          const newArray: any = [...prevArray];
-          newArray.push(newArray.shift());
-          return newArray;
-        });
-      }, 1200);
-      return () => clearInterval(intervalId);
-    }
+    const intervalId = setInterval(() => {
+      setAbsences((prevArray) => {
+        const newArray: any = [...prevArray];
+        newArray.push(newArray.shift());
+        return newArray;
+      });
+    }, 1200);
+    return () => clearInterval(intervalId);
   }, []);
 
   const getAbsencesListFormatted = async (state: boolean) => {
@@ -110,22 +109,35 @@ const Carousel = () => {
   }
 
   const getAbsencesList = async (state: boolean) => {
-    const responseAbsences: any = await getAbsencesListFormatted(state)
+    const responseAbsences: any = await getAbsencesListFormatted(state);
     if (responseAbsences) {
-      setAbsences(responseAbsences)
+      setAbsences(responseAbsences.sort((a: any, b: any) => a.id - b.id));
     }
-  }
+  };
 
   return (
-    <div>
-      <p className="my-4 ml-3 text-xl">Lista de Inasistencias</p>
-      <CustomTable
-        className="text-xl"
-        headers={headers}
-        items={absences}
-        onSelectRow={() => { }}
-        fontSize="xl"
-      />
+    <div className="py-4">
+      <Button
+        href={"/absences"}
+        variant="outlined"
+        size="small"
+        className="normal-case"
+      >
+        Volver al inicio
+      </Button>
+      <p className="my-4 text-xl">Lista de Inasistencias</p>
+      {
+        absences.length > 0 && (
+          <CustomTable
+            className="text-xl"
+            headers={headers}
+            items={absences}
+            onSelectRow={() => { }}
+            fontSize="xl"
+            showFilters={false}
+          />
+        )
+      }
     </div>
   );
 };

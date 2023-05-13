@@ -25,15 +25,24 @@ const Matters = () => {
   const DEFAULT_FORM_DATA = {
     id: "",
     name: "",
+    code: "",
     description: "",
   };
 
+  const DEFAULT_ERRORS = {
+    name: { visible: false, error: "" },
+    description: { visible: false, error: "" },
+    code: { visible: false, error: "" },
+  }
+
+
   const [matters, setMatters] = useState([]);
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+  const [formData, setFormData] = useState<any>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { isLoading, setLoading } = useContext(LoaderContext)
+  const [errors, setErrors] = useState(DEFAULT_ERRORS);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -76,6 +85,7 @@ const Matters = () => {
   const handleOpen = () => {
     setEditId(null);
     setFormData(DEFAULT_FORM_DATA);
+    setErrors(DEFAULT_ERRORS)
     setOpen(true);
   };
 
@@ -84,10 +94,63 @@ const Matters = () => {
   };
 
   const handleSubmit = async (event: any) => {
-    setLoading(true)
     event.preventDefault();
+    // validation
+    let failed = false
+    let error = {}
+    // validate length
+    Object.keys(errors).map((fieldName: string) => {
+      if (formData[fieldName].length > 30) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El texto es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+      if (formData[fieldName].length < 4) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El texto es muy corto"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+    })
+
+    const existsCode = Boolean(matters.filter((matter: any) => (matter.code === formData.code && matter.name === formData.name)).length)
+    if (existsCode) {
+      // TODO validar cuando este el campo
+      // if (!editId) {
+      // setErrors({
+      //   ...errors,
+      //   ...error,
+      //   code: {
+      //     visible: true,
+      //     error: "Ya existe este codigo con este nombre de materia, por favor ingrese un nuevo codigo"
+      //   }
+      // })
+      // }
+
+    } else if (failed) {
+      setErrors({
+        ...errors,
+        ...error,
+      })
+    }
+    if (failed) return null;
+
+
+
+    ///////////////
+
+    setLoading(true)
     if (editId) {
-      const matter = { name: formData.name, description: formData.description }
+      const matter = { name: formData.name, description: formData.description, code: formData.code }
       const responseSave = await saveMatter(editId, matter)
       if (responseSave) {
         setOpen(false);
@@ -95,7 +158,7 @@ const Matters = () => {
         setEditId(null)
       }
     } else {
-      const matter = { name: formData.name, description: formData.description }
+      const matter = { name: formData.name, description: formData.description, code: formData.code }
       const responseSave = await createMatter(matter)
       if (responseSave) {
         setOpen(false);
@@ -106,8 +169,27 @@ const Matters = () => {
     setLoading(false)
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);
+    setErrors(DEFAULT_ERRORS)
     setFormData({
       ...formData,
       ...selectedRow,
@@ -162,6 +244,23 @@ const Matters = () => {
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
+                  error={errors.name.visible}
+                  helperText={errors.name.visible && errors.name.error}
+                />
+              </FormControl>
+            </div>
+            <div className="mb-4">
+              <FormControl className="w-full mt-4">
+                <TextField
+                  label="Codigo"
+                  required
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  error={errors.code.visible}
+                  helperText={errors.code.visible && errors.code.error}
                 />
               </FormControl>
             </div>
@@ -174,6 +273,8 @@ const Matters = () => {
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
+                  error={errors.description.visible}
+                  helperText={errors.description.visible && errors.description.error}
                 />
               </FormControl>
             </div>
@@ -214,6 +315,7 @@ const Matters = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              onClick={() => setErrors(DEFAULT_ERRORS)}
               disabled={isLoading}
             >
               {editId ? "Guardar" : "Crear"}

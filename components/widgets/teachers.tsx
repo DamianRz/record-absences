@@ -35,18 +35,27 @@ import { getTeachersFormatted } from "../../adapters/teachers";
 import { getSpecialtiesFormatted } from "../../adapters/specialties";
 
 const Teachers = () => {
+
+  const DEFAULT_ERRORS = {
+    name: { visible: false, error: "" },
+    lastname: { visible: false, error: "" },
+    document: { visible: false, error: "" },
+  }
+
   const [open, setOpen] = useState(false);
   const [showConfirmChangeState, setShowConfirmChangeState] = useState(false);
   const [selectedGmp, setSelectedGmp] = useState<IGmp>(SELECTED_GMP);
   const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([])
-  const [formData, setFormData] = useState<IFormData>(TEACHER_DEFAULT_FORM_DATA)
+  const [formData, setFormData] = useState<any>(TEACHER_DEFAULT_FORM_DATA)
   const [matters, setMatters] = useState([])
   const [errors, setErrors] = useState({
     error: "",
     errorFilters: false,
     errorSave: false
   });
+  const [formErrors, setFormErrors] = useState(DEFAULT_ERRORS);
+
   const [teachersState, setTeachersState] = useState({ active: true });
   const { isLoading, setLoading } = useContext(LoaderContext);
 
@@ -81,6 +90,7 @@ const Teachers = () => {
 
   const handleEdit = async (selectedRow: any) => {
     setLoading(true)
+    setFormErrors(DEFAULT_ERRORS)
     setEditId(selectedRow.id)
     const {
       matterSpecialtyIds,
@@ -105,6 +115,7 @@ const Teachers = () => {
   const handleOpen = () => {
     setEditId(null);
     setFormData(TEACHER_DEFAULT_FORM_DATA);
+    setFormErrors(DEFAULT_ERRORS)
     setOpen(true);
   };
 
@@ -114,8 +125,71 @@ const Teachers = () => {
   };
 
   const handleSubmit = async (event: any) => {
-    setLoading(true)
     event.preventDefault();
+    // validation
+    let failed = false
+    let error = {}
+    // validate length
+    Object.keys(formErrors).map((fieldName: string) => {
+      if (fieldName !== "document" && formData[fieldName].length > 30) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El texto es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+      // DOCUMENTO
+      if (fieldName === "document" && formData[fieldName].length > 10) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El documento es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+      if (fieldName === "document" && formData[fieldName].length < 6) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El documento es muy corto"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+    })
+
+    const existsDocument = Boolean(teachers.filter((teacher: any) => teacher.document === formData.document).length)
+    if (existsDocument) {
+      if (!editId) {
+        setFormErrors({
+          ...formErrors,
+          ...error,
+          document: {
+            visible: true,
+            error: "Ya existe este documento, por favor ingrese un nuevo documento"
+          }
+        })
+        failed = true
+      }
+    } else if (failed) {
+      setFormErrors({
+        ...formErrors,
+        ...error,
+      })
+    }
+
+    if (failed) return null;
+
+    ///////////////
+
+    setLoading(true)
+
     if (editId) {
       const teacher = {
         name: formData.name,
@@ -259,6 +333,8 @@ const Teachers = () => {
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
                   size="small"
+                  error={formErrors.name.visible}
+                  helperText={formErrors.name.visible && formErrors.name.error}
                 />
               </FormControl>
               <FormControl className="w-full">
@@ -271,6 +347,8 @@ const Teachers = () => {
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
                   size="small"
+                  error={formErrors.lastname.visible}
+                  helperText={formErrors.lastname.visible && formErrors.lastname.error}
                 />
               </FormControl>
             </div>
@@ -287,6 +365,8 @@ const Teachers = () => {
                   variant="outlined"
                   size="small"
                   disabled={Boolean(editId)}
+                  error={formErrors.document.visible}
+                  helperText={formErrors.document.visible && formErrors.document.error}
                 />
               </FormControl>
             </div>
@@ -303,9 +383,9 @@ const Teachers = () => {
                     onChange={handleSpecialtyChange}
                     input={<OutlinedInput label="Especialidades" />}
                     MenuProps={MenuProps}
-                    renderValue={(selected) => (
+                    renderValue={(selected: any) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value) => (
+                        {selected.map((value: any) => (
                           <Chip key={value} label={value} />
                         ))}
                       </Box>
@@ -373,6 +453,7 @@ const Teachers = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              onClick={() => setFormErrors(DEFAULT_ERRORS)}
               disabled={isLoading}
             >
               {editId ? "Guardar" : "Crear"}

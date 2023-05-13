@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { PersonAdd } from "@mui/icons-material";
 import CustomTable from "../table";
-import { deleteUser, getUsers, setUser, signUp } from "../../libs/usersApi";
+import { deleteUser, getUsers, signUp } from "../../libs/usersApi";
 import {
   Button,
   Dialog,
@@ -19,6 +19,7 @@ import { LoaderContext } from "../../contexts/loader";
 import { getUserLogged } from "../../utils/user";
 import { MenuProps } from "../../constants/styles";
 import { USER_TYPES } from "../../constants/users";
+import { fieldMaxWidth } from "../../utils/validation";
 
 const Users = () => {
   const headers = [
@@ -29,16 +30,26 @@ const Users = () => {
   const DEFAULT_FORM_DATA = {
     id: "",
     name: "",
+    firstname: "",
+    lastname: "",
     password: "",
     type: "",
   };
 
+  const DEFAULT_ERRORS = {
+    firstname: { visible: false, error: "" },
+    lastname: { visible: false, error: "" },
+    name: { visible: false, error: "" },
+    password: { visible: false, error: "" },
+  }
+
   const [users, setUsers] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+  const [formData, setFormData] = useState<any>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { isLoading, setLoading } = useContext(LoaderContext)
+  const [errors, setErrors] = useState(DEFAULT_ERRORS);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -67,6 +78,7 @@ const Users = () => {
   const handleOpen = () => {
     setEditId(null);
     setFormData(DEFAULT_FORM_DATA);
+    setErrors(DEFAULT_ERRORS)
     setOpen(true);
   };
 
@@ -76,29 +88,85 @@ const Users = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    if (editId) {
-      let data = { name: formData.name, type: formData.type }
-      if (formData.password) {
-        Object.assign(data, { password: formData.password })
+    // validation
+    let failed = false
+    let error = {}
+    // validate length
+    Object.keys(errors).map((fieldName: string) => {
+      if (fieldName !== "name" && formData[fieldName].length > 30) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El texto es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
       }
-      const responseSave = await setUser(editId, data);
-      if (responseSave) {
-        setOpen(false);
-        await getUserList(true)
-        setEditId(null)
+      // DOCUMENTO
+      if (fieldName === "name" && formData[fieldName].length > 10) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El documento es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
       }
-    } else {
-      const responseSave = await signUp(Number(formData.name), formData.password, formData.type)
-      if (responseSave) {
-        setOpen(false);
-        await getUserList(true)
-        setEditId(null)
+      if (fieldName === "name" && formData[fieldName].length < 6) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El documento es muy corto"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
       }
+    })
+    const existsName = Boolean(users.filter(user => user.name === formData.name).length)
+    if (existsName) {
+      if (!editId) {
+        setErrors({
+          ...errors,
+          ...error,
+          name: {
+            visible: true,
+            error: "Ya existe este documento, por favor ingrese un nuevo documento"
+          }
+        })
+      }
+    } else if (failed) {
+      setErrors({
+        ...errors,
+        ...error,
+      })
+    }
+    if (failed) return null;
+    let data = {
+      name: formData.name,
+      type: formData.type,
+      firstname: formData.firstname,
+      lastname: formData.lastname
+    }
+    const responseSave = await signUp(data)
+    if (responseSave) {
+      setOpen(false);
+      await getUserList(true)
+      setEditId(null)
     }
   };
 
+
+
+
+
+
+
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);
+    setErrors(DEFAULT_ERRORS)
     setFormData({
       ...formData,
       ...selectedRow,
@@ -164,6 +232,36 @@ const Users = () => {
                 ))}
               </Select>
             </FormControl>
+            <div className="flex mb-4 space-x-2">
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Nombre"
+                  name="firstname"
+                  value={formData.firstname}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                  error={errors.firstname.visible}
+                  helperText={errors.firstname.visible && errors.firstname.error}
+                />
+              </FormControl>
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Apellido"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                  error={errors.lastname.visible}
+                  helperText={errors.lastname.visible && errors.lastname.error}
+                />
+              </FormControl>
+            </div>
             <div className="mb-4">
               <FormControl className="w-full">
                 <TextField
@@ -174,6 +272,8 @@ const Users = () => {
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
+                  error={errors.name.visible}
+                  helperText={errors.name.visible && errors.name.error}
                 />
               </FormControl>
             </div>
@@ -189,6 +289,8 @@ const Users = () => {
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
                   required={!editId}
+                  error={errors.password.visible}
+                  helperText={errors.password.visible && errors.password.error}
                 />
               </FormControl>
             </div>
@@ -227,6 +329,7 @@ const Users = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              onClick={() => setErrors(DEFAULT_ERRORS)}
             >
               {editId ? "Guardar" : "Crear"}
             </Button>

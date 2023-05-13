@@ -30,7 +30,6 @@ import { loadStoreMGs } from "../../utils/mg";
 import { MenuProps } from "../../constants/styles";
 
 export const Absences = () => {
-
   const [formData, setFormData] = useState(ABSENCES_FORM);
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({ visible: false, error: "" });

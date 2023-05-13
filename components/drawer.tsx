@@ -37,7 +37,7 @@ const TOOLS = [
     page: "/matters",
   },
   {
-    label: "Reportes",
+    label: "Visualizar",
     icon: AssessmentIcon,
     page: "/lista",
   },

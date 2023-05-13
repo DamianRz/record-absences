@@ -14,11 +14,11 @@ export const signIn = (document: number | string, password: string): Promise<{ t
         }).catch(error => { return error });
 }
 
-export const signUp = (ci: number, password: string, type: string): Promise<any> => {
+export const signUp = (data: any): Promise<any> => {
     return fetch(`${API_URL}/users/signup`, {
         method: 'POST',
         headers: getHeader(),
-        body: JSON.stringify({ name: String(ci), password, type })
+        body: JSON.stringify({ ...data })
     })
         .then(response => response.json())
         .then(data => {
