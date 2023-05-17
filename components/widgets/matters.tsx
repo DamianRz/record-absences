@@ -18,6 +18,7 @@ import { LoaderContext } from "../../contexts/loader";
 const Matters = () => {
   const headers = [
     { name: "id", value: "ID" },
+    { name: "code", value: "Codigo" },
     { name: "name", value: "Nombre" },
     { name: "description", value: "Descripcion" },
   ];
@@ -34,7 +35,6 @@ const Matters = () => {
     description: { visible: false, error: "" },
     code: { visible: false, error: "" },
   }
-
 
   const [matters, setMatters] = useState([]);
   const [open, setOpen] = useState(false);
@@ -135,7 +135,6 @@ const Matters = () => {
       //   }
       // })
       // }
-
     } else if (failed) {
       setErrors({
         ...errors,
@@ -143,10 +142,6 @@ const Matters = () => {
       })
     }
     if (failed) return null;
-
-
-
-    ///////////////
 
     setLoading(true)
     if (editId) {
@@ -168,24 +163,6 @@ const Matters = () => {
     }
     setLoading(false)
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);
