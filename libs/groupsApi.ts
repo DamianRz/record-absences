@@ -1,62 +1,32 @@
+import { API_URL, getHeader } from "../utils/apiSettings";
+
 export const getGroups = async (groupFilters: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/groups`, {
+    return await fetch(`${API_URL}/groups`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...groupFilters })
     }).then(response => response.json())
 }
 
 export const createGroup = async (group: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/groups/create`, {
+    return await fetch(`${API_URL}/groups/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...group })
     }).then(response => response.json())
 }
 
 export const deleteGroup = async (groupId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/groups/${groupId}`, {
+    return await fetch(`${API_URL}/groups/${groupId}`, {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
     }).then(response => response.json())
 }
 
 export const saveGroup = async (groupId: number, groupData: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/groups/${groupId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PATCH',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+    return await fetch(`${API_URL}/groups/${groupId}`, {
+        method: 'PUT',
+        headers: getHeader(),
         body: JSON.stringify({ ...groupData })
     }).then(response => response.json())
 }

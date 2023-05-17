@@ -6,14 +6,16 @@ import PersonIcon from "@mui/icons-material/Person";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import { LoaderContext } from "../contexts/loader";
 import { useRouter } from "next/router";
-import { ExitToApp } from "@mui/icons-material";
+import { AccountBox, ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { getUserLogged } from "../utils/user";
+import { USER_TYPES } from "../constants/users";
 
 interface DrawerProps {
   isAdmin: boolean;
 }
 
-const tools = [
+const TOOLS = [
   {
     label: "Inasistencias",
     icon: EventBusyIcon,
@@ -35,9 +37,14 @@ const tools = [
     page: "/matters",
   },
   {
-    label: "Reportes",
+    label: "Visualizar",
     icon: AssessmentIcon,
     page: "/lista",
+  },
+  {
+    label: "Usuarios",
+    icon: AccountBox,
+    page: "/users",
   },
   {
     label: "Salir",
@@ -48,11 +55,23 @@ const tools = [
 
 const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const [selected, setSelected] = useState(0);
+  const [tools, setTools] = useState(TOOLS)
   const { asPath } = useRouter();
 
   const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
+    // Adscrito
+    if (getUserLogged() === USER_TYPES[0].value) {
+      const filteredTools = [tools[0], tools[4], tools[6]]
+      setTools(filteredTools)
+    }
+    // Administrativo
+    if (getUserLogged() === USER_TYPES[1].value) {
+      const filteredTools = tools.filter(item => item.page !== "/users")
+      setTools(filteredTools)
+    }
+
     tools.map((item, index) => {
       if (item.page === `/${asPath.split("/")[1]}`) {
         setSelected(index);

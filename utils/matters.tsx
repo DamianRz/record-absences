@@ -11,17 +11,19 @@ export const setStoreMatters = async () => {
 }
 
 export const sortMattersByName = (matters: any[]) => {
-    matters.sort(function (a: any, b: any) {
-        var nameA = a.name.toUpperCase();
-        var nameB = b.name.toUpperCase();
+    if (matters.length) {
+        matters.sort(function (a: any, b: any) {
+            var nameA = a.name.toUpperCase();
+            var nameB = b.name.toUpperCase();
 
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        return 0;
-    });
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
+        });
+    }
     return matters
 }

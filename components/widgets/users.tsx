@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import PostAddIcon from "@mui/icons-material/PostAdd";
+import { PersonAdd } from "@mui/icons-material";
 import CustomTable from "../table";
-import { signIn } from "../../libs/usersApi";
-import { createMatter, deleteMatter, getMatters, saveMatter } from "../../libs/mattersApi";
+import { deleteUser, getUsers, signUp } from "../../libs/usersApi";
 import {
   Button,
   Dialog,
@@ -11,32 +10,40 @@ import {
   DialogTitle,
   TextField,
   FormControl,
-  FormLabel,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  MenuItem,
 } from "@mui/material";
 import { LoaderContext } from "../../contexts/loader";
+import { getUserLogged } from "../../utils/user";
+import { MenuProps } from "../../constants/styles";
+import { USER_TYPES } from "../../constants/users";
+import { fieldMaxWidth } from "../../utils/validation";
 
-const Matters = () => {
+const Users = () => {
   const headers = [
     { name: "id", value: "ID" },
-    { name: "code", value: "Codigo" },
-    { name: "name", value: "Nombre" },
-    { name: "description", value: "Descripcion" },
+    { name: "name", value: "Documento" },
   ];
 
   const DEFAULT_FORM_DATA = {
     id: "",
     name: "",
-    code: "",
-    description: "",
+    firstname: "",
+    lastname: "",
+    password: "",
+    type: "",
   };
 
   const DEFAULT_ERRORS = {
+    firstname: { visible: false, error: "" },
+    lastname: { visible: false, error: "" },
     name: { visible: false, error: "" },
-    description: { visible: false, error: "" },
-    code: { visible: false, error: "" },
+    password: { visible: false, error: "" },
   }
 
-  const [matters, setMatters] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<any>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
@@ -49,7 +56,7 @@ const Matters = () => {
       setLoading(true)
       const token = localStorage.getItem("token")
       if (token) {
-        await getMatterList(true)
+        await getUserList(true)
       } else {
         window.location.href = '/';
       }
@@ -58,24 +65,10 @@ const Matters = () => {
     fetchToken()
   }, []);
 
-  const getMatterList = async (active: boolean) => {
-    setLoading(true)
-    const response: any = await getMattersFormatted(active)
-    if (response) setMatters(response)
-    setLoading(false)
-  }
-
-  const getMattersFormatted = async (active: boolean) => {
-    const matters = await getMatters()
-    if (matters) {
-      const formattedMatters: any = []
-      matters.map(async (matter: any) => {
-        formattedMatters.push({
-          ...matter
-        })
-      })
-      return formattedMatters.sort((a: any, b: any) => a.id - b.id);
-    }
+  const getUserList = async (active: boolean) => {
+    const users: { id: number, name: string, type: string }[] = await getUsers(active);
+    const filteredUsers = users.filter((user) => user.name !== getUserLogged())
+    if (filteredUsers) setUsers(filteredUsers)
   }
 
   const handleChange = (event: any) => {
@@ -100,7 +93,7 @@ const Matters = () => {
     let error = {}
     // validate length
     Object.keys(errors).map((fieldName: string) => {
-      if (formData[fieldName].length > 30) {
+      if (fieldName !== "name" && formData[fieldName].length > 30) {
         const newError = {
           [fieldName]: {
             visible: true,
@@ -110,31 +103,40 @@ const Matters = () => {
         Object.assign(error, newError)
         failed = true
       }
-      if (formData[fieldName].length < 4) {
+      // DOCUMENTO
+      if (fieldName === "name" && formData[fieldName].length > 10) {
         const newError = {
           [fieldName]: {
             visible: true,
-            error: "El texto es muy corto"
+            error: "El documento es muy largo"
+          }
+        }
+        Object.assign(error, newError)
+        failed = true
+      }
+      if (fieldName === "name" && formData[fieldName].length < 6) {
+        const newError = {
+          [fieldName]: {
+            visible: true,
+            error: "El documento es muy corto"
           }
         }
         Object.assign(error, newError)
         failed = true
       }
     })
-
-    const existsCode = Boolean(matters.filter((matter: any) => (matter.code === formData.code && matter.name === formData.name)).length)
-    if (existsCode) {
-      // TODO validar cuando este el campo
-      // if (!editId) {
-      // setErrors({
-      //   ...errors,
-      //   ...error,
-      //   code: {
-      //     visible: true,
-      //     error: "Ya existe este codigo con este nombre de materia, por favor ingrese un nuevo codigo"
-      //   }
-      // })
-      // }
+    const existsName = Boolean(users.filter(user => user.name === formData.name).length)
+    if (existsName) {
+      if (!editId) {
+        setErrors({
+          ...errors,
+          ...error,
+          name: {
+            visible: true,
+            error: "Ya existe este documento, por favor ingrese un nuevo documento"
+          }
+        })
+      }
     } else if (failed) {
       setErrors({
         ...errors,
@@ -142,27 +144,25 @@ const Matters = () => {
       })
     }
     if (failed) return null;
-
-    setLoading(true)
-    if (editId) {
-      const matter = { name: formData.name, description: formData.description, code: formData.code }
-      const responseSave = await saveMatter(editId, matter)
-      if (responseSave) {
-        setOpen(false);
-        await getMatterList(true)
-        setEditId(null)
-      }
-    } else {
-      const matter = { name: formData.name, description: formData.description, code: formData.code }
-      const responseSave = await createMatter(matter)
-      if (responseSave) {
-        setOpen(false);
-        await getMatterList(true)
-        setEditId(null)
-      }
+    let data = {
+      name: formData.name,
+      type: formData.type,
+      firstname: formData.firstname,
+      lastname: formData.lastname
     }
-    setLoading(false)
+    const responseSave = await signUp(data)
+    if (responseSave) {
+      setOpen(false);
+      await getUserList(true)
+      setEditId(null)
+    }
   };
+
+
+
+
+
+
 
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);
@@ -175,11 +175,11 @@ const Matters = () => {
   };
 
   const handleDelete = async () => {
-    const responseSave = await deleteMatter(Number(editId))
-    if (responseSave) {
+    const response = await deleteUser(Number(editId))
+    if (response) {
       setShowConfirmDelete(false)
       setOpen(false);
-      await getMatterList(true)
+      await getUserList(true)
       setEditId(null)
     }
   }
@@ -191,31 +191,82 @@ const Matters = () => {
           variant="outlined"
           color="success"
           onClick={handleOpen}
-          endIcon={<PostAddIcon />}
+          endIcon={<PersonAdd />}
           className="normal-case"
           disabled={isLoading}
         >
-          Nuevo materia
+          Nuevo Usuario
         </Button>
       </div>
-      <p className="my-4 text-xl">Materias</p>
+      <p className="my-4 text-xl">Usuarios</p>
       <CustomTable
         className="max-h-[400px]"
         headers={headers}
-        items={matters}
+        items={users}
         onSelectRow={handleEdit}
       />
       <Dialog open={open} className="max-w-xl mx-auto">
         <DialogTitle className="text-sm">
-          {editId ? "Editar materia" : "Nueva materia"}
+          {`${editId ? "Editar" : "Nuevo"} usuario`}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
-            <div className="mb-4">
+            <FormControl className="w-full mb-4">
+              <InputLabel id="select-grade">Tipo de usuario</InputLabel>
+              <Select
+                name="type"
+                required
+                labelId="select-type"
+                value={formData.type}
+                onChange={handleChange}
+                input={<OutlinedInput label="Tipo de usuario" />}
+                MenuProps={MenuProps}
+              >
+                {USER_TYPES.map((type, index: number) => (
+                  <MenuItem
+                    key={index}
+                    value={type.value}
+                  >
+                    {type.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <div className="flex mb-4 space-x-2">
               <FormControl className="w-full">
                 <TextField
                   required
                   label="Nombre"
+                  name="firstname"
+                  value={formData.firstname}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                  error={errors.firstname.visible}
+                  helperText={errors.firstname.visible && errors.firstname.error}
+                />
+              </FormControl>
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Apellido"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+                  variant="outlined"
+                  size="small"
+                  error={errors.lastname.visible}
+                  helperText={errors.lastname.visible && errors.lastname.error}
+                />
+              </FormControl>
+            </div>
+            <div className="mb-4">
+              <FormControl className="w-full">
+                <TextField
+                  required
+                  label="Documento"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
@@ -227,41 +278,28 @@ const Matters = () => {
               </FormControl>
             </div>
             <div className="mb-4">
+              {editId && <p>Nueva contraseña (Opcional)</p>}
               <FormControl className="w-full mt-4">
                 <TextField
-                  label="Codigo"
-                  required
-                  name="code"
-                  value={formData.code}
+                  label="Contraseña"
+                  name="password"
+                  type="password"
+                  value={formData.password}
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
-                  error={errors.code.visible}
-                  helperText={errors.code.visible && errors.code.error}
-                />
-              </FormControl>
-            </div>
-            <div className="mb-4">
-              <FormControl className="w-full mt-4">
-                <TextField
-                  label="Descripcion"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                  variant="outlined"
-                  error={errors.description.visible}
-                  helperText={errors.description.visible && errors.description.error}
+                  required={!editId}
+                  error={errors.password.visible}
+                  helperText={errors.password.visible && errors.password.error}
                 />
               </FormControl>
             </div>
             {
               editId && (
                 <div className="mb-4">
-                  <FormControl className="w-full">
-                    <FormLabel id="radio-active">Eliminar</FormLabel>
+                  <FormControl className="w-full mt-4">
                     <Button
-                      className=""
+                      className="m-auto"
                       size="small"
                       variant="outlined"
                       color="error"
@@ -269,7 +307,7 @@ const Matters = () => {
                         setShowConfirmDelete(true)
                       }}
                     >
-                      ELIMINAR
+                      ELIMINAR USUARIO
                     </Button>
                   </FormControl>
                 </div>
@@ -282,7 +320,6 @@ const Matters = () => {
               variant="outlined"
               size="small"
               className="normal-case"
-              disabled={isLoading}
             >
               Cancelar
             </Button>
@@ -293,7 +330,6 @@ const Matters = () => {
               size="small"
               className="normal-case"
               onClick={() => setErrors(DEFAULT_ERRORS)}
-              disabled={isLoading}
             >
               {editId ? "Guardar" : "Crear"}
             </Button>
@@ -302,7 +338,7 @@ const Matters = () => {
       </Dialog>
       <Dialog open={showConfirmDelete} className="max-w-xl mx-auto">
         <DialogTitle className="text-sm">
-          Esta seguro de que desea ELIMINAR esta materia?
+          Esta seguro de que desea ELIMINAR esta usuario?
         </DialogTitle>
         <DialogActions className="pb-4 pr-4 space-x-4">
           <Button
@@ -328,4 +364,4 @@ const Matters = () => {
   );
 };
 
-export default Matters;
+export default Users;

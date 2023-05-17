@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import CustomTable from "../table";
-import { signIn } from "../../libs/usersApi";
-import { getProfessorInfo } from "../../libs/proffesorsApi";
+import { getProfessorInfo } from "../../libs/professorsApi";
 import { getAbsences } from "../../libs/absencesApi";
 import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";
+import { formatToLocalDate } from "../../utils/date";
+import { Button } from "@mui/material";
 
 const Carousel = () => {
   const headers = [
@@ -58,7 +59,7 @@ const Carousel = () => {
         newArray.push(newArray.shift());
         return newArray;
       });
-    }, 2500);
+    }, 1200);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -68,9 +69,9 @@ const Carousel = () => {
       let formattedAbsences: any[] = []
       await Promise.all(
         absences.map(async (absence: any) => {
-          const { person } = await getProfessorInfo(absence.gmp.proffessorId)
-          const teacherData = await getTeacherData(Number(person.ci), formData)
-          const filtredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
+          const { ci } = await getProfessorInfo(absence.gmp.proffessorId)
+          const teacherData = await getTeacherData(Number(ci), formData, false)
+          const filteredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
             const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
             if (selectedMatters.length > 0) {
               acc.push({ group: gmp.group, matter: selectedMatters[0] });
@@ -78,14 +79,14 @@ const Carousel = () => {
             return acc;
           }, []);
 
-          if (filtredGmp.length) {
-            const { group, matter } = filtredGmp[0]
+          if (filteredGmp.length) {
+            const { group, matter } = filteredGmp[0]
             const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
             formattedAbsences.push({
               id: absence.id,
-              document: person.ci,
-              name: person.name,
-              lastname: person.lastname,
+              document: teacherData.ci,
+              name: teacherData.name,
+              lastname: teacherData.lastname,
               group: group.name,
               groupId: group.id,
               matter: matter.name,
@@ -107,29 +108,36 @@ const Carousel = () => {
     }
   }
 
-  const formatToLocalDate = (newDate: string) => {
-    const date = new Date(newDate);
-    const options: any = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return date.toLocaleDateString('es-ES', options)
-  }
-
   const getAbsencesList = async (state: boolean) => {
-    const responseAbsences: any = await getAbsencesListFormatted(state)
+    const responseAbsences: any = await getAbsencesListFormatted(state);
     if (responseAbsences) {
-      setAbsences(responseAbsences)
+      setAbsences(responseAbsences.sort((a: any, b: any) => a.id - b.id));
     }
-  }
+  };
 
   return (
-    <div>
-      <p className="my-4 ml-3 text-xl">Lista de Inasistencias</p>
-      <CustomTable
-        className="text-xl"
-        headers={headers}
-        items={absences}
-        onSelectRow={() => { }}
-        fontSize="xl"
-      />
+    <div className="py-4">
+      <Button
+        href={"/absences"}
+        variant="outlined"
+        size="small"
+        className="normal-case"
+      >
+        Volver al inicio
+      </Button>
+      <p className="my-4 text-xl">Lista de Inasistencias</p>
+      {
+        absences.length > 0 && (
+          <CustomTable
+            className="text-xl"
+            headers={headers}
+            items={absences}
+            onSelectRow={() => { }}
+            fontSize="xl"
+            showFilters={false}
+          />
+        )
+      }
     </div>
   );
 };

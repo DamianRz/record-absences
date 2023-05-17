@@ -1,19 +1,13 @@
+import { API_URL, getHeader } from "../utils/apiSettings";
+
 export const getGMP = async (professorId: number | null, gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
     let body = { ...gmp }
     if (professorId !== null) {
         body = { ...body, "proffessorId": professorId }
     }
-    const response = await fetch(`${apiUrl}/gmps`, {
+    const response = await fetch(`${API_URL}/gmps`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...body })
     });
     const data = await response.json();
@@ -25,48 +19,24 @@ export const getGMP = async (professorId: number | null, gmp: any): Promise<any>
 }
 
 export const createGmp = async (gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/gmps/create`, {
+    return await fetch(`${API_URL}/gmps/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader(),
         body: JSON.stringify({ ...gmp })
     }).then(response => response.json())
 }
 
 export const saveGmp = async (gmpId: number, gmp: any): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/gmps/${gmpId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PATCH',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+    return await fetch(`${API_URL}/gmps/${gmpId}`, {
+        method: 'PUT',
+        headers: getHeader(),
         body: JSON.stringify({ ...gmp })
     }).then(response => response.json())
 }
 
 export const deleteGmp = async (gmpId: number): Promise<any> => {
-    const apiUrl = process.env.API_URL || 'http://localhost:3000'
-    const token = localStorage.getItem('token');
-    return await fetch(`${apiUrl}/gmps/${gmpId}`, {
+    return await fetch(`${API_URL}/gmps/${gmpId}`, {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: getHeader()
     }).then(response => response.json())
 }

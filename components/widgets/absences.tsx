@@ -3,9 +3,14 @@ import EventBusyIcon from "@mui/icons-material/EventBusy";
 import CustomTable from "../table";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { getProfessorInfo } from "../../libs/proffesorsApi";
-import { createAbsence, getAbsences, saveAbsence } from "../../libs/absencesApi";
+import { createAbsence, saveAbsence } from "../../libs/absencesApi";
 import ES from 'dayjs/locale/es';
+import { getTeacherData } from "../../utils/teacher";
+import { LoaderContext } from "../../contexts/loader";
+import { useDialog } from "../../hooks/useDialog";
+import { ABSENCES_FORM, HEADERS, IAbsencesFormatted, TURNS } from "../../constants/absences";
+import { getAbsencesListFormatted } from "../../adapters/absencens";
+import { formatToISO } from "../../utils/date";
 import {
   Button,
   Dialog,
@@ -20,65 +25,21 @@ import {
   DialogTitle,
   FormLabel,
 } from "@mui/material";
-import { getTeacherData } from "../../utils/teacher";
-import { LoaderContext } from "../../contexts/loader";
+import { loadStoreGMPs } from "../../utils/gmp";
+import { loadStoreMGs } from "../../utils/mg";
+import { MenuProps } from "../../constants/styles";
 
-const Absences = () => {
-  const headers = [
-    { name: "id", value: "id" },
-    { name: "document", value: "CI" },
-    { name: "name", value: "Nombre" },
-    { name: "lastname", value: "Apellido" },
-    { name: "group", value: "Grupo" },
-    { name: "matter", value: "Materia" },
-    { name: "startDate", value: "Fecha Incio" },
-    { name: "endDate", value: "Fecha Fin" },
-    { name: "activeLabel", value: "Activo" },
-  ];
-  const TURNS =
-    [
-      { id: 1, name: "Matutino" },
-      { id: 2, name: "Vespertino" },
-      { id: 3, name: "Nocturno" }
-    ]
-  const ITEM_HEIGHT = 30;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-  const DEFAULT_FORM_DATA = {
-    id: -1,
-    groupId: "",
-    matterId: "",
-    gmpId: "",
-    gmps: [],
-    turn: "",
-    turnId: -1,
-    startDate: "",
-    endDate: "",
-    document: "",
-    name: "",
-    lastname: "",
-    reason: "",
-    groupMatter: [],
-    active: false
-  };
-
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+export const Absences = () => {
+  const [formData, setFormData] = useState(ABSENCES_FORM);
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({ visible: false, error: "" });
-  const [absences, setAbsences] = useState([]);
+  const [absences, setAbsences] = useState<IAbsencesFormatted[]>([]);
   const [absencesState, setAbsencesState] = useState({ active: true });
   const [selectedGmp, setSelectedGmp] = useState<any>()
   const [gmpId, setGmpId] = useState()
-
   const { isLoading, setLoading } = useContext(LoaderContext)
+
+  const { open, handleClose, handleOpen } = useDialog();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +47,8 @@ const Absences = () => {
       const token = localStorage.getItem("token")
       if (token) {
         await getAbsencesList(true)
+        await loadStoreGMPs()
+        await loadStoreMGs()
       } else {
         window.location.href = '/';
       }
@@ -94,78 +57,23 @@ const Absences = () => {
     setLoading(false)
   }, []);
 
-  const getAbsencesListFormatted = async (state: boolean) => {
-    const absences = await getAbsences(state)
-    if (absences) {
-      let formattedAbsences: any[] = []
-      await Promise.all(
-        absences.map(async (absence: any) => {
-          const { person } = await getProfessorInfo(absence.gmp.proffessorId)
-          const teacherData = await getTeacherData(Number(person.ci), formData)
-          const filtredGmp = teacherData?.gmps.reduce((acc: any, gmp: any) => {
-            const selectedMatters = gmp.matters.filter((matter: any) => matter.gmpId === absence.gmpId);
-            if (selectedMatters.length > 0) {
-              acc.push({ group: gmp.group, matter: selectedMatters[0] });
-            }
-            return acc;
-          }, []);
-
-          if (filtredGmp.length) {
-            const { group, matter } = filtredGmp[0]
-            const gmpData = teacherData?.gmps.filter((gmp: any) => (gmp.group.id === group.id))[0]
-            formattedAbsences.push({
-              id: absence.id,
-              document: person.ci,
-              name: person.name,
-              lastname: person.lastname,
-              group: group.name,
-              groupId: group.id,
-              matter: matter.name,
-              matterId: matter.id,
-              gmpId: matter.gmpId,
-              gmps: teacherData?.gmps,
-              gmpData: gmpData,
-              reason: absence.reason,
-              startDate: formatToLocalDate(absence.startDate),
-              endDate: formatToLocalDate(absence.endDate),
-              turnName: absence.turn.name,
-              turnId: absence.turn.id,
-              active: absence.active,
-              activeLabel: absence.active ? "Activo" : "Inactivo"
-            })
-          }
-        }))
-      return formattedAbsences.sort((a, b) => a.id - b.id);
+  const getAbsencesList = async (state: boolean) => {
+    setLoading(true)
+    const responseAbsences = await getAbsencesListFormatted(state, formData)
+    if (responseAbsences) {
+      setAbsences(responseAbsences)
     }
-  }
-
-  const formatToLocalDate = (newDate: string) => {
-    const date = new Date(newDate);
-    const options: any = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return date.toLocaleDateString('es-ES', options)
-  }
-
-  function formatToISO(newDate: string) {
-    const dateArr = newDate.split("/");
-    const day = Number(dateArr[0]);
-    const month = Number(dateArr[1]);
-    const year = Number(dateArr[2]);
-    const date = new Date(year, month - 1, day);
-    return date.toISOString();
+    setLoading(false)
   }
 
   const handleChange = (event: any) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  const handleOpen = () => {
+  const handleOpenDialog = () => {
     setEditId(null);
-    setFormData(DEFAULT_FORM_DATA);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    setFormData(ABSENCES_FORM);
+    handleOpen()
   };
 
   const handleSubmit = async (event: any) => {
@@ -174,15 +82,15 @@ const Absences = () => {
       const body = {
         gmpId: gmpId,
         turnId: formData.turnId,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        startDate: new Date(formData.startDate).toISOString().split(".")[0],
+        endDate: new Date(formData.endDate).toISOString().split(".")[0],
         reason: formData.reason,
         active: formData.active
       }
       const response = await saveAbsence(formData.id, body)
       if (response) {
         await getAbsencesList(true)
-        setOpen(false);
+        handleClose()
         setEditId(null)
         setGmpId(undefined)
         setSelectedGmp(undefined)
@@ -193,15 +101,15 @@ const Absences = () => {
       const body = {
         gmpId: gmpId,
         turnId: selectedGmp.group.turnId,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        startDate: new Date(formData.startDate).toISOString().split(".")[0],
+        endDate: new Date(formData.endDate).toISOString().split(".")[0],
         reason: formData.reason,
         active: true
       }
       const response = await createAbsence(body)
       if (response) {
         await getAbsencesList(true)
-        setOpen(false);
+        handleClose()
         setEditId(null)
         setGmpId(undefined)
         setSelectedGmp(undefined)
@@ -219,12 +127,12 @@ const Absences = () => {
       endDate: formatToISO(selectedRow.endDate)
     })
     setSelectedGmp(selectedRow.gmpData)
-    setOpen(true)
+    handleOpen()
   };
 
   const handleSearch = async () => {
     setErrors({ visible: false, error: "" })
-    const teacherData = await getTeacherData(Number(formData.document), formData);
+    const teacherData = await getTeacherData(Number(formData.document), formData, true);
     if (teacherData) {
       setFormData({
         ...formData,
@@ -235,20 +143,13 @@ const Absences = () => {
     }
   }
 
-  const getAbsencesList = async (state: boolean) => {
-    const responseAbsences: any = await getAbsencesListFormatted(state)
-    if (responseAbsences) {
-      setAbsences(responseAbsences)
-    }
-  }
-
   return (
     <div>
       <div className="my-4 space-x-4">
         <Button
           variant="outlined"
           color="success"
-          onClick={handleOpen}
+          onClick={handleOpenDialog}
           endIcon={<EventBusyIcon />}
           className="normal-case "
           disabled={isLoading}
@@ -271,11 +172,11 @@ const Absences = () => {
       <p className="my-4 text-xl">{absencesState.active ? "Inasistencias Activas" : "Inasistencias Inactivas"}</p>
       <CustomTable
         className=""
-        headers={headers}
+        headers={HEADERS}
         items={absences}
         onSelectRow={handleEdit}
       />
-      <Dialog open={open} className="mx-auto ">
+      <Dialog open={open} className="mx-auto">
         <DialogTitle className="text-sm">
           {editId ? "Editar insasistencia" : "Nuevo Inasistencia"}
         </DialogTitle>
@@ -423,6 +324,7 @@ const Absences = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              disabled={isLoading}
             >
               Cancelar
             </Button>
@@ -432,6 +334,7 @@ const Absences = () => {
               variant="outlined"
               size="small"
               className="normal-case"
+              disabled={isLoading}
             >
               {editId ? "Guardar" : "Crear"}
             </Button>
@@ -441,5 +344,3 @@ const Absences = () => {
     </div>
   );
 };
-
-export default Absences;

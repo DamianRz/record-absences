@@ -101,8 +101,10 @@ const Groups = () => {
   }, []);
 
   const getGroupList = async (active: boolean) => {
+    setLoading(true)
     const response: any = await getGroupsFormatted(active)
     if (response) setGroups(response)
+    setLoading(false)
   }
 
   const getGroupsFormatted = async (active: boolean) => {
@@ -182,6 +184,7 @@ const Groups = () => {
   }
 
   const handleSubmit = async (event: any) => {
+    setLoading(true)
     event.preventDefault();
     if (editId) {
       const group = {
@@ -199,20 +202,24 @@ const Groups = () => {
             removeMgIds.push(mg.id)
           }
         })
-        await Promise.all(
-          removeMgIds.map(async (mgId) => {
-            await deleteMg(mgId)
-          }),
-        )
-        await Promise.all(
-          formData.matterIds.map(async (matterId) => {
-            await createMg({ groupId: editId, matterId: matterId })
-          }),
-        )
-        setOpen(false);
-        await getGroupList(true)
-        setEditId(null)
+        try {
+          await Promise.all(
+            removeMgIds.map(async (mgId) => {
+              await deleteMg(mgId)
+            }),
+          )
+          await Promise.all(
+            formData.matterIds.map(async (matterId) => {
+              await createMg({ groupId: editId, matterId: matterId })
+            }),
+          )
+        } catch (error) {
+          console.log(error)
+        }
       }
+      setOpen(false);
+      await getGroupList(true)
+      setEditId(null)
     } else {
       const group = {
         grade: formData.grade,
@@ -228,7 +235,7 @@ const Groups = () => {
         setEditId(null)
       }
     }
-
+    setLoading(false)
   };
 
   const handleChange = (event: any) => {
@@ -284,7 +291,7 @@ const Groups = () => {
         <form onSubmit={handleSubmit}>
           <DialogContent className="grid justify-center">
             <div className="flex mb-4 space-x-2">
-              <FormControl className="w-full  min-w-[100px]">
+              <FormControl className="w-full">
                 <TextField
                   required
                   label="Nombre"
@@ -295,24 +302,23 @@ const Groups = () => {
                   variant="outlined"
                 />
               </FormControl>
-              <div>
-                <FormControl>
-                  <InputLabel id="turn-select">Turno</InputLabel>
-                  <Select
-                    labelId="turn-select"
-                    name="turnId"
-                    value={formData.turnId}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Turno" />}
-                  >
-                    {TURNS.map((turn) => (
-                      <MenuItem key={turn.id} value={turn.id}>
-                        {turn.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
+
+              <FormControl className="min-w-[100px]">
+                <InputLabel id="turn-select">Turno</InputLabel>
+                <Select
+                  labelId="turn-select"
+                  name="turnId"
+                  value={formData.turnId}
+                  onChange={handleChange}
+                  input={<OutlinedInput label="Turno" />}
+                >
+                  {TURNS.map((turn) => (
+                    <MenuItem key={turn.id} value={turn.id}>
+                      {turn.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <FormControl className="w-full max-w-[100px]">
                 <InputLabel id="select-grade">Grado</InputLabel>
@@ -376,7 +382,7 @@ const Groups = () => {
                     color="success"
                     variant="outlined"
                     onClick={() => importMattersByGroupId(Number(formData.groupIdToImportMatters))}
-                    className="w-full mx-4 my-4 normal-case max-w-[150px]"
+                    className="w-full mx-4 normal-case max-w-[150px]"
                     disabled={!formData.groupIdToImportMatters}
                   >
                     Importar Materias
