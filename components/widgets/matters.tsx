@@ -124,17 +124,7 @@ const Matters = () => {
 
     const existsCode = Boolean(matters.filter((matter: any) => (matter.code === formData.code && matter.name === formData.name)).length)
     if (existsCode) {
-      // TODO validar cuando este el campo
-      // if (!editId) {
-      // setErrors({
-      //   ...errors,
-      //   ...error,
-      //   code: {
-      //     visible: true,
-      //     error: "Ya existe este codigo con este nombre de materia, por favor ingrese un nuevo codigo"
-      //   }
-      // })
-      // }
+      // TODO
     } else if (failed) {
       setErrors({
         ...errors,
@@ -144,23 +134,22 @@ const Matters = () => {
     if (failed) return null;
 
     setLoading(true)
+
+    let responseSave = null
+
     if (editId) {
       const matter = { name: formData.name, description: formData.description, code: formData.code }
-      const responseSave = await saveMatter(editId, matter)
-      if (responseSave) {
-        setOpen(false);
-        await getMatterList(true)
-        setEditId(null)
-      }
+      responseSave = await saveMatter(editId, matter)
     } else {
       const matter = { name: formData.name, description: formData.description, code: formData.code }
-      const responseSave = await createMatter(matter)
-      if (responseSave) {
-        setOpen(false);
-        await getMatterList(true)
-        setEditId(null)
-      }
+      responseSave = await createMatter(matter)
     }
+
+    if (!responseSave) alert(`Ocurrio un error al ${editId ? 'Editar' : 'Crear'} una materia, vuelva a intentarlo mas tarde o cumuniquese con soporte`)
+
+    setOpen(false);
+    await getMatterList(true)
+    setEditId(null)
     setLoading(false)
   };
 

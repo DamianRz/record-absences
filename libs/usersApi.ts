@@ -23,7 +23,7 @@ export const signUp = (data: any): Promise<any> => {
         .then(response => response.json())
         .then(data => {
             return { token: data.token };
-        });
+        }).catch(() => null);
 }
 
 export const getUsers = (active = true) => {

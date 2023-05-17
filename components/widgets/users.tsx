@@ -125,7 +125,9 @@ const Users = () => {
         failed = true
       }
     })
+
     const existsName = Boolean(users.filter(user => user.name === formData.name).length)
+
     if (existsName) {
       if (!editId) {
         setErrors({
@@ -143,26 +145,23 @@ const Users = () => {
         ...error,
       })
     }
+
     if (failed) return null;
+
     let data = {
       name: formData.name,
       type: formData.type,
       firstname: formData.firstname,
       lastname: formData.lastname
     }
+
     const responseSave = await signUp(data)
-    if (responseSave) {
-      setOpen(false);
-      await getUserList(true)
-      setEditId(null)
-    }
+    if (!responseSave) alert(`Ocurrio un error al ${editId ? 'Editar' : 'Crear'} un usuario, vuelva a intentarlo mas tarde o cumuniquese con soporte`)
+
+    setOpen(false);
+    await getUserList(true)
+    setEditId(null)
   };
-
-
-
-
-
-
 
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);

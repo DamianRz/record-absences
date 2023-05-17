@@ -5,7 +5,7 @@ export const getMatters = async (): Promise<any> => {
         method: 'POST',
         headers: getHeader(),
         body: JSON.stringify({})
-    }).then(response => response.json())
+    }).then(response => response.json()).catch(() => null)
 }
 
 export const createMatter = async (matter: any): Promise<any> => {
@@ -13,7 +13,7 @@ export const createMatter = async (matter: any): Promise<any> => {
         method: 'POST',
         headers: getHeader(),
         body: JSON.stringify({ ...matter })
-    }).then(response => response.json())
+    }).then(response => response.json()).catch(() => null)
 }
 
 export const saveMatter = async (matterId: number, matter: any): Promise<any> => {
@@ -21,12 +21,12 @@ export const saveMatter = async (matterId: number, matter: any): Promise<any> =>
         method: 'PUT',
         headers: getHeader(),
         body: JSON.stringify({ ...matter })
-    }).then(response => response.json())
+    }).then(response => response.json()).catch(() => null)
 }
 
 export const deleteMatter = async (matterId: number): Promise<any> => {
     return await fetch(`${API_URL}/matters/${matterId}`, {
         method: 'DELETE',
         headers: getHeader(),
-    }).then(response => response.json())
+    }).then(response => response.json()).catch(() => null)
 }
