@@ -114,7 +114,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             value={filterValue}
             onChange={handleFilterChange}
             placeholder="Filtrar"
-            className="w-full max-w-[200px] mb-4 leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
+            className="w-full max-w-[200px] !mb-4 leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
             variant="outlined"
             size="small"
           />
@@ -127,10 +127,12 @@ const CustomTable: React.FC<CustomTableProps> = ({
               {headers.map((header, key) => (
                 <TableCell
                   key={key}
-                  className={`${fontSize && "text-" + fontSize} ${showFilters && selectedHeader && selectedHeader.name === header.name && 'bg-teal-400 text-white'}
-                  ${showFilters && 'cursor-pointer'}
-                    p-3 text-gray-700 text-center bg-teal-100 select-none`}
-                  onClick={() => { if (!isLoading && showFilters) handleHeaderClick(header) }}
+                  className={`!p-3 !text-gray-700 !text-center !bg-teal-100 !select-none ${fontSize && "!text-" + fontSize} ${(showFilters && selectedHeader && selectedHeader.name === header.name) ? '!bg-teal-400 !text-white ' : ''}${showFilters ? '!cursor-pointer ' : ''}`}
+                  onClick={
+                    () => {
+                      if (!isLoading && showFilters) handleHeaderClick(header)
+                    }
+                  }
                 >
                   {header.value}
                 </TableCell>
