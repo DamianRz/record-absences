@@ -25,6 +25,9 @@ const Users = () => {
   const headers = [
     { name: "id", value: "ID" },
     { name: "name", value: "Documento" },
+    { name: "firstname", value: "Nombre" },
+    { name: "lastname", value: "Apellido" },
+    { name: "type", value: "Tipo" },
   ];
 
   const DEFAULT_FORM_DATA = {

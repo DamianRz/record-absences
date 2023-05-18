@@ -61,7 +61,7 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const { isLoading, setLoading } = useContext(LoaderContext);
 
   useEffect(() => {
-    // Adscrito
+    // adscripto
     if (getUserLogged() === USER_TYPES[0].value) {
       const filteredTools = [tools[0], tools[4], tools[6]]
       setTools(filteredTools)
