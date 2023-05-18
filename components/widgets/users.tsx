@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { PersonAdd } from "@mui/icons-material";
 import CustomTable from "../table";
-import { deleteUser, getUsers, signUp } from "../../libs/usersApi";
+import { deleteUser, getUsers, setUser, signUp } from "../../libs/usersApi";
 import {
   Button,
   Dialog,
@@ -133,6 +133,7 @@ const Users = () => {
 
     if (existsName) {
       if (!editId) {
+        failed = true
         setErrors({
           ...errors,
           ...error,
@@ -151,15 +152,25 @@ const Users = () => {
 
     if (failed) return null;
 
-    let data = {
+    let data: any = {
       name: formData.name,
       type: formData.type,
       firstname: formData.firstname,
       lastname: formData.lastname
     }
 
-    const responseSave = await signUp(data)
-    if (!responseSave) alert(`Ocurrio un error al ${editId ? 'Editar' : 'Crear'} un usuario, vuelva a intentarlo mas tarde o cumuniquese con soporte`)
+    let response = null
+    if (editId) {
+      if (formData.password) {
+        data = { ...data, password: formData.password }
+      }
+      response = await setUser(editId, data)
+    } else {
+      data = { ...data, password: formData.password }
+      response = await signUp(data)
+    }
+
+    if (!response) alert(`Ocurrio un error al ${editId ? 'Editar' : 'Crear'} un usuario, vuelva a intentarlo mas tarde o cumuniquese con soporte`)
 
     setOpen(false);
     await getUserList(true)

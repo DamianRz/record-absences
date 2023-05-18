@@ -149,7 +149,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
               >
                 {headers.map((header, key) => (
                   <TableCell key={key} className={`${fontSize && "text-" + fontSize} ${isLoading && 'text-gray-400'} 
-                    p-3 font-mono text-sm border-t border-gray-200`}>
+                    p-3 font-mono text-sm border-t text-center border-gray-200`}>
                     {row && row[header?.name]}
                   </TableCell>
                 ))}

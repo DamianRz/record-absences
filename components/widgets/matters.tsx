@@ -122,9 +122,24 @@ const Matters = () => {
       }
     })
 
-    const existsCode = Boolean(matters.filter((matter: any) => (matter.code === formData.code && matter.name === formData.name)).length)
+    console.log(matters)
+    const existsCode = Boolean(
+      matters.filter(
+        (matter: { id: number, code: string, name: string, active: boolean }) => (
+          (matter.id !== editId) &&
+          matter.code.toLowerCase() === formData.code.toLowerCase()
+        )).length)
+
     if (existsCode) {
-      // TODO
+      failed = true
+      setErrors({
+        ...errors,
+        ...error,
+        code: {
+          visible: true,
+          error: "Ya existe este codigo, por favor ingrese un nuevo codigo"
+        }
+      })
     } else if (failed) {
       setErrors({
         ...errors,

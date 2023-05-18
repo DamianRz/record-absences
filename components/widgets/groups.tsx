@@ -56,7 +56,7 @@ const Groups = () => {
     turnId: "",
     groupIdToImportMatters: "",
 
-    active: false,
+    active: true,
     matterNames: [],
     matterIds: [],
     savedMgIds: [],
@@ -76,6 +76,10 @@ const Groups = () => {
     savedMgIds: number[],
   }
 
+  const DEFAULT_ERRORS = {
+    name: { visible: false, error: "" },
+  }
+
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<IFormData>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
@@ -83,6 +87,7 @@ const Groups = () => {
   const [matters, setMatters] = useState([])
   const [groupsState, setGroupsState] = useState({ active: true });
   const { isLoading, setLoading } = useContext(LoaderContext)
+  const [errors, setErrors] = useState(DEFAULT_ERRORS);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -138,6 +143,7 @@ const Groups = () => {
 
   const handleEdit = (selectedRow: any) => {
     setEditId(selectedRow.id);
+    setErrors(DEFAULT_ERRORS)
     setFormData({
       ...formData,
       ...selectedRow,
@@ -184,8 +190,30 @@ const Groups = () => {
   }
 
   const handleSubmit = async (event: any) => {
-    setLoading(true)
     event.preventDefault();
+
+    let failed = false
+    const existsGroup = Boolean(
+      groups.filter(
+        (group: any) => (
+          group.id !== editId &&
+          group.name.toLowerCase() === formData.name.toLowerCase() &&
+          group.turnId === formData.turnId &&
+          group.grade === formData.grade
+        )).length)
+    if (existsGroup) {
+      failed = true
+      setErrors({
+        ...errors,
+        name: {
+          visible: true,
+          error: "Ya existe un grupo con ese nombre, turno y grado"
+        }
+      })
+    }
+    if (failed) return null;
+    setLoading(true)
+
     if (editId) {
       const group = {
         grade: formData.grade,
@@ -244,6 +272,7 @@ const Groups = () => {
 
   const handleOpen = () => {
     setEditId(null);
+    setErrors(DEFAULT_ERRORS)
     setFormData(DEFAULT_FORM_DATA);
     setOpen(true);
   };
@@ -300,6 +329,8 @@ const Groups = () => {
                   onChange={handleChange}
                   className="w-full max-w-xs leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                   variant="outlined"
+                  error={errors.name.visible}
+                  helperText={errors.name.visible && errors.name.error}
                 />
               </FormControl>
 
@@ -311,6 +342,7 @@ const Groups = () => {
                   value={formData.turnId}
                   onChange={handleChange}
                   input={<OutlinedInput label="Turno" />}
+                  required
                 >
                   {TURNS.map((turn) => (
                     <MenuItem key={turn.id} value={turn.id}>
@@ -329,6 +361,7 @@ const Groups = () => {
                   onChange={handleChange}
                   input={<OutlinedInput label="Grado" />}
                   MenuProps={MenuProps}
+                  required
                 >
                   {GRADES.map((grade: number, index: number) => (
                     <MenuItem
