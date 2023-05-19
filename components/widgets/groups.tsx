@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CustomTable from "../table";
-import { signIn } from "../../libs/usersApi";
 import { setStoreMatters } from "../../utils/matters";
 import { createGroup, getGroups, saveGroup } from "../../libs/groupsApi";
 import { GRADES, TURNS } from "../../utils/groups";
@@ -25,9 +24,10 @@ import {
   Chip,
 } from "@mui/material";
 import { LoaderContext } from "../../contexts/loader";
+import { UserContext } from "../../contexts/userContext";
+import { useRouter } from "next/router";
 
 const Groups = () => {
-
   const headers = [
     { name: "id", value: "id" },
     { name: "name", value: "Nombre" },
@@ -86,8 +86,11 @@ const Groups = () => {
   const [groups, setGroups] = useState([])
   const [matters, setMatters] = useState([])
   const [groupsState, setGroupsState] = useState({ active: true });
-  const { isLoading, setLoading } = useContext(LoaderContext)
   const [errors, setErrors] = useState(DEFAULT_ERRORS);
+
+  const { isLoading, setLoading } = useContext(LoaderContext)
+  const { userIsNormal } = useContext(UserContext)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -98,7 +101,7 @@ const Groups = () => {
         setMatters(mattersList)
         await getGroupList(true)
       } else {
-        window.location.href = '/';
+        router.push('/')
       }
       setLoading(false)
     }
@@ -283,35 +286,38 @@ const Groups = () => {
 
   return (
     <div>
-      <div className="my-4 space-x-4">
-        <Button
-          variant="outlined"
-          color="success"
-          onClick={handleOpen}
-          endIcon={<PersonAddIcon />}
-          className="normal-case"
-        >
-          Nuevo grupo
-        </Button>
-        <Button
-          variant="outlined"
-          color={groupsState.active ? "warning" : "success"}
-          onClick={() => {
-            setGroupsState({ active: !groupsState.active })
-            getGroupList(!groupsState.active)
-          }}
-          className="normal-case"
-          disabled={isLoading}
-        >
-          {`Ver Grupos ${groupsState.active ? "Inactivos" : "Activos"}`}
-        </Button>
-      </div>
+      {!userIsNormal() && (
+        <div className="my-4 space-x-4">
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={handleOpen}
+            endIcon={<PersonAddIcon />}
+            className="normal-case"
+          >
+            Nuevo grupo
+          </Button>
+          <Button
+            variant="outlined"
+            color={groupsState.active ? "warning" : "success"}
+            onClick={() => {
+              setGroupsState({ active: !groupsState.active })
+              getGroupList(!groupsState.active)
+            }}
+            className="normal-case"
+            disabled={isLoading}
+          >
+            {`Ver Grupos ${groupsState.active ? "Inactivos" : "Activos"}`}
+          </Button>
+        </div>
+      )}
       <p className="my-4 text-xl">{groupsState.active ? "Grupos Activos" : "Grupos Inactivos"}</p>
       <CustomTable
         className=""
         headers={headers}
         items={groups}
         onSelectRow={handleEdit}
+        disabledSelectRow={userIsNormal()}
       />
       <Dialog open={open} className="max-w-xl mx-auto">
         <DialogTitle className="text-sm">

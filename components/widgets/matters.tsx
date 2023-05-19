@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import CustomTable from "../table";
-import { signIn } from "../../libs/usersApi";
 import { createMatter, deleteMatter, getMatters, saveMatter } from "../../libs/mattersApi";
 import {
   Button,
@@ -14,6 +13,8 @@ import {
   FormLabel,
 } from "@mui/material";
 import { LoaderContext } from "../../contexts/loader";
+import { UserContext } from "../../contexts/userContext";
+import { useRouter } from "next/router";
 
 const Matters = () => {
   const headers = [
@@ -41,8 +42,11 @@ const Matters = () => {
   const [formData, setFormData] = useState<any>(DEFAULT_FORM_DATA);
   const [editId, setEditId] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-  const { isLoading, setLoading } = useContext(LoaderContext)
   const [errors, setErrors] = useState(DEFAULT_ERRORS);
+
+  const { isLoading, setLoading } = useContext(LoaderContext)
+  const { userIsNormal } = useContext(UserContext)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -51,7 +55,7 @@ const Matters = () => {
       if (token) {
         await getMatterList(true)
       } else {
-        window.location.href = '/';
+        router.push('/');
       }
       setLoading(false)
     }
@@ -122,7 +126,6 @@ const Matters = () => {
       }
     })
 
-    console.log(matters)
     const existsCode = Boolean(
       matters.filter(
         (matter: { id: number, code: string, name: string, active: boolean }) => (
@@ -190,24 +193,27 @@ const Matters = () => {
 
   return (
     <div>
-      <div className="my-4 space-x-4">
-        <Button
-          variant="outlined"
-          color="success"
-          onClick={handleOpen}
-          endIcon={<PostAddIcon />}
-          className="normal-case"
-          disabled={isLoading}
-        >
-          Nuevo materia
-        </Button>
-      </div>
+      {!userIsNormal() && (
+        <div className="my-4 space-x-4">
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={handleOpen}
+            endIcon={<PostAddIcon />}
+            className="normal-case"
+            disabled={isLoading}
+          >
+            Nuevo materia
+          </Button>
+        </div>
+      )}
       <p className="my-4 text-xl">Materias</p>
       <CustomTable
         className="max-h-[400px]"
         headers={headers}
         items={matters}
         onSelectRow={handleEdit}
+        disabledSelectRow={userIsNormal()}
       />
       <Dialog open={open} className="max-w-xl mx-auto">
         <DialogTitle className="text-sm">

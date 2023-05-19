@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { signIn } from "../../libs/usersApi";
 import {
     Button,
     TextField,
     FormControl,
 } from "@mui/material";
+import { UserContext } from "../../contexts/userContext";
+import { useRouter } from "next/router";
+import { LoaderContext } from "../../contexts/loader";
 
 const Login = () => {
 
@@ -16,16 +19,24 @@ const Login = () => {
     const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
     const [error, setError] = useState({ visible: false, error: "" })
 
+    const { setUserType } = useContext(UserContext)
+    const { isLoading, setLoading } = useContext(LoaderContext);
+    const router = useRouter();
+
     useEffect(() => {
+        setLoading(false)
         localStorage.setItem("token", "")
     }, [])
 
     const handleLogin = async () => {
         setError({ visible: false, error: "" })
-        const { token } = await signIn(formData.ci, formData.password);
+        const { token, type } = await signIn(formData.ci, formData.password);
         if (token) {
+            setLoading(true)
+            setUserType(type)
+            localStorage.setItem("user", type)
             localStorage.setItem("token", token)
-            window.location.href = '/absences';
+            router.push('/absences');
         } else {
             setError({ visible: true, error: "No se pudo iniciar sesion verifique usuario o contrasena" })
         }
@@ -49,6 +60,7 @@ const Login = () => {
                             onChange={handleChange}
                             className="w-full leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                             variant="outlined"
+                            disabled={isLoading}
                         />
                     </FormControl>
                 </div>
@@ -62,6 +74,7 @@ const Login = () => {
                             onChange={handleChange}
                             className="w-full leading-normal text-gray-900 bg-white rounded-md focus:outline-none focus:shadow-outline"
                             variant="outlined"
+                            disabled={isLoading}
                         />
                     </FormControl>
                 </div>
@@ -78,6 +91,7 @@ const Login = () => {
                         onClick={() => {
                             handleLogin()
                         }}
+                        disabled={isLoading}
                     >
                         Acceder
                     </Button>

@@ -17,6 +17,7 @@ interface CustomTableProps {
   className: string;
   fontSize?: "xs" | "sm" | "xl";
   showFilters?: boolean
+  disabledSelectRow?: boolean
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
@@ -25,7 +26,8 @@ const CustomTable: React.FC<CustomTableProps> = ({
   onSelectRow,
   className,
   fontSize,
-  showFilters = true
+  showFilters = true,
+  disabledSelectRow = false,
 }) => {
   const [selectedRow, setSelectedRow] = useState();
   const [selectedHeader, setSelectedHeader] = useState<any>(headers[0]);
@@ -143,7 +145,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             {values.length > 0 && values.map((row: any, index) => (
               <TableRow
                 key={index}
-                onClick={() => { if (!isLoading) handleSelectRow(row) }}
+                onClick={() => { if (!isLoading && !disabledSelectRow) handleSelectRow(row) }}
                 className={`${selectedRow === row && "bg-teal-50"
                   } text-center cursor-pointer hover:bg-teal-50`}
               >

@@ -20,6 +20,7 @@ import { getUserLogged } from "../../utils/user";
 import { MenuProps } from "../../constants/styles";
 import { USER_TYPES } from "../../constants/users";
 import { fieldMaxWidth } from "../../utils/validation";
+import { useRouter } from "next/router";
 
 const Users = () => {
   const headers = [
@@ -54,6 +55,8 @@ const Users = () => {
   const { isLoading, setLoading } = useContext(LoaderContext)
   const [errors, setErrors] = useState(DEFAULT_ERRORS);
 
+  const router = useRouter()
+
   useEffect(() => {
     const fetchToken = async () => {
       setLoading(true)
@@ -61,7 +64,7 @@ const Users = () => {
       if (token) {
         await getUserList(true)
       } else {
-        window.location.href = '/';
+        router.push('/');
       }
       setLoading(false)
     }
@@ -69,8 +72,9 @@ const Users = () => {
   }, []);
 
   const getUserList = async (active: boolean) => {
+    const userLogged = await getUserLogged(window)
     const users: { id: number, name: string, type: string }[] = await getUsers(active);
-    const filteredUsers = users.filter((user) => user.name !== getUserLogged())
+    const filteredUsers = users.filter((user) => user.name !== userLogged)
     if (filteredUsers) setUsers(filteredUsers)
   }
 

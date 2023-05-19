@@ -6,6 +6,7 @@ import { getTeacherData } from "../../utils/teacher";
 import { LoaderContext } from "../../contexts/loader";
 import { formatToLocalDate } from "../../utils/date";
 import { Button } from "@mui/material";
+import { useRouter } from "next/router";
 
 const Carousel = () => {
   const headers = [
@@ -37,6 +38,7 @@ const Carousel = () => {
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [absences, setAbsences] = useState([]);
   const { setLoading } = useContext(LoaderContext)
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +47,7 @@ const Carousel = () => {
       if (token) {
         await getAbsencesList(true)
       } else {
-        window.location.href = '/';
+        router.push('/')
       }
       setLoading(false)
     }
@@ -118,7 +120,9 @@ const Carousel = () => {
   return (
     <div className="py-4">
       <Button
-        href={"/absences"}
+        onClick={() => {
+          router.push('/absences')
+        }}
         variant="outlined"
         size="small"
         className="normal-case"

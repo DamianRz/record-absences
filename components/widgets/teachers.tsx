@@ -25,14 +25,15 @@ import {
 import { createProfessor, saveProfessor } from "../../libs/professorsApi";
 import { setStoreMatters } from "../../utils/matters";
 import { getSpecialtiesByNames } from "../../utils/specialties";
-import { getGmpsSortedByTeacherId } from "../../utils/gmp";
 import { createGmp, saveGmp } from "../../libs/gmpsApi";
 import { LoaderContext } from "../../contexts/loader";
-import { IFormData, IGmp, SELECTED_GMP, TEACHER_DEFAULT_FORM_DATA, TEACHER_HEADERS } from "../../constants/teachers";
+import { IGmp, SELECTED_GMP, TEACHER_DEFAULT_FORM_DATA, TEACHER_HEADERS } from "../../constants/teachers";
 import { MenuProps } from "../../constants/styles";
 import { GroupsAssigner } from "../groupsAssingner";
 import { getTeachersFormatted } from "../../adapters/teachers";
 import { getSpecialtiesFormatted } from "../../adapters/specialties";
+import { UserContext } from "../../contexts/userContext";
+import { useRouter } from "next/router";
 
 const Teachers = () => {
 
@@ -43,11 +44,10 @@ const Teachers = () => {
   }
 
   const [open, setOpen] = useState(false);
-  const [showConfirmChangeState, setShowConfirmChangeState] = useState(false);
-  const [selectedGmp, setSelectedGmp] = useState<IGmp>(SELECTED_GMP);
   const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([])
   const [formData, setFormData] = useState<any>(TEACHER_DEFAULT_FORM_DATA)
+  const [currentSelectedRow, setCurrentSelectedRow] = useState<any>()
   const [matters, setMatters] = useState([])
   const [errors, setErrors] = useState({
     error: "",
@@ -57,7 +57,10 @@ const Teachers = () => {
   const [formErrors, setFormErrors] = useState(DEFAULT_ERRORS);
 
   const [teachersState, setTeachersState] = useState({ active: true });
+
   const { isLoading, setLoading } = useContext(LoaderContext);
+  const { userIsNormal } = useContext(UserContext)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -68,7 +71,7 @@ const Teachers = () => {
         setMatters(mattersList)
         await getTeacherList(true)
       } else {
-        window.location.href = '/';
+        router.push('/');
       }
       setLoading(false)
     }
@@ -97,6 +100,14 @@ const Teachers = () => {
       specialties,
       specialtyNames
     } = await getSpecialtiesFormatted(selectedRow.id)
+    // save for validation
+    setCurrentSelectedRow({
+      ...selectedRow,
+      matterSpecialtyIds,
+      specialties,
+      specialtyNames,
+      teacherId: selectedRow.id
+    })
     setFormData({
       ...selectedRow,
       matterSpecialtyIds,
@@ -126,6 +137,17 @@ const Teachers = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    if (
+      formData.name == currentSelectedRow?.name &&
+      formData.lastname == currentSelectedRow?.lastname &&
+      formData.active == currentSelectedRow?.active &&
+      formData.specialtyNames == currentSelectedRow?.specialtyNames &&
+      formData.updatedGmps.length == 0
+    ) {
+      setOpen(false);
+      setEditId(null)
+      return null
+    }
     // validation
     let failed = false
     let error = {}
@@ -163,7 +185,6 @@ const Teachers = () => {
         failed = true
       }
     })
-
     const existsDocument = Boolean(teachers.filter((teacher: any) => teacher.document === formData.document).length)
     if (existsDocument) {
       if (!editId) {
@@ -183,11 +204,8 @@ const Teachers = () => {
         ...error,
       })
     }
-
     if (failed) return null;
-
     ///////////////
-
     setLoading(true)
 
     if (editId) {
@@ -285,36 +303,39 @@ const Teachers = () => {
 
   return (
     <div>
-      <div className="my-4 space-x-4">
-        <Button
-          variant="outlined"
-          color="success"
-          onClick={handleOpen}
-          endIcon={<PersonAddIcon />}
-          className="normal-case"
-          disabled={isLoading}
-        >
-          Nuevo profesor
-        </Button>
-        <Button
-          variant="outlined"
-          color={teachersState.active ? "warning" : "success"}
-          onClick={() => {
-            setTeachersState({ active: !teachersState.active })
-            getTeacherList(!teachersState.active)
-          }}
-          className="normal-case"
-          disabled={isLoading}
-        >
-          {teachersState.active ? "Ver profesores inactivos" : "Ver profesores activos"}
-        </Button>
-      </div>
+      {!userIsNormal() && (
+        <div className="my-4 space-x-4">
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={handleOpen}
+            endIcon={<PersonAddIcon />}
+            className="normal-case"
+            disabled={isLoading}
+          >
+            Nuevo profesor
+          </Button>
+          <Button
+            variant="outlined"
+            color={teachersState.active ? "warning" : "success"}
+            onClick={() => {
+              setTeachersState({ active: !teachersState.active })
+              getTeacherList(!teachersState.active)
+            }}
+            className="normal-case"
+            disabled={isLoading}
+          >
+            {teachersState.active ? "Ver profesores inactivos" : "Ver profesores activos"}
+          </Button>
+        </div>
+      )}
       <p className="my-4 text-xl">{teachersState.active ? "Profesores Activos" : "Profesores Inactivos"}</p>
       <CustomTable
         className="max-h-[400px]"
         headers={TEACHER_HEADERS}
         items={teachers}
         onSelectRow={handleEdit}
+        disabledSelectRow={userIsNormal()}
       />
       <Dialog open={open} className="max-w-xl mx-auto">
         <DialogTitle className="text-sm">
@@ -412,15 +433,17 @@ const Teachers = () => {
                 </FormControl>
               </>
             )}
-            <GroupsAssigner
-              formData={formData}
-              onSelectMatterAndGroup={
-                (MGs: any[]) => {
-                  setFormData({ ...formData, selectedMGIds: MGs })
-                }}
-              onChangeGMPState={(GMPs: any[]) => { setFormData({ ...formData, updatedGmps: GMPs }) }}
-              onChangeField={handleChange}
-            />
+            {editId && (
+              <GroupsAssigner
+                formData={formData}
+                onSelectMatterAndGroup={
+                  (MGs: any[]) => {
+                    setFormData({ ...formData, selectedMGIds: MGs })
+                  }}
+                onChangeGMPState={(GMPs: any[]) => { setFormData({ ...formData, updatedGmps: GMPs }) }}
+                onChangeField={handleChange}
+              />
+            )}
             <div className="my-4">
               <FormControl className="w-full">
                 <FormLabel id="radio-active">Estado</FormLabel>

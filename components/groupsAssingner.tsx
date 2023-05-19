@@ -111,29 +111,46 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
     };
 
     const formatGMPbyHeaders = (gmps: any) => {
-        const formatted = gmps.map((gmp: any) => ({
-            id: gmp.group.id,
-            gmpId: gmp.matters[0].gmpId,
-            matterName: gmp.matters[0].name,
-            groupName: gmp.group.name,
-            turnName: TURNS[gmp.group.turnId - 1].name,
-            grade: gmp.group.grade,
-            activeLabel: gmp.active ? "ACTIVO" : "INACTIVO",
-            active: gmp.active,
-            updated: gmp.updated
-        }))
-        return formatted.sort((a: any, b: any) => a.id - b.id)
+        const formatted = gmps.map((gmp: any) => {
+            return gmp.matters.map((matter: any) => ({
+                id: gmp.group.id,
+                gmpId: matter.gmpId,
+                matterName: matter.name,
+                groupName: gmp.group.name,
+                turnName: TURNS[gmp.group.turnId - 1].name,
+                grade: gmp.group.grade,
+                activeLabel: matter.active ? "ACTIVO" : "INACTIVO",
+                active: Boolean(matter.active),
+                updated: matter.updated
+            }))
+        })
+        if (formatted.length) {
+            return formatted[0].sort((a: any, b: any) => a.id - b.id)
+        }
+        return []
     }
 
     const changeSateSelectedGmp = async () => {
-        const filteredGmp = gmps.filter((item: any) => item.matters[0].gmpId === selectedGmp.gmpId)[0]
-        filteredGmp.active = !selectedGmp.active
-        filteredGmp.updated = true
-        const removedSelectedGmp = gmps.filter((item: any) => item.matters[0].gmpId !== selectedGmp.gmpId)
-
-        setGmps([...removedSelectedGmp, filteredGmp])
-        setShowConfirmChangeState(false)
-    }
+        const modifiedGmps = gmps.map((item: any) => {
+            if (item.matters.some((matter: any) => matter.gmpId === selectedGmp.gmpId)) {
+                const modifiedItem = { ...item };
+                modifiedItem.matters = modifiedItem.matters.map((matter: any) => {
+                    if (matter.gmpId === selectedGmp.gmpId) {
+                        return {
+                            ...matter,
+                            updated: !matter.updated,
+                            active: !selectedGmp.active,
+                        };
+                    }
+                    return matter;
+                });
+                return modifiedItem;
+            }
+            return item;
+        });
+        setGmps(modifiedGmps);
+        setShowConfirmChangeState(false);
+    };
 
     return (
         <>

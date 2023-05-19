@@ -36,7 +36,7 @@ export const TEACHER_DEFAULT_FORM_DATA = {
     selectedGrade: "",
     name: "",
     lastname: "",
-    active: false,
+    active: true,
     activeLabel: ""
 };
 

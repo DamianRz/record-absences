@@ -1,7 +1,6 @@
 import { API_URL, getHeader } from "../utils/apiSettings";
-import { setUserLogged } from "../utils/user";
 
-export const signIn = (document: number | string, password: string): Promise<{ token: string }> => {
+export const signIn = (document: number | string, password: string): Promise<{ token: string, type: string }> => {
     return fetch(`${API_URL}/users/signin`, {
         method: 'POST',
         headers: getHeader(),
@@ -9,8 +8,7 @@ export const signIn = (document: number | string, password: string): Promise<{ t
     })
         .then(response => response.json())
         .then(data => {
-            setUserLogged(data.type)
-            return { token: data.token };
+            return { token: data.token, type: data.user.type };
         }).catch(error => { return error });
 }
 

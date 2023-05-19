@@ -8,8 +8,7 @@ import { LoaderContext } from "../contexts/loader";
 import { useRouter } from "next/router";
 import { AccountBox, ExitToApp } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { getUserLogged } from "../utils/user";
-import { USER_TYPES } from "../constants/users";
+import { UserContext } from "../contexts/userContext";
 
 interface DrawerProps {
   isAdmin: boolean;
@@ -56,28 +55,25 @@ const TOOLS = [
 const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
   const [selected, setSelected] = useState(0);
   const [tools, setTools] = useState(TOOLS)
-  const { asPath } = useRouter();
+  const router = useRouter();
 
   const { isLoading, setLoading } = useContext(LoaderContext);
+  const { userIsNormal, userIsAdmin } = useContext(UserContext)
 
   useEffect(() => {
-    // adscripto
-    if (getUserLogged() === USER_TYPES[0].value) {
-      const filteredTools = [tools[0], tools[4], tools[6]]
-      setTools(filteredTools)
-    }
-    // Administrativo
-    if (getUserLogged() === USER_TYPES[1].value) {
-      const filteredTools = tools.filter(item => item.page !== "/users")
-      setTools(filteredTools)
-    }
-
-    tools.map((item, index) => {
-      if (item.page === `/${asPath.split("/")[1]}`) {
-        setSelected(index);
-        setLoading(true)
+    const loadData = async () => {
+      if (userIsNormal() || userIsAdmin()) {
+        const filteredTools = tools.filter(item => item.page !== "/users")
+        setTools(filteredTools)
       }
-    });
+      tools.map((item, index) => {
+        if (item.page === `/${router.asPath.split("/")[1]}`) {
+          setSelected(index);
+          setLoading(true)
+        }
+      });
+    }
+    loadData()
   }, []);
 
   return (
@@ -86,8 +82,10 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
         <Button
           key={index}
           className="p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px]"
-          href={item.page}
-          onClick={() => setLoading(true)}
+          onClick={() => {
+            setLoading(true)
+            router.push(item.page);
+          }}
           sx={{
             minWidth: "150px",
             display: "inline-flex",

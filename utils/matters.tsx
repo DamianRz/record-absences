@@ -11,7 +11,7 @@ export const setStoreMatters = async () => {
 }
 
 export const sortMattersByName = (matters: any[]) => {
-    if (matters.length) {
+    if (matters && matters.length) {
         matters.sort(function (a: any, b: any) {
             var nameA = a.name.toUpperCase();
             var nameB = b.name.toUpperCase();

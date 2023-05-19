@@ -22,7 +22,7 @@ export const getGmpsByTeacherId = async (teacherId: number, usingStore: boolean)
                     mgs = await getMgById(item.mgId);
                 }
                 const { matter, group } = mgs;
-                if (matter && group) gmps.push({ id: item.id, matter, group, active: item.active })
+                if (matter && group) gmps.push({ id: item.id, matter: { ...matter, active: item.active }, group, active: item.active })
             }));
     }
     return gmps;

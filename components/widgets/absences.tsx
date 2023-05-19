@@ -28,6 +28,7 @@ import {
 import { loadStoreGMPs } from "../../utils/gmp";
 import { loadStoreMGs } from "../../utils/mg";
 import { MenuProps } from "../../constants/styles";
+import { useRouter } from "next/router";
 
 export const Absences = () => {
   const [formData, setFormData] = useState(ABSENCES_FORM);
@@ -40,6 +41,7 @@ export const Absences = () => {
   const { isLoading, setLoading } = useContext(LoaderContext)
 
   const { open, handleClose, handleOpen } = useDialog();
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +52,7 @@ export const Absences = () => {
         await loadStoreGMPs()
         await loadStoreMGs()
       } else {
-        window.location.href = '/';
+        router.push('/')
       }
     }
     fetchData()
