@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dialog, DialogActions, DialogTitle, FormControl, FormLabel, InputLabel, ListItemText, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { Button, Checkbox, Dialog, DialogActions, DialogTitle, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { TURNS } from "../constants/absences";
 import { GRADES } from "../utils/groups";
@@ -112,7 +112,8 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
 
     const formatGMPbyHeaders = (gmps: any) => {
         const formatted = gmps.map((gmp: any) => {
-            return gmp.matters.map((matter: any) => ({
+            const matter = gmp.matters[0];
+            return {
                 id: gmp.group.id,
                 gmpId: matter.gmpId,
                 matterName: matter.name,
@@ -122,10 +123,10 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
                 activeLabel: matter.active ? "ACTIVO" : "INACTIVO",
                 active: Boolean(matter.active),
                 updated: matter.updated
-            }))
+            }
         })
         if (formatted.length) {
-            return formatted[0].sort((a: any, b: any) => a.id - b.id)
+            return formatted.sort((a: any, b: any) => a.id - b.id)
         }
         return []
     }

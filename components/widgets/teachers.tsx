@@ -27,7 +27,7 @@ import { setStoreMatters } from "../../utils/matters";
 import { getSpecialtiesByNames } from "../../utils/specialties";
 import { createGmp, saveGmp } from "../../libs/gmpsApi";
 import { LoaderContext } from "../../contexts/loader";
-import { IGmp, SELECTED_GMP, TEACHER_DEFAULT_FORM_DATA, TEACHER_HEADERS } from "../../constants/teachers";
+import { TEACHER_DEFAULT_FORM_DATA, TEACHER_HEADERS } from "../../constants/teachers";
 import { MenuProps } from "../../constants/styles";
 import { GroupsAssigner } from "../groupsAssingner";
 import { getTeachersFormatted } from "../../adapters/teachers";
@@ -95,11 +95,13 @@ const Teachers = () => {
     setLoading(true)
     setFormErrors(DEFAULT_ERRORS)
     setEditId(selectedRow.id)
+
     const {
       matterSpecialtyIds,
       specialties,
       specialtyNames
     } = await getSpecialtiesFormatted(selectedRow.id)
+
     // save for validation
     setCurrentSelectedRow({
       ...selectedRow,
@@ -142,7 +144,8 @@ const Teachers = () => {
       formData.lastname == currentSelectedRow?.lastname &&
       formData.active == currentSelectedRow?.active &&
       formData.specialtyNames == currentSelectedRow?.specialtyNames &&
-      formData.updatedGmps.length == 0
+      formData.updatedGmps.length == 0 &&
+      formData.selectedMGIds == currentSelectedRow?.selectedMGIds
     ) {
       setOpen(false);
       setEditId(null)
