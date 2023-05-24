@@ -168,7 +168,6 @@ const Groups = () => {
 
   const handleSelectMatter = (selectedMatter: { id: number, name: string, code: string }) => {
     const matterCode = `${selectedMatter.name}-${selectedMatter.code}`
-    alert(matterCode)
     if (formData.matterNames.indexOf(matterCode) === -1) {
       formData.matterIds.push(selectedMatter.id)
       formData.matterNames.push(matterCode)

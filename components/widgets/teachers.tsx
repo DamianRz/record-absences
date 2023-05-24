@@ -31,7 +31,7 @@ import { TEACHER_DEFAULT_FORM_DATA, TEACHER_HEADERS } from "../../constants/teac
 import { MenuProps } from "../../constants/styles";
 import { GroupsAssigner } from "../groupsAssingner";
 import { getTeachersFormatted } from "../../adapters/teachers";
-import { getSpecialtiesFormatted } from "../../adapters/specialties";
+import { getSpecialtiesFormatted, upgradeSpecialties } from "../../adapters/specialties";
 import { UserContext } from "../../contexts/userContext";
 import { useRouter } from "next/router";
 
@@ -103,13 +103,16 @@ const Teachers = () => {
     } = await getSpecialtiesFormatted(selectedRow.id)
 
     // save for validation
-    setCurrentSelectedRow({
+
+    const newCopy = {}
+    Object.assign(newCopy, {
       ...selectedRow,
       matterSpecialtyIds,
       specialties,
       specialtyNames,
       teacherId: selectedRow.id
     })
+    setCurrentSelectedRow(newCopy)
     setFormData({
       ...selectedRow,
       matterSpecialtyIds,
@@ -212,30 +215,27 @@ const Teachers = () => {
     setLoading(true)
 
     if (editId) {
+
+
+
+
+      // teacher info
       const teacher = {
         name: formData.name,
         lastname: formData.lastname,
         active: formData.active
       }
       const teacherResponse = await saveProfessor(editId, teacher)
-      const specialties = await getSpecialtiesByNames(formData.specialtyNames)
-      let formattedSpecialties: any = []
-      let removeSpecialties: any = []
-      specialties.map(async (specialty: any) => {
-        const specialtyBody = {
-          proffessorId: editId,
-          matterId: specialty.id
-        }
-        formattedSpecialties.push(specialtyBody)
-        removeSpecialties = formData.specialties.filter((a: any) => (
-          formData.specialtyNames.indexOf(`${a.matter.name}-${a.matter.code}`) === -1
-        ))
-      })
-      const formattedRemoveSpecialties: any = []
-      removeSpecialties.map((spe: any) => {
-        formattedRemoveSpecialties.push(spe.id)
-      })
-      await updateSpecialties(formattedSpecialties, formattedRemoveSpecialties)
+
+      // specialties
+      if (formData.specialtyNames !== currentSelectedRow?.specialtyNames) {
+        await upgradeSpecialties(
+          currentSelectedRow?.specialties,
+          [...currentSelectedRow?.specialtyNames],
+          formData.specialtyNames,
+          editId)
+      }
+
       // state modification
       if (formData.updatedGmps.length) {
         await Promise.all(
