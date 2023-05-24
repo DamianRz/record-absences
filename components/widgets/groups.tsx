@@ -188,7 +188,7 @@ const Groups = () => {
     setLoading(true)
     const gms = await getMgs({ groupId })
     gms.map((gm: any) => {
-      handleSelectMatter({ id: gm.matter.id, name: gm.matter.name })
+      handleSelectMatter({ id: gm.matter.id, name: gm.matter.name, code: gm.matter.code })
     })
     handleMatterChange({ target: { value: formData.matterNames } })
     setLoading(false)
