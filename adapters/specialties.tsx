@@ -11,7 +11,7 @@ export const getSpecialtiesFormatted = async (teacherId: number) => {
     });
 
     const specialtyNames = formattedSpecialties.map(
-        (specialty: any) => (`${specialty.matter.name}`))
+        (specialty: any) => (`${specialty.matter.name}-${specialty.matter.code}`))
 
     return {
         specialties: formattedSpecialties,

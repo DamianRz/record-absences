@@ -126,7 +126,7 @@ const Groups = () => {
           const matterIds: number[] = []
           const mgIds: any[] = []
           mgs.map((mg: any) => {
-            matterNames.push(mg.matter.name)
+            matterNames.push(`${mg.matter.name}-${mg.matter.code}`)
             matterIds.push(mg.matter.id)
             mgIds.push({ id: mg.id, matterId: mg.matter.id })
           })
@@ -166,13 +166,15 @@ const Groups = () => {
     setFormData({ ...formData, matterNames: value })
   };
 
-  const handleSelectMatter = (selectedMatter: { id: number, name: string }) => {
-    if (formData.matterNames.indexOf(selectedMatter.name) === -1) {
+  const handleSelectMatter = (selectedMatter: { id: number, name: string, code: string }) => {
+    const matterCode = `${selectedMatter.name}-${selectedMatter.code}`
+    alert(matterCode)
+    if (formData.matterNames.indexOf(matterCode) === -1) {
       formData.matterIds.push(selectedMatter.id)
-      formData.matterNames.push(selectedMatter.name)
+      formData.matterNames.push(matterCode)
     } else {
       const filteredNames = formData.matterNames.filter(
-        (name: string) => name !== selectedMatter.name
+        (name: string) => name !== matterCode
       );
       const filteredIds = formData.matterIds.filter(
         (id: number) => id !== selectedMatter.id
@@ -449,17 +451,17 @@ const Groups = () => {
                         <MenuItem
                           className="h-[20px]"
                           key={index}
-                          value={matter.name}
+                          value={`${matter.name}-${matter.code}`}
                           onClick={() => {
                             handleSelectMatter(matter);
                           }}
                         >
                           <Checkbox
                             checked={
-                              formData.matterNames.indexOf(matter.name) > -1
+                              formData.matterNames.indexOf(`${matter.name}-${matter.code}`) > -1
                             }
                           />
-                          <ListItemText primary={matter.name} />
+                          <ListItemText primary={`${matter.name}-${matter.code}`} />
                         </MenuItem>
                       ))}
                     </Select>

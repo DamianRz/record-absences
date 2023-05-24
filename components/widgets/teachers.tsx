@@ -228,7 +228,7 @@ const Teachers = () => {
         }
         formattedSpecialties.push(specialtyBody)
         removeSpecialties = formData.specialties.filter((a: any) => (
-          formData.specialtyNames.indexOf(a.matter.name) === -1
+          formData.specialtyNames.indexOf(`${a.matter.name}-${a.matter.code}`) === -1
         ))
       })
       const formattedRemoveSpecialties: any = []
@@ -288,13 +288,14 @@ const Teachers = () => {
     setFormData({ ...formData, specialtyNames: typeof value === "string" ? value.split(",") : value })
   };
 
-  const handleSelectSpecialty = (selectedMatter: { id: number, name: string }) => {
-    if (formData.specialtyNames.indexOf(selectedMatter.name) === -1) {
+  const handleSelectSpecialty = (selectedMatter: { id: number, name: string, code: string }) => {
+    const matterCode = `${selectedMatter.name}-${selectedMatter.code}`
+    if (formData.specialtyNames.indexOf(matterCode) === -1) {
       formData.matterSpecialtyIds.push(selectedMatter.id)
-      formData.specialtyNames.push(selectedMatter.name)
+      formData.specialtyNames.push(matterCode)
     } else {
       const filteredNames = formData.specialtyNames.filter(
-        (name: string) => name !== selectedMatter.name
+        (name: string) => name !== matterCode
       );
       const filteredIds = formData.matterSpecialtyIds.filter(
         (id: number) => id !== selectedMatter.id
@@ -419,17 +420,17 @@ const Teachers = () => {
                       <MenuItem
                         className="h-[20px]"
                         key={index}
-                        value={matter.name}
+                        value={`${matter.name}-${matter.code}`}
                         onClick={() => {
                           handleSelectSpecialty(matter);
                         }}
                       >
                         <Checkbox
                           checked={
-                            formData.specialtyNames.indexOf(matter.name) > -1
+                            formData.specialtyNames.indexOf(`${matter.name}-${matter.code}`) > -1
                           }
                         />
-                        <ListItemText primary={matter.name} />
+                        <ListItemText primary={`${matter.name}-${matter.code}`} />
                       </MenuItem>
                     ))}
                   </Select>
