@@ -26,17 +26,11 @@ export const upgradeSpecialties = async (
     initialSpecialtyNames: string[],
     specialtyNames: string[],
     teacherId: number) => {
-
     const toRemove = initialSpecialties.filter((spe: any) => (specialtyNames.indexOf(`${spe.matter.name}-${spe.matter.code}`) == -1))
-    // console.log("toRemove", toRemove)
-
     const toCreate = specialtyNames.filter((matterCode: string) =>
         !initialSpecialties.some((item: any) => `${item.matter.name}-${item.matter.code}` === matterCode)
     );
-    // console.log("toCreate", toCreate);
-
     const specialtiesToCreate = await getSpecialtiesByNames(toCreate)
-
     Promise.all(
         specialtiesToCreate.map(async (matter: any) => {
             const specialtyBody = {

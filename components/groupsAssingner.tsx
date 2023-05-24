@@ -69,14 +69,15 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
                         }
                     })
                 )
-                const filteredNotSavedInGmps = mgsFilteredByGMPs.filter((a: any) => {
+                const filteredNotSavedInGmps = mgsFilteredByGMPs.filter((mgsFiltered: any) => {
                     let found = true;
-                    gmps.map((b: any) => {
-                        if (b.group.id === a.group.id) found = false
+                    gmps.map((gmp: any) => {
+                        if (
+                            (gmp.group.id === mgsFiltered.group.id) &&
+                            (gmp.matters[0].id === mgsFiltered.matter.id)) found = false
                     })
                     return found
                 })
-
                 MGList = [...MGList, ...filteredNotSavedInGmps]
             })
         )
@@ -111,20 +112,25 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
     };
 
     const formatGMPbyHeaders = (gmps: any) => {
-        const formatted = gmps.map((gmp: any) => {
-            const matter = gmp.matters[0];
-            return {
-                id: gmp.group.id,
-                gmpId: matter.gmpId,
-                matterName: matter.name,
-                groupName: gmp.group.name,
-                turnName: TURNS[gmp.group.turnId - 1].name,
-                grade: gmp.group.grade,
-                activeLabel: matter.active ? "ACTIVO" : "INACTIVO",
-                active: Boolean(matter.active),
-                updated: matter.updated
-            }
-        })
+        const formatted: any[] = []
+        gmps.map((gmp: any) => (
+            gmp.matters.map((matter: any) => {
+                formatted.push(
+                    {
+                        id: gmp.group.id,
+                        code: matter.code,
+                        gmpId: matter.gmpId,
+                        matterName: matter.name,
+                        groupName: gmp.group.name,
+                        turnName: TURNS[gmp.group.turnId - 1].name,
+                        grade: gmp.group.grade,
+                        activeLabel: matter.active ? "ACTIVO" : "INACTIVO",
+                        active: Boolean(matter.active),
+                        updated: matter.updated
+                    }
+                )
+            })
+        ))
         if (formatted.length) {
             return formatted.sort((a: any, b: any) => a.id - b.id)
         }
@@ -237,7 +243,10 @@ export const GroupsAssigner: React.FC<GroupsAssignerProps> = ({
                 </div>
             )}
             {errors.errorFilters && (
-                <p className="mb-4 text-red-400">No se han encontrado grupos con los filtros seleccionados</p>
+                <>
+                    <p className="ml-1 text-sm text-red-400">No hay grupos disponibles con estos filtros</p>
+                    <p className="ml-1 text-sm text-red-400">Verifique si el grupo ya se encuentra ocupado por otro profesor</p>
+                </>
             )}
             <p className="my-4 text-sm">Grupos Asignados</p>
             {

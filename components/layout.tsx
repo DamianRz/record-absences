@@ -12,8 +12,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="absolute block w-full h-full">
-      <div className="w-full py-2 bg-teal-100 h-fit">
-        <p className='mx-3 '>{`Logald - Inasistencias Docentes ${getUserType() !== "undefined" ? `- ${getUserType()}` : ''}`}</p>
+      <div className="w-full py-2 border-[1px] h-fit">
+        <div className='flex pl-2 w-max'>
+          <img
+            className="w-[30px] m-auto text-center align-center"
+            src="/favicon.ico" alt="" />
+          <img
+            className="w-[100px] m-auto text-center align-center"
+            src="/title.PNG" alt="" />
+          <p className='m-auto mx-3 text-center'>{`Inasistencias Docentes ${getUserType() !== "undefined" ? `- ${getUserType()}` : ''}`}</p>
+        </div>
       </div>
       <div className="flex w-full h-fit">
         <Drawer isAdmin={false} />

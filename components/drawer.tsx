@@ -84,7 +84,9 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
           className="p-0 px-4 normal-case mb-1 h-[30px] min-w-[150px]"
           onClick={() => {
             setLoading(true)
-            router.push(item.page);
+            if (selected !== index) {
+              router.push(item.page);
+            }
           }}
           sx={{
             minWidth: "150px",
@@ -100,7 +102,7 @@ const Drawer: React.FC<DrawerProps> = ({ isAdmin }) => {
                 }`}
             />
           }
-          disabled={isLoading}
+          disabled={isLoading || (selected == index)}
         >
           {item.label}
         </Button>

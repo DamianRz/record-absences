@@ -9,6 +9,7 @@ export const TEACHER_HEADERS = [
 export const GROUPS_HEADERS = [
     { name: "id", value: "ID" },
     { name: "groupName", value: "Grupo" },
+    { name: "code", value: "Codigo" },
     { name: "matterName", value: "Materia" },
     { name: "turnName", value: "Turno" },
     { name: "grade", value: "Grado" },

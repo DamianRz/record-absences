@@ -1,18 +1,16 @@
 import { getProfessors } from "../libs/professorsApi"
-import { getTeacherData } from "../utils/teacher"
 
 export const getTeachersFormatted = async (active: boolean, formData: any) => {
     const professors: any[] = await getProfessors(active)
     if (professors.length) {
         let formattedTeachers: any[] = []
         await Promise.all(
-            professors.map(async (professor: any) => {
-                const teacherData = await getTeacherData(Number(professor.ci), {}, false)
+            professors.map(async (teacher: any) => {
                 formattedTeachers.push({
                     ...formData,
-                    ...teacherData,
-                    personId: teacherData.teacherId,
-                    activeLabel: teacherData.active ? "Activo" : "Inactivo"
+                    ...teacher,
+                    personId: teacher.id,
+                    activeLabel: teacher.active ? "Activo" : "Inactivo"
                 })
             })
         )

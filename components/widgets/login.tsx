@@ -38,7 +38,7 @@ const Login = () => {
             localStorage.setItem("token", token)
             router.push('/absences');
         } else {
-            setError({ visible: true, error: "No se pudo iniciar sesion verifique usuario o contrasena" })
+            setError({ visible: true, error: "No se pudo iniciar sesión, verifique usuario o contraseña" })
         }
     }
 
@@ -49,7 +49,13 @@ const Login = () => {
     return (
         <div className="">
             <form className="m-auto mt-[200px] max-w-[350px] max-h-[600px]">
-                <p className="my-4 text-xl text-center">Bienvenido al Adminstrador de Inasistencias Docentes</p>
+                <img
+                    className="w-[100px] m-auto text-center align-center"
+                    src="/favicon.ico" alt="" />
+                <img
+                    className="w-[100px] m-auto text-center align-center"
+                    src="/title.PNG" alt="" />
+                <p className="my-4 text-xl text-center">Administrador de Inasistencias Docentes</p>
                 <div className="mb-4">
                     <FormControl className="w-full">
                         <TextField
@@ -67,7 +73,8 @@ const Login = () => {
                 <div className="mb-4">
                     <FormControl className="w-full">
                         <TextField
-                            label="Contrasena"
+                            required
+                            label="Contraseña"
                             name="password"
                             type="password"
                             value={formData.password}

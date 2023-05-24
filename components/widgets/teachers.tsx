@@ -34,6 +34,8 @@ import { getTeachersFormatted } from "../../adapters/teachers";
 import { getSpecialtiesFormatted, upgradeSpecialties } from "../../adapters/specialties";
 import { UserContext } from "../../contexts/userContext";
 import { useRouter } from "next/router";
+import { getTeacherData } from "../../utils/teacher";
+import { getGmpsSortedByTeacherId } from "../../utils/gmp";
 
 const Teachers = () => {
 
@@ -102,15 +104,18 @@ const Teachers = () => {
       specialtyNames
     } = await getSpecialtiesFormatted(selectedRow.id)
 
-    // save for validation
+    const gmps = await getGmpsSortedByTeacherId(selectedRow.id, false)
 
+    // save for validation
     const newCopy = {}
     Object.assign(newCopy, {
       ...selectedRow,
       matterSpecialtyIds,
       specialties,
       specialtyNames,
-      teacherId: selectedRow.id
+      teacherId: selectedRow.id,
+      gmps: gmps,
+      document: String(selectedRow.ci),
     })
     setCurrentSelectedRow(newCopy)
     setFormData({
@@ -118,7 +123,9 @@ const Teachers = () => {
       matterSpecialtyIds,
       specialties,
       specialtyNames,
-      teacherId: selectedRow.id
+      teacherId: selectedRow.id,
+      gmps: gmps,
+      document: String(selectedRow.ci),
     })
     setLoading(false)
     setOpen(true)
@@ -154,6 +161,7 @@ const Teachers = () => {
       setEditId(null)
       return null
     }
+
     // validation
     let failed = false
     let error = {}
@@ -180,6 +188,7 @@ const Teachers = () => {
         Object.assign(error, newError)
         failed = true
       }
+
       if (fieldName === "document" && formData[fieldName].length < 6) {
         const newError = {
           [fieldName]: {
@@ -191,6 +200,7 @@ const Teachers = () => {
         failed = true
       }
     })
+
     const existsDocument = Boolean(teachers.filter((teacher: any) => teacher.document === formData.document).length)
     if (existsDocument) {
       if (!editId) {
@@ -211,14 +221,9 @@ const Teachers = () => {
       })
     }
     if (failed) return null;
-    ///////////////
     setLoading(true)
 
     if (editId) {
-
-
-
-
       // teacher info
       const teacher = {
         name: formData.name,
@@ -341,7 +346,7 @@ const Teachers = () => {
         onSelectRow={handleEdit}
         disabledSelectRow={userIsNormal()}
       />
-      <Dialog open={open} className="max-w-xl mx-auto">
+      <Dialog open={open} className="mx-auto">
         <DialogTitle className="text-sm">
           {editId ? "Editar profesor" : "Nuevo profesor"}
         </DialogTitle>
